@@ -1,10 +1,10 @@
-package site.coach_coach.Coach_Coach_server.routine.Services;
+package site.coach_coach.Coach_Coach_server.routine.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import site.coach_coach.Coach_Coach_server.routine.DTO.RoutineDTO;
-import site.coach_coach.Coach_Coach_server.routine.Domain.Routine;
-import site.coach_coach.Coach_Coach_server.routine.Repository.RoutineRepository;
+import site.coach_coach.Coach_Coach_server.routine.dto.RoutineDTO;
+import site.coach_coach.Coach_Coach_server.routine.domain.Routine;
+import site.coach_coach.Coach_Coach_server.routine.repository.RoutineRepository;
 
 @Service
 public class RoutineServices {

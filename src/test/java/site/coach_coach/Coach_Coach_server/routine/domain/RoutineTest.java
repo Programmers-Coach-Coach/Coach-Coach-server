@@ -1,4 +1,4 @@
-package site.coach_coach.Coach_Coach_server.routine.Domain;
+package site.coach_coach.Coach_Coach_server.routine.domain;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

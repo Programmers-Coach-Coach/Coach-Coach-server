@@ -1,9 +1,9 @@
-package site.coach_coach.Coach_Coach_server.routine.DTO;
+package site.coach_coach.Coach_Coach_server.routine.dto;
 
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import site.coach_coach.Coach_Coach_server.routine.Domain.Routine;
+import site.coach_coach.Coach_Coach_server.routine.domain.Routine;
 
 @Getter
 @NoArgsConstructor
@@ -11,14 +11,14 @@ public class RoutineDTO {
 
     private Integer userId;
     private Integer coachId;
-    private Integer sportId;
+    private Integer sportsId;
     private String routineName;
 
     @Builder
-    public RoutineDTO(Integer userId, Integer coachId, Integer sportId, String routineName){
+    public RoutineDTO(Integer userId, Integer coachId, Integer sportsId, String routineName){
         this.userId = userId;
         this.coachId = coachId;
-        this.sportId = sportId;
+        this.sportsId = sportsId;
         this.routineName = routineName;
     }
 
@@ -26,7 +26,7 @@ public class RoutineDTO {
         return Routine.builder()
                 .userId(userId)
                 .coachId(coachId)
-                .sportId(sportId)
+                .sportsId(sportsId)
                 .routineName(routineName)
                 .build();
     }
@@ -35,7 +35,7 @@ public class RoutineDTO {
         return RoutineDTO.builder()
                 .userId(userId)
                 .coachId(coachId)
-                .sportId(sportId)
+                .sportsId(sportsId)
                 .routineName(routineName)
                 .build();
     }

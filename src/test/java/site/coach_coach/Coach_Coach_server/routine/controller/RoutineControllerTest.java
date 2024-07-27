@@ -1,4 +1,4 @@
-package site.coach_coach.Coach_Coach_server.routine.Controller;
+package site.coach_coach.Coach_Coach_server.routine.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,9 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import site.coach_coach.Coach_Coach_server.routine.DTO.RoutineDTO;
-import site.coach_coach.Coach_Coach_server.routine.Domain.Routine;
-import site.coach_coach.Coach_Coach_server.routine.Services.RoutineServices;
+import site.coach_coach.Coach_Coach_server.routine.dto.RoutineDTO;
+import site.coach_coach.Coach_Coach_server.routine.domain.Routine;
+import site.coach_coach.Coach_Coach_server.routine.services.RoutineServices;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;

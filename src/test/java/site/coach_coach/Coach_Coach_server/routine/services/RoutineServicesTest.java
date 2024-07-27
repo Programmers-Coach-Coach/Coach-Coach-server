@@ -1,4 +1,4 @@
-package site.coach_coach.Coach_Coach_server.routine.Services;
+package site.coach_coach.Coach_Coach_server.routine.services;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -6,9 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import site.coach_coach.Coach_Coach_server.routine.DTO.RoutineDTO;
-import site.coach_coach.Coach_Coach_server.routine.Domain.Routine;
-import site.coach_coach.Coach_Coach_server.routine.Repository.RoutineRepository;
+import site.coach_coach.Coach_Coach_server.routine.dto.RoutineDTO;
+import site.coach_coach.Coach_Coach_server.routine.domain.Routine;
+import site.coach_coach.Coach_Coach_server.routine.repository.RoutineRepository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;

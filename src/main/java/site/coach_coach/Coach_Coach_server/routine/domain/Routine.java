@@ -1,12 +1,10 @@
-package site.coach_coach.Coach_Coach_server.routine.Domain;
+package site.coach_coach.Coach_Coach_server.routine.domain;
 
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.Optional;
 
 @NoArgsConstructor
 @Setter
@@ -24,17 +22,17 @@ public class Routine {
     @Column(name="coach_id")
     private Integer coachId;
 
-    @Column(name="sport_id")
-    private Integer sportId;
+    @Column(name="sports_id")
+    private Integer sportsId;
 
     @Column(name="routine_Name")
     private String routineName;
 
     @Builder
-    public Routine(Integer userId, Integer coachId, Integer sportId, String routineName){
+    public Routine(Integer userId, Integer coachId, Integer sportsId, String routineName){
         this.userId = userId;
         this.coachId = coachId;
-        this.sportId = sportId;
+        this.sportsId = sportsId;
         this.routineName = routineName;
     }
 }
