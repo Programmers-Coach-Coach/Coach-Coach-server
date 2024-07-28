@@ -1,9 +1,9 @@
-package site.coach_coach.Coach_Coach_server.routine.dto;
+package site.coach_coach.coach_coach_server.routine.dto;
 
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import site.coach_coach.Coach_Coach_server.routine.domain.Routine;
+import site.coach_coach.coach_coach_server.routine.domain.Routine;
 
 @Getter
 @NoArgsConstructor
