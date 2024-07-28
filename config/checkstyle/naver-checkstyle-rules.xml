@@ -65,7 +65,7 @@ The following rules in the Naver coding convention cannot be checked by this con
 
         <!-- [package-name] -->
         <module name="PackageName">
-            <property name="format" value="^[a-zA-Z_]+(\.[a-zA-Z_][a-zA-Z0-9_]*)*$"/>
+            <property name="format" value="^[a-zA-Z_]+(\.[a-zA-Z_][a-zA-Z0-9_]*|_[a-z][a-z0-9_]*)*$"/>
             <message key="name.invalidPattern"
                      value="Package name ''{0}'' must match pattern ''{1}''."/>
         </module>
