@@ -1,4 +1,4 @@
-package site.coach_coach.Coach_Coach_server;
+package site.coach_coach.coach_coach_server;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
