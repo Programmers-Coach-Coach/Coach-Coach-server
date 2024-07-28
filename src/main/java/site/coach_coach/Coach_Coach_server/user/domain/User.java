@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,6 +16,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,18 +41,6 @@ public class User {
 		this.nickname = nickname;
 		this.email = email;
 		this.password = password;
-	}
-
-	public User(Long userId, String nickname, String email, String password,
-		String profileImageUrl, String gender, String localInfo, String introduction) {
-		this.userId = userId;
-		this.nickname = nickname;
-		this.email = email;
-		this.password = password;
-		this.profileImageUrl = profileImageUrl;
-		this.gender = gender;
-		this.localInfo = localInfo;
-		this.introduction = introduction;
 	}
 
 	public void updateUserInfo(String profileImageUrl, String gender, String localInfo, String introduction) {
