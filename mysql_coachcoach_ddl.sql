@@ -55,8 +55,8 @@ CREATE TABLE `coaches` (
                            `chatting_url` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
                            `is_open` tinyint DEFAULT '1',
                            PRIMARY KEY (`coach_id`),
-                           KEY `fk_coaches_user_id_idx` (`user_id`),
-                           CONSTRAINT `fk_coaches_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`)
+                           KEY `coaches_user_id_idx` (`user_id`),
+                           CONSTRAINT `coaches_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='코치 정보';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -72,8 +72,8 @@ CREATE TABLE `coaching_sports` (
                                    `coach_id` int NOT NULL,
                                    `sports_id` int NOT NULL,
                                    PRIMARY KEY (`coaching_sports_id`),
-                                   KEY `fk_coaching_sports_coach_id_idx` (`coach_id`),
-                                   KEY `fk_coaching_sports_sports_id_idx` (`sports_id`),
+                                   KEY `coaching_sports_coach_id_idx` (`coach_id`),
+                                   KEY `coaching_sports_sports_id_idx` (`sports_id`),
                                    CONSTRAINT `fk_coaching_sports_coach_id` FOREIGN KEY (`coach_id`) REFERENCES `coaches` (`coach_id`),
                                    CONSTRAINT `fk_coaching_sports_sports_id` FOREIGN KEY (`sports_id`) REFERENCES `sports` (`sports_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='코칭 종목';
@@ -91,8 +91,8 @@ CREATE TABLE `completed_categories` (
                                         `user_record_id` int NOT NULL,
                                         `routine_category_id` int NOT NULL,
                                         PRIMARY KEY (`completed_category_id`),
-                                        KEY `fk_completed_categories_idx` (`user_record_id`),
-                                        KEY `fk_completed_categories_routines_category_id_idx` (`routine_category_id`),
+                                        KEY `completed_categories_idx` (`user_record_id`),
+                                        KEY `completed_categories_routine_category_id_idx` (`routine_category_id`),
                                         CONSTRAINT `fk_completed_categories_id` FOREIGN KEY (`user_record_id`) REFERENCES `user_records` (`user_record_id`),
                                         CONSTRAINT `fk_completed_categories_routine_category_id` FOREIGN KEY (`routine_category_id`) REFERENCES `routine_categories` (`routine_category_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='완료 카테고리';
@@ -110,8 +110,8 @@ CREATE TABLE `interested_sports` (
                                      `user_id` int NOT NULL,
                                      `sports_id` int NOT NULL,
                                      PRIMARY KEY (`interested_sports_id`),
-                                     KEY `user_id_idx` (`user_id`),
-                                     KEY `sports_id_idx` (`sports_id`),
+                                     KEY `interested_sports_user_id_idx` (`user_id`),
+                                     KEY `interested_sports_sports_id_idx` (`sports_id`),
                                      CONSTRAINT `fk_interested_sports_sports_id` FOREIGN KEY (`sports_id`) REFERENCES `sports` (`sports_id`),
                                      CONSTRAINT `fk_interested_sports_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='관심 운동';
@@ -132,7 +132,7 @@ CREATE TABLE `notifications` (
                                  `relation_function` varchar(45) COLLATE utf8mb4_bin NOT NULL,
                                  `created_at` timestamp NOT NULL,
                                  PRIMARY KEY (`notification_id`),
-                                 KEY `fk_notifications_user_id_idx` (`user_id`),
+                                 KEY `notifications_user_id_idx` (`user_id`),
                                  CONSTRAINT `fk_notifications_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='알림';
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -152,8 +152,8 @@ CREATE TABLE `reviews` (
                            `stars` int NOT NULL,
                            `created_at` timestamp NOT NULL,
                            PRIMARY KEY (`review_id`),
-                           KEY `fk_reviews_user_id_idx` (`user_id`),
-                           KEY `fk_reviews_coach_id_idx` (`coach_id`),
+                           KEY `reviews_user_id_idx` (`user_id`),
+                           KEY `reviews_coach_id_idx` (`coach_id`),
                            CONSTRAINT `fk_reviews_coach_id` FOREIGN KEY (`coach_id`) REFERENCES `coaches` (`coach_id`),
                            CONSTRAINT `fk_reviews_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='리뷰';
@@ -190,9 +190,9 @@ CREATE TABLE `routines` (
                             `sports_id` int NOT NULL,
                             `routine_name` varchar(45) COLLATE utf8mb4_bin NOT NULL,
                             PRIMARY KEY (`routine_id`),
-                            KEY `user_id_idx` (`user_id`),
-                            KEY `sports_id_idx` (`sports_id`),
-                            KEY `coach_id_idx` (`coach_id`),
+                            KEY `routines_user_id_idx` (`user_id`),
+                            KEY `routines_sports_id_idx` (`sports_id`),
+                            KEY `routines_coach_id_idx` (`coach_id`),
                             CONSTRAINT `fk_routines_coach_id` FOREIGN KEY (`coach_id`) REFERENCES `coaches` (`coach_id`),
                             CONSTRAINT `fk_routines_sports_id` FOREIGN KEY (`sports_id`) REFERENCES `sports` (`sports_id`),
                             CONSTRAINT `fk_routines_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`)
@@ -225,8 +225,8 @@ CREATE TABLE `user_coach_likes` (
                                     `user_id` int NOT NULL,
                                     `coach_id` int NOT NULL,
                                     PRIMARY KEY (`user_coach_like_id`),
-                                    KEY `fk_user_coach_likes_user_id_idx` (`user_id`),
-                                    KEY `fk_user_coach_likes_coach_id_idx` (`coach_id`),
+                                    KEY `user_coach_likes_user_id_idx` (`user_id`),
+                                    KEY `user_coach_likes_coach_id_idx` (`coach_id`),
                                     CONSTRAINT `fk_user_coach_likes_coach_id` FOREIGN KEY (`coach_id`) REFERENCES `coaches` (`coach_id`),
                                     CONSTRAINT `fk_user_coach_likes_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='관심 코치';
@@ -245,8 +245,8 @@ CREATE TABLE `user_coach_matching` (
                                        `coach_id` int NOT NULL,
                                        `is_matching` tinyint NOT NULL DEFAULT '0',
                                        PRIMARY KEY (`user_coach_matching_id`),
-                                       KEY `fk_user_coach_matching_user_id_idx` (`user_id`),
-                                       KEY `fk_user_coach_matching_coach_id_idx` (`coach_id`),
+                                       KEY `user_coach_matching_user_id_idx` (`user_id`),
+                                       KEY `user_coach_matching_coach_id_idx` (`coach_id`),
                                        CONSTRAINT `fk_user_coach_matching_coach_id` FOREIGN KEY (`coach_id`) REFERENCES `coaches` (`coach_id`),
                                        CONSTRAINT `fk_user_coach_matching_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='매칭 회원';
@@ -268,7 +268,7 @@ CREATE TABLE `user_records` (
                                 `bmi` double DEFAULT NULL,
                                 `created_at` date NOT NULL,
                                 PRIMARY KEY (`user_record_id`),
-                                KEY `fk_user_records_user_id_idx` (`user_id`),
+                                KEY `user_records_user_id_idx` (`user_id`),
                                 CONSTRAINT `fk_user_records_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='유저 기록';
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -284,8 +284,7 @@ CREATE TABLE `users` (
                          `user_id` int NOT NULL AUTO_INCREMENT,
                          `nickname` varchar(45) COLLATE utf8mb4_bin NOT NULL,
                          `email` varchar(45) COLLATE utf8mb4_bin NOT NULL,
-                         `password` varchar(45) COLLATE utf8mb4_bin NOT NULL,
-                         `salt` varchar(128) COLLATE utf8mb4_bin NOT NULL,
+                         `password` varchar(128) COLLATE utf8mb4_bin NOT NULL,
                          `profile_image_url` varchar(200) COLLATE utf8mb4_bin DEFAULT NULL,
                          `gender` enum('M','W') COLLATE utf8mb4_bin DEFAULT NULL,
                          `local_info` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
@@ -303,4 +302,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-07-27 18:49:19
+-- Dump completed on 2024-07-28 17:50:49
