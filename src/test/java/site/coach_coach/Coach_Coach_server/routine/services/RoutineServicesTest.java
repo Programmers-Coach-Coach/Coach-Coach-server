@@ -34,14 +34,14 @@ public class RoutineServicesTest {
         RoutineDTO routineDto = RoutineDTO.builder()
                 .userId(1)
                 .coachId(2)
-                .sportId(3)
+                .sportsId(3)
                 .routineName("Test Routine")
                 .build();
 
         Routine expectedRoutine = Routine.builder()
                 .userId(1)
                 .coachId(2)
-                .sportId(3)
+                .sportsId(3)
                 .routineName("Test Routine")
                 .build();
 
@@ -49,7 +49,7 @@ public class RoutineServicesTest {
         when(routineRepository.save(any(Routine.class))).thenReturn(expectedRoutine);
 
         // When
-        Routine actualRoutine = routineServices.addRoutine(routineDto);
+        Routine actualRoutine = routineServices.addRoutineService(routineDto);
 
         // Then
         assertEquals(expectedRoutine, actualRoutine);

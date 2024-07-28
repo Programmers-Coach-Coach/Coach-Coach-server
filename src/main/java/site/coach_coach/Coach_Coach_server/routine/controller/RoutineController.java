@@ -18,15 +18,15 @@ public class RoutineController {
 
     @ResponseBody
     @PostMapping("/routines")
-    public ResponseEntity addRoutine(@RequestBody Integer userId, Integer coachId, Integer sportsId, String routineName){
+    public ResponseEntity addRoutine(@RequestBody RoutineDTO routineDto){
         // userId의 경우 임시로 body로 받게 함
-        RoutineDTO routineDto = new RoutineDTO(userId, coachId, sportsId, routineName);
-        Routine checkAddRoutine = routineServices.addRoutine(routineDto);
+		System.out.println("입력 받은 body값 1" + routineDto);
+        Routine checkAddRoutine = routineServices.addRoutineService(routineDto);
 		System.out.println("DB에 추가 후 , routine_id를 반환하는가? : "+checkAddRoutine.getId());
         if(checkAddRoutine.getId() != null){
-            return ResponseEntity.status(HttpStatus.CREATED).body("루틴 추가 성공");
+            return ResponseEntity.status(HttpStatus.CREATED).body("Add Routine Success");
         }else{
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("루틴 추가 실패");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Add Routine Fail");
         }
 
     }

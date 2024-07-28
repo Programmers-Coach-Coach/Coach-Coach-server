@@ -54,14 +54,14 @@ public class RoutineControllerTest {
         Routine routine = new Routine();
         routine.setId(1); // Assume the routine is created successfully with an ID
 
-        when(routineServices.addRoutine(any(RoutineDTO.class))).thenReturn(routine);
+        when(routineServices.addRoutineService(any(RoutineDTO.class))).thenReturn(routine);
 
         // When & Then
         mockMvc.perform(post("/routines")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(routineDto)))
                 .andExpect(status().isCreated())
-                .andExpect(content().string("루틴 추가 성공"));
+                .andExpect(content().string("Add Routine Success"));
     }
 
     @Test
@@ -77,13 +77,13 @@ public class RoutineControllerTest {
         Routine routine = new Routine();
         routine.setId(null); // Assume the routine creation failed
 
-        when(routineServices.addRoutine(any(RoutineDTO.class))).thenReturn(routine);
+        when(routineServices.addRoutineService(any(RoutineDTO.class))).thenReturn(routine);
 
         // When & Then
         mockMvc.perform(post("/routines")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(routineDto)))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("루틴 추가 실패"));
+                .andExpect(content().string("Add Routine Fail"));
     }
 }

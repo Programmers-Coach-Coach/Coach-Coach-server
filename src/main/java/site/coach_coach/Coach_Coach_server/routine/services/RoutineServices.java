@@ -11,7 +11,7 @@ public class RoutineServices {
     @Autowired
     private RoutineRepository routineRepository;
 
-    public Routine addRoutine(RoutineDTO routineDto){
+    public Routine addRoutineService(RoutineDTO routineDto){
         Routine routine = routineDto.toEntity();
         return routineRepository.save(routine);
     }

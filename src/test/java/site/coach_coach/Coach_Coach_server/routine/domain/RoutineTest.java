@@ -20,7 +20,7 @@ public class RoutineTest {
         Routine routine = Routine.builder()
                 .userId(userId)
                 .coachId(coachId)
-                .sportId(sportId)
+                .sportsId(sportId)
                 .routineName(routineName)
                 .build();
 
@@ -29,7 +29,7 @@ public class RoutineTest {
         assertThat(routine.getId()).isNull(); // ID는 아직 생성되지 않았으므로 null이어야 함
         assertThat(routine.getUserId()).isEqualTo(userId);
         assertThat(routine.getCoachId()).isEqualTo(coachId);
-        assertThat(routine.getSportId()).isEqualTo(sportId);
+        assertThat(routine.getSportsId()).isEqualTo(sportId);
         assertThat(routine.getRoutineName()).isEqualTo(routineName);
     }
 
@@ -46,7 +46,7 @@ public class RoutineTest {
         Routine routine = Routine.builder()
                 .userId(userId)
                 .coachId(coachId)
-                .sportId(sportId)
+                .sportsId(sportId)
                 .routineName(routineName)
                 .build();
 
