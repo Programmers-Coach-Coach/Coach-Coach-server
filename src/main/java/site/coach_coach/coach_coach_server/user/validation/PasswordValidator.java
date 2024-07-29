@@ -2,6 +2,7 @@ package site.coach_coach.coach_coach_server.user.validation;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
 
 public class PasswordValidator implements ConstraintValidator<Password, String> {
 	@Override

@@ -7,11 +7,11 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.coach.dto.StartedAsCoachDto;
 import site.coach_coach.coach_coach_server.coach.service.CoachService;
+import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
 import site.coach_coach.coach_coach_server.user.domain.User;
 import site.coach_coach.coach_coach_server.user.dto.SignupDto;
 import site.coach_coach.coach_coach_server.user.dto.UserDto;
-import site.coach_coach.coach_coach_server.user.exception.AlreadyExistEmailException;
-import site.coach_coach.coach_coach_server.user.exception.AlreadyExistNicknameException;
+import site.coach_coach.coach_coach_server.user.exception.UserAlreadyExistException;
 import site.coach_coach.coach_coach_server.user.repository.UserRepository;
 
 @Service
@@ -24,10 +24,10 @@ public class UserService {
 	@Transactional
 	public void signup(SignupDto signupDto) {
 		if (userRepository.existsByNickname(signupDto.nickname())) {
-			throw new AlreadyExistNicknameException();
+			throw new UserAlreadyExistException(ErrorMessage.DUPLICATE_NICKNAME);
 		}
 		if (userRepository.existsByEmail(signupDto.email())) {
-			throw new AlreadyExistEmailException();
+			throw new UserAlreadyExistException(ErrorMessage.DUPLICATE_EMAIL);
 		}
 
 		User user = buildUser(signupDto);

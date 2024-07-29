@@ -3,15 +3,15 @@ package site.coach_coach.coach_coach_server.user.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import site.coach_coach.coach_coach_server.user.validation.ErrorMessage;
+import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
 import site.coach_coach.coach_coach_server.user.validation.Nickname;
 import site.coach_coach.coach_coach_server.user.validation.Password;
 
 public record SignupDto(
-	@NotNull
+	@NotNull(message = ErrorMessage.INVALID_VALUE)
 	Boolean isCoach,
 
-	@NotNull
+	@NotBlank(message = ErrorMessage.EMPTY_NICKNAME)
 	@Nickname
 	String nickname,
 
@@ -20,7 +20,7 @@ public record SignupDto(
 	@Email(message = ErrorMessage.INVALID_EMAIL)
 	String email,
 
-	@NotNull
+	@NotBlank(message = ErrorMessage.EMPTY_PASSWORD)
 	@Password
 	String password
 ) {

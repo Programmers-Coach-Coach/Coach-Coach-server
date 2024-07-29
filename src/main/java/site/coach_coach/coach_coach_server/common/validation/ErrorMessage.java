@@ -1,0 +1,24 @@
+package site.coach_coach.coach_coach_server.common.validation;
+
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ErrorMessage {
+	public static final String INVALID_REQUEST = "유효하지 않은 요청입니다.";
+	public static final String SERVER_ERROR = "서버 오류가 발생했습니다.";
+
+	public static final String INVALID_VALUE = "형식에 올바르게 작성해주세요.";
+
+	public static final String EMPTY_NICKNAME = "닉네임을 입력해주세요.";
+	public static final String INVALID_NICKNAME = "닉네임 형식이 올바르지 않습니다.";
+
+	public static final String EMPTY_EMAIL = "이메일을 입력해주세요.";
+	public static final String INVALID_EMAIL = "이메일 형식이 올바르지 않습니다.";
+
+	public static final String EMPTY_PASSWORD = "비밀번호를 입력해주세요.";
+	public static final String INVALID_PASSWORD = "비밀번호 형식이 올바르지 않습니다.";
+
+	public static final String DUPLICATE_EMAIL = "이미 사용중인 이메일입니다.";
+	public static final String DUPLICATE_NICKNAME = "이미 사용중인 닉네임입니다.";
+}
