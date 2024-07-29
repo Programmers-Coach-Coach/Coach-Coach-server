@@ -1,4 +1,4 @@
-package site.coach_coach.Coach_Coach_server.user.validation;
+package site.coach_coach.coach_coach_server.user.validation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -10,15 +10,14 @@ import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
 @Documented
-@Constraint(validatedBy = NicknameValidator.class)
+@Constraint(validatedBy = PasswordValidator.class)
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Nickname {
-
+public @interface Password {
 	String REGEX =
-		"^(?!.*\\s{2,})[0-9a-zA-Z가-힣][0-9a-zA-Z가-힣\\s]{0,8}[0-9a-zA-Z가-힣]$";
+		"^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,20}$";
 
-	String message() default ErrorMessage.INVALID_NICKNAME;
+	String message() default ErrorMessage.INVALID_PASSWORD;
 
 	Class<?>[] groups() default {};
 

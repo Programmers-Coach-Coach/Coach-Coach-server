@@ -1,7 +1,7 @@
-package site.coach_coach.Coach_Coach_server.user.dto;
+package site.coach_coach.coach_coach_server.user.dto;
 
 import lombok.Builder;
-import site.coach_coach.Coach_Coach_server.user.domain.User;
+import site.coach_coach.coach_coach_server.user.domain.User;
 
 @Builder
 public record UserDto(

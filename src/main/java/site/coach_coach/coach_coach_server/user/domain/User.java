@@ -1,4 +1,4 @@
-package site.coach_coach.Coach_Coach_server.user.domain;
+package site.coach_coach.coach_coach_server.user.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

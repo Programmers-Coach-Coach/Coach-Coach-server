@@ -1,4 +1,4 @@
-package site.coach_coach.Coach_Coach_server.config;
+package site.coach_coach.coach_coach_server.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

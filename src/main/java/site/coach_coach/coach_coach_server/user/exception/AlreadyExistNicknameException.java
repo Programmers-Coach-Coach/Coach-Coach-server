@@ -1,4 +1,4 @@
-package site.coach_coach.Coach_Coach_server.user.exception;
+package site.coach_coach.coach_coach_server.user.exception;
 
 import org.springframework.dao.DuplicateKeyException;
 

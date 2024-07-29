@@ -1,11 +1,11 @@
-package site.coach_coach.Coach_Coach_server.user.dto;
+package site.coach_coach.coach_coach_server.user.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import site.coach_coach.Coach_Coach_server.user.validation.ErrorMessage;
-import site.coach_coach.Coach_Coach_server.user.validation.Nickname;
-import site.coach_coach.Coach_Coach_server.user.validation.Password;
+import site.coach_coach.coach_coach_server.user.validation.ErrorMessage;
+import site.coach_coach.coach_coach_server.user.validation.Nickname;
+import site.coach_coach.coach_coach_server.user.validation.Password;
 
 public record SignupDto(
 	@NotNull

@@ -1,16 +1,16 @@
-package site.coach_coach.Coach_Coach_server.user.service;
+package site.coach_coach.coach_coach_server.user.service;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import site.coach_coach.Coach_Coach_server.user.domain.User;
-import site.coach_coach.Coach_Coach_server.user.dto.SignupDto;
-import site.coach_coach.Coach_Coach_server.user.dto.UserDto;
-import site.coach_coach.Coach_Coach_server.user.exception.AlreadyExistEmailException;
-import site.coach_coach.Coach_Coach_server.user.exception.AlreadyExistNicknameException;
-import site.coach_coach.Coach_Coach_server.user.repository.UserRepository;
+import site.coach_coach.coach_coach_server.user.domain.User;
+import site.coach_coach.coach_coach_server.user.dto.SignupDto;
+import site.coach_coach.coach_coach_server.user.dto.UserDto;
+import site.coach_coach.coach_coach_server.user.exception.AlreadyExistEmailException;
+import site.coach_coach.coach_coach_server.user.exception.AlreadyExistNicknameException;
+import site.coach_coach.coach_coach_server.user.repository.UserRepository;
 
 @Service
 @RequiredArgsConstructor

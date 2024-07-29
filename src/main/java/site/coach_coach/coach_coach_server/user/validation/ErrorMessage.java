@@ -1,4 +1,4 @@
-package site.coach_coach.Coach_Coach_server.user.validation;
+package site.coach_coach.coach_coach_server.user.validation;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
