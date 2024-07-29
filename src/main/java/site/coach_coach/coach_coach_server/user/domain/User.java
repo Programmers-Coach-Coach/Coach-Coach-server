@@ -35,18 +35,4 @@ public class User {
 	@Column(name = "local_info")
 	private String localInfo;
 	private String introduction;
-
-	public User(Long userId, String nickname, String email, String password) {
-		this.userId = userId;
-		this.nickname = nickname;
-		this.email = email;
-		this.password = password;
-	}
-
-	public void updateUserInfo(String profileImageUrl, String gender, String localInfo, String introduction) {
-		this.profileImageUrl = profileImageUrl;
-		this.gender = gender;
-		this.localInfo = localInfo;
-		this.introduction = introduction;
-	}
 }

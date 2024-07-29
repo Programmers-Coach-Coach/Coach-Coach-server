@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.user.dto.SignupDto;
-import site.coach_coach.coach_coach_server.user.dto.UserDto;
 import site.coach_coach.coach_coach_server.user.service.UserService;
 
 @RestController
@@ -18,8 +17,8 @@ public class UserController {
 	private final UserService userService;
 
 	@PostMapping("/auth/signup")
-	public ResponseEntity<UserDto> signup(@RequestBody @Valid SignupDto signupDto) {
-		UserDto userDto = userService.signup(signupDto);
-		return ResponseEntity.status(HttpStatus.CREATED).body(userDto);
+	public ResponseEntity<Void> signup(@RequestBody @Valid SignupDto signupDto) {
+		userService.signup(signupDto);
+		return new ResponseEntity<>(HttpStatus.CREATED);
 	}
 }

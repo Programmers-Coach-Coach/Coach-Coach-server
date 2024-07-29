@@ -9,6 +9,9 @@ import site.coach_coach.coach_coach_server.user.validation.Password;
 
 public record SignupDto(
 	@NotNull
+	Boolean isCoach,
+
+	@NotNull
 	@Nickname
 	String nickname,
 
