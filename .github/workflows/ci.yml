@@ -51,6 +51,4 @@ jobs:
 
       # (6) checkStyle 검사
       - name: Run java checkstyle
-        uses: nikitasavinov/checkstyle-action@0.6.0
-        with:
-          config: naver-checkstyle-rules.xml  # naver-checkstyle-rules.xml 파일을 사용하도록 설정
+        run: ./gradlew check
