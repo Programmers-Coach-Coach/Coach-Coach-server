@@ -49,4 +49,3 @@ jobs:
       # (6) checkStyle 검사
       - name: Run java checkstyle
         uses: nikitasavinov/checkstyle-action@0.6.0
-
