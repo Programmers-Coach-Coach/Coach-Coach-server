@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.coach.dto.CoachDto;
 import site.coach_coach.coach_coach_server.coach.dto.StartedAsCoachDto;
-import site.coach_coach.coach_coach_server.coach.exception.InvalidUserIdException;
 import site.coach_coach.coach_coach_server.coach.repository.CoachRepository;
 
 @Service
@@ -17,9 +16,6 @@ public class CoachService {
 
 	@Transactional
 	public void startedAsCoach(StartedAsCoachDto startedAsCoachDto) {
-		if (coachRepository.existsByUserId(startedAsCoachDto.userId())) {
-			throw new InvalidUserIdException();
-		}
 		Coach coach = buildCoach(startedAsCoachDto);
 		coachRepository.save(coach);
 		CoachDto.from(coach);
