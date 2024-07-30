@@ -15,7 +15,6 @@ import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Nickname {
-
 	String REGEX =
 		"^(?!.*\\s{2,})[0-9a-zA-Z가-힣][0-9a-zA-Z가-힣\\s]{0,8}[0-9a-zA-Z가-힣]$";
 

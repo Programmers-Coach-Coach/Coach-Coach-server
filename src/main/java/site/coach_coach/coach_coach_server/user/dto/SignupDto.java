@@ -11,16 +11,13 @@ public record SignupDto(
 	@NotNull(message = ErrorMessage.INVALID_VALUE)
 	Boolean isCoach,
 
-	@NotBlank(message = ErrorMessage.EMPTY_NICKNAME)
 	@Nickname
 	String nickname,
 
-	@NotNull
 	@NotBlank(message = ErrorMessage.EMPTY_EMAIL)
 	@Email(message = ErrorMessage.INVALID_EMAIL)
 	String email,
 
-	@NotBlank(message = ErrorMessage.EMPTY_PASSWORD)
 	@Password
 	String password
 ) {

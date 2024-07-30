@@ -17,6 +17,12 @@ import site.coach_coach.coach_coach_server.user.exception.UserAlreadyExistExcept
 public class GlobalExceptionHandler {
 	public static final String DEFAULT_MESSAGE = ErrorMessage.INVALID_REQUEST;
 
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<ErrorResponse> handleException(Exception ex) {
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+			.body(new ErrorResponse(ErrorMessage.SERVER_ERROR));
+	}
+
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
 		List<FieldError> fieldErrors = ex.getFieldErrors();

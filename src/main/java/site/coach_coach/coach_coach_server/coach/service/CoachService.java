@@ -27,6 +27,7 @@ public class CoachService {
 
 	private Coach buildCoach(StartedAsCoachDto startedAsCoachDto) {
 		return Coach.builder()
-			.userId(startedAsCoachDto.userId()).build();
+			.userId(startedAsCoachDto.userId())
+			.build();
 	}
 }

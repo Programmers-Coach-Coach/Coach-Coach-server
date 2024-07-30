@@ -13,8 +13,8 @@ public record UserDto(
 	String localInfo,
 	String introduction
 ) {
-	public static void from(User user) {
-		UserDto.builder()
+	public static UserDto from(User user) {
+		return UserDto.builder()
 			.userId(user.getUserId())
 			.email(user.getEmail())
 			.nickname(user.getNickname())

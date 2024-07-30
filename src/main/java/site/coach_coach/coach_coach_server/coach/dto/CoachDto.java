@@ -17,8 +17,8 @@ public record CoachDto(
 	String chattingUrl,
 	Boolean isOpen
 ) {
-	public static void from(Coach coach) {
-		CoachDto.builder()
+	public static CoachDto from(Coach coach) {
+		return CoachDto.builder()
 			.coachId(coach.getCoachId())
 			.userId(coach.getUserId())
 			.createdAt(coach.getCreatedAt())
