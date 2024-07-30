@@ -64,7 +64,7 @@ public class UserControllerTest {
 	}
 
 	@Test
-	@DisplayName("회원가입 시 비밀번호 길이 부족으로 400 상태 코드 반환 및 에러 메시지")
+	@DisplayName("회원가입 시 비밀번호 형식 오류로 400 상태 코드 반환 및 에러 메시지")
 	public void testSignupInvalidPassword() throws Exception {
 		SignupDto signupDto = new SignupDto(true, "test", "test@test.com", "short");
 
