@@ -2,7 +2,7 @@ name: Java CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "feature/5-signup-api" ]
   pull_request:
     branches: [ "main" ]
 
