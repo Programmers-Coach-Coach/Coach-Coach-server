@@ -1,6 +1,7 @@
 package site.coach_coach.coach_coach_server.user.dto;
 
 import lombok.Builder;
+import site.coach_coach.coach_coach_server.common.domain.GenderEnum;
 import site.coach_coach.coach_coach_server.user.domain.User;
 
 @Builder
@@ -9,7 +10,7 @@ public record UserDto(
 	String email,
 	String nickname,
 	String profileImageUrl,
-	String gender,
+	GenderEnum gender,
 	String localInfo,
 	String introduction
 ) {
