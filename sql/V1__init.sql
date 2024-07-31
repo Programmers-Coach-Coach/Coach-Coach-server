@@ -1,14 +1,13 @@
 CREATE DATABASE IF NOT EXISTS `coachcoach` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `coachcoach`;
-
 CREATE TABLE `users` (
                          `user_id` int NOT NULL AUTO_INCREMENT,
                          `nickname` varchar(45) COLLATE utf8mb4_bin NOT NULL,
                          `email` varchar(45) COLLATE utf8mb4_bin NOT NULL,
-                         `password` varchar(128) COLLATE utf8mb4_bin NOT NULL,
-                         `profile_image_url` varchar(200) COLLATE utf8mb4_bin DEFAULT NULL,
+                         `password` varchar(200) COLLATE utf8mb4_bin NOT NULL,
+                         `profile_image_url` varchar(400) COLLATE utf8mb4_bin DEFAULT NULL,
                          `gender` enum('M','W') COLLATE utf8mb4_bin DEFAULT NULL,
-                         `local_info` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
+                         `local_info` varchar(200) COLLATE utf8mb4_bin DEFAULT NULL,
                          `introduction` text COLLATE utf8mb4_bin,
                          PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
@@ -16,19 +15,20 @@ CREATE TABLE `users` (
 CREATE TABLE `sports` (
                           `sports_id` int NOT NULL AUTO_INCREMENT,
                           `sports_name` varchar(45) COLLATE utf8mb4_bin NOT NULL,
+                          `sports_image_url` varchar(400) COLLATE utf8mb4_bin NOT NULL,
                           PRIMARY KEY (`sports_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='운동 종목';
 
 CREATE TABLE `coaches` (
                            `coach_id` int NOT NULL AUTO_INCREMENT,
                            `user_id` int NOT NULL,
-                           `coach_introduction` text COLLATE utf8mb4_bin,
+                           `coach_introduction` text COLLATE utf8mb4_bin NOT NULL,
                            `created_at` timestamp NOT NULL,
-                           `active_center` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
-                           `active_hours_on` int DEFAULT NULL,
-                           `active_hours_off` int DEFAULT NULL,
-                           `chatting_url` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
-                           `is_open` tinyint DEFAULT '1',
+                           `active_center` varchar(200) COLLATE utf8mb4_bin NOT NULL,
+                           `active_hours_on` int NOT NULL,
+                           `active_hours_off` int NOT NULL,
+                           `chatting_url` varchar(400) COLLATE utf8mb4_bin NOT NULL,
+                           `is_open` tinyint NOT NULL DEFAULT '1',
                            PRIMARY KEY (`coach_id`),
                            KEY `coaches_user_id_idx` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='코치 정보';
@@ -56,7 +56,7 @@ CREATE TABLE `routine_categories` (
 CREATE TABLE `actions` (
                            `action_id` int NOT NULL AUTO_INCREMENT,
                            `routine_category_id` int NOT NULL,
-                           `action_name` varchar(45) COLLATE utf8mb4_bin NOT NULL,
+                           `action_name` varchar(45)  COLLATE utf8mb4_bin NOT NULL,
                            `count_or_minutes` varchar(45) COLLATE utf8mb4_bin DEFAULT NULL,
                            `set` int DEFAULT NULL,
                            `description` varchar(200) COLLATE utf8mb4_bin DEFAULT NULL,
@@ -96,11 +96,12 @@ CREATE TABLE `notifications` (
                                  `user_id` int NOT NULL,
                                  `message` varchar(100) COLLATE utf8mb4_bin NOT NULL,
                                  `is_reading` tinyint NOT NULL DEFAULT '0',
-                                 `relation_function` varchar(45) COLLATE utf8mb4_bin NOT NULL,
+                                 `relation_function` enum('review','ask','like') COLLATE utf8mb4_bin NOT NULL,
                                  `created_at` timestamp NOT NULL,
                                  PRIMARY KEY (`notification_id`),
                                  KEY `notifications_user_id_idx` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='알림';
+
 
 CREATE TABLE `reviews` (
                            `review_id` int NOT NULL AUTO_INCREMENT,
