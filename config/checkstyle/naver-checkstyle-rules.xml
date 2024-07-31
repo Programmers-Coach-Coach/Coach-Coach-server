@@ -20,7 +20,7 @@ The following rules in the Naver coding convention cannot be checked by this con
 <module name="Checker">
     <property name="severity" value="warning"/>
     <property name="fileExtensions" value="java"/>
-
+    <property name="suppressionFile" value="naver-checkstyle-suppressions.xml"/>
     <!-- [encoding-utf8] -->
     <property name="charset" value="UTF-8"/>
 
