@@ -51,4 +51,7 @@ jobs:
 
       # (6) checkStyle 검사
       - name: Run java checkstyle
-        run: ./gradlew check
+        uses: dbelyaev/action-checkstyle@master
+        with:
+          reporter: github-pr-review
+          checkstyle_config: naver-checkstyle-rules.xml
