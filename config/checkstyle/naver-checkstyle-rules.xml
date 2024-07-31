@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE module PUBLIC
         "-//Puppy Crawl//DTD Check Configuration 1.3//EN"
-        "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
+        "configuration_1_3.dtd">
 
 <!-- Naver coding convention for Java (version 1.2)  -->
 <!-- This rule file requires Checkstyle version 8.24 or above. -->
@@ -20,7 +20,7 @@ The following rules in the Naver coding convention cannot be checked by this con
 <module name="Checker">
     <property name="severity" value="warning"/>
     <property name="fileExtensions" value="java"/>
-
+    
     <!-- [encoding-utf8] -->
     <property name="charset" value="UTF-8"/>
 
@@ -427,7 +427,7 @@ The following rules in the Naver coding convention cannot be checked by this con
 
     <!--- Suppression -->
     <module name="SuppressionFilter">
-        <property name="file" value="${suppressionFile}"/>
+        <property name="file" value="naver-checkstyle-suppressions.xml"/>
         <property name="optional" value="true"/>
     </module>
 
