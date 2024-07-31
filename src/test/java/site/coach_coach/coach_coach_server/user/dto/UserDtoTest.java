@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import site.coach_coach.coach_coach_server.common.domain.GenderEnum;
 import site.coach_coach.coach_coach_server.user.domain.User;
 
 public class UserDtoTest {
@@ -18,7 +19,7 @@ public class UserDtoTest {
 			.email("test@test.com")
 			.password("password123!")
 			.profileImageUrl("profileImageUrl")
-			.gender("female")
+			.gender(GenderEnum.valueOf("W"))
 			.localInfo("localInfo")
 			.introduction("introduction")
 			.build();
@@ -30,7 +31,7 @@ public class UserDtoTest {
 		assertEquals("test", userDto.nickname());
 		assertEquals("test@test.com", userDto.email());
 		assertEquals("profileImageUrl", userDto.profileImageUrl());
-		assertEquals("female", userDto.gender());
+		assertEquals(GenderEnum.W, userDto.gender());
 		assertEquals("localInfo", userDto.localInfo());
 		assertEquals("introduction", userDto.introduction());
 	}
