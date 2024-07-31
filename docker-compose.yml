@@ -23,7 +23,7 @@ services:
     depends_on:
       - db
     volumes:
-      - ./sql:/flyway/sql
+      - ./src/main/resources/db/migration:/flyway/sql
     networks:
       - coachcoach-network
 
