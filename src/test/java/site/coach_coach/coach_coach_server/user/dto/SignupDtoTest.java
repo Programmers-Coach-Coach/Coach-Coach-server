@@ -22,7 +22,7 @@ public class SignupDtoTest {
 	@Test
 	@DisplayName("유효한 SignupDto 객체 검증")
 	public void testValidSignupDto() {
-		SignupDto dto = new SignupDto(true, "test", "test@test.com", "password123!");
+		SignupDto dto = new SignupDto("test", "test@test.com", "password123!");
 		var violations = validator.validate(dto);
 		assertTrue(violations.isEmpty());
 	}
@@ -30,7 +30,7 @@ public class SignupDtoTest {
 	@Test
 	@DisplayName("유효하지 않은 SignupDto 객체 검증")
 	public void testInvalidSignupDto() {
-		SignupDto dto = new SignupDto(null, "", "invalidEmail", "short");
+		SignupDto dto = new SignupDto("", "invalidEmail", "short");
 		var violations = validator.validate(dto);
 		assertFalse(violations.isEmpty());
 	}

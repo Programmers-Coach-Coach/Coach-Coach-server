@@ -5,8 +5,6 @@ import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import site.coach_coach.coach_coach_server.coach.dto.StartedAsCoachDto;
-import site.coach_coach.coach_coach_server.coach.service.CoachService;
 import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
 import site.coach_coach.coach_coach_server.user.domain.User;
 import site.coach_coach.coach_coach_server.user.dto.SignupDto;
@@ -19,7 +17,6 @@ import site.coach_coach.coach_coach_server.user.repository.UserRepository;
 public class UserService {
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
-	private final CoachService coachService;
 
 	@Transactional
 	public void signup(SignupDto signupDto) {
@@ -32,10 +29,6 @@ public class UserService {
 
 		User user = buildUser(signupDto);
 		userRepository.save(user);
-
-		if (signupDto.isCoach()) {
-			coachService.startedAsCoach(new StartedAsCoachDto(user.getUserId()));
-		}
 		UserDto.from(user);
 	}
 

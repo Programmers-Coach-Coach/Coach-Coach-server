@@ -53,5 +53,6 @@ jobs:
       - name: Run java checkstyle
         uses: dbelyaev/action-checkstyle@master
         with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-review
-          checkstyle_config: naver-checkstyle-rules.xml
+          checkstyle_config: ./config/checkstyle/naver-checkstyle-rules.xml
