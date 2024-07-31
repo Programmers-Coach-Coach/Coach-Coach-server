@@ -3,16 +3,32 @@ version: '3.8'
 services:
   db:
     image: mysql:8.0.37
-    restart: always
     container_name: coachcoach-db
     environment:
+      MYSQL_ROOT_PASSWORD: coach1234
+      MYSQL_DATABASE: coachcoach
       MYSQL_USER: coachcoach
       MYSQL_PASSWORD: coach1234
-      MYSQL_DATABASE: coachcoach
     ports:
       - "3307:3306"
     volumes:
       - db_data:/var/lib/mysql
+    networks:
+      - coachcoach-network
+
+  flyway:
+    image: flyway/flyway:8.0.4
+    container_name: coachcoach-flyway
+    command: -url=jdbc:mysql://db:3306/coachcoach -user=coachcoach -password=coach1234 -schemas=coachcoach migrate
+    depends_on:
+      - db
+    volumes:
+      - ./src/main/resources/db/migration:/flyway/sql
+    networks:
+      - coachcoach-network
+
+networks:
+  coachcoach-network:
 
 volumes:
   db_data:
