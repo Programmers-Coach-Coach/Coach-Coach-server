@@ -1,68 +1,70 @@
-CREATE DATABASE IF NOT EXISTS `coachcoach` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin */ /*!80016 DEFAULT ENCRYPTION='N' */;
+DROP DATABASE IF EXISTS `coachcoach`;
+CREATE DATABASE `coachcoach` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin*/ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `coachcoach`;
+
+-- 테이블 생성
 CREATE TABLE `users` (
                          `user_id` int NOT NULL AUTO_INCREMENT,
-                         `nickname` varchar(45) COLLATE utf8mb4_bin NOT NULL,
-                         `email` varchar(45) COLLATE utf8mb4_bin NOT NULL,
-                         `password` varchar(200) COLLATE utf8mb4_bin NOT NULL,
-                         `profile_image_url` varchar(400) COLLATE utf8mb4_bin DEFAULT NULL,
-                         `gender` enum('M','W') COLLATE utf8mb4_bin DEFAULT NULL,
-                         `local_info` varchar(200) COLLATE utf8mb4_bin DEFAULT NULL,
-                         `introduction` text COLLATE utf8mb4_bin,
+                         `nickname` varchar(45) NOT NULL,
+                         `email` varchar(45) NOT NULL,
+                         `password` varchar(128) NOT NULL,
+                         `profile_image_url` varchar(200) DEFAULT NULL,
+                         `gender` enum('M','W') DEFAULT NULL,
+                         `local_info` varchar(100) DEFAULT NULL,
+                         `introduction` text,
                          PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `sports` (
                           `sports_id` int NOT NULL AUTO_INCREMENT,
-                          `sports_name` varchar(45) COLLATE utf8mb4_bin NOT NULL,
-                          `sports_image_url` varchar(400) COLLATE utf8mb4_bin NOT NULL,
+                          `sports_name` varchar(45) NOT NULL,
                           PRIMARY KEY (`sports_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='운동 종목';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='운동 종목';
 
 CREATE TABLE `coaches` (
                            `coach_id` int NOT NULL AUTO_INCREMENT,
                            `user_id` int NOT NULL,
-                           `coach_introduction` text COLLATE utf8mb4_bin NOT NULL,
+                           `coach_introduction` text,
                            `created_at` timestamp NOT NULL,
-                           `active_center` varchar(200) COLLATE utf8mb4_bin NOT NULL,
-                           `active_hours_on` int NOT NULL,
-                           `active_hours_off` int NOT NULL,
-                           `chatting_url` varchar(400) COLLATE utf8mb4_bin NOT NULL,
-                           `is_open` tinyint NOT NULL DEFAULT '1',
+                           `active_center` varchar(100) DEFAULT NULL,
+                           `active_hours_on` int DEFAULT NULL,
+                           `active_hours_off` int DEFAULT NULL,
+                           `chatting_url` varchar(100) DEFAULT NULL,
+                           `is_open` tinyint DEFAULT '1',
                            PRIMARY KEY (`coach_id`),
                            KEY `coaches_user_id_idx` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='코치 정보';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='코치 정보';
 
 CREATE TABLE `routines` (
                             `routine_id` int NOT NULL AUTO_INCREMENT,
                             `user_id` int NOT NULL,
                             `coach_id` int DEFAULT NULL,
                             `sports_id` int NOT NULL,
-                            `routine_name` varchar(45) COLLATE utf8mb4_bin NOT NULL,
+                            `routine_name` varchar(45) NOT NULL,
                             PRIMARY KEY (`routine_id`),
                             KEY `routines_user_id_idx` (`user_id`),
                             KEY `routines_sports_id_idx` (`sports_id`),
                             KEY `routines_coach_id_idx` (`coach_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='운동 루틴';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='운동 루틴';
 
 CREATE TABLE `routine_categories` (
                                       `routine_category_id` int NOT NULL AUTO_INCREMENT,
                                       `routine_id` int NOT NULL,
-                                      `category_name` varchar(45) COLLATE utf8mb4_bin NOT NULL,
+                                      `category_name` varchar(45) NOT NULL,
                                       PRIMARY KEY (`routine_category_id`),
                                       KEY `routine_id_idx` (`routine_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='운동 루틴 카테고리';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='운동 루틴 카테고리';
 
 CREATE TABLE `actions` (
                            `action_id` int NOT NULL AUTO_INCREMENT,
                            `routine_category_id` int NOT NULL,
-                           `action_name` varchar(45)  COLLATE utf8mb4_bin NOT NULL,
-                           `count_or_minutes` varchar(45) COLLATE utf8mb4_bin DEFAULT NULL,
+                           `action_name` varchar(45) NOT NULL,
+                           `count_or_minutes` varchar(45) DEFAULT NULL,
                            `set` int DEFAULT NULL,
-                           `description` varchar(200) COLLATE utf8mb4_bin DEFAULT NULL,
+                           `description` varchar(200) DEFAULT NULL,
                            PRIMARY KEY (`action_id`),
                            KEY `routine_category_id_idx` (`routine_category_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='운동 actions';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='운동 actions';
 
 CREATE TABLE `coaching_sports` (
                                    `coaching_sports_id` int NOT NULL AUTO_INCREMENT,
@@ -71,7 +73,7 @@ CREATE TABLE `coaching_sports` (
                                    PRIMARY KEY (`coaching_sports_id`),
                                    KEY `coaching_sports_coach_id_idx` (`coach_id`),
                                    KEY `coaching_sports_sports_id_idx` (`sports_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='코칭 종목';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='코칭 종목';
 
 CREATE TABLE `completed_categories` (
                                         `completed_category_id` int NOT NULL AUTO_INCREMENT,
@@ -80,7 +82,7 @@ CREATE TABLE `completed_categories` (
                                         PRIMARY KEY (`completed_category_id`),
                                         KEY `completed_categories_idx` (`user_record_id`),
                                         KEY `completed_categories_routine_category_id_idx` (`routine_category_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='완료 카테고리';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='완료 카테고리';
 
 CREATE TABLE `interested_sports` (
                                      `interested_sports_id` int NOT NULL AUTO_INCREMENT,
@@ -89,31 +91,30 @@ CREATE TABLE `interested_sports` (
                                      PRIMARY KEY (`interested_sports_id`),
                                      KEY `interested_sports_user_id_idx` (`user_id`),
                                      KEY `interested_sports_sports_id_idx` (`sports_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='관심 운동';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='관심 운동';
 
 CREATE TABLE `notifications` (
                                  `notification_id` int NOT NULL AUTO_INCREMENT,
                                  `user_id` int NOT NULL,
-                                 `message` varchar(100) COLLATE utf8mb4_bin NOT NULL,
+                                 `message` varchar(100) NOT NULL,
                                  `is_reading` tinyint NOT NULL DEFAULT '0',
-                                 `relation_function` enum('review','ask','like') COLLATE utf8mb4_bin NOT NULL,
+                                 `relation_function` varchar(45) NOT NULL,
                                  `created_at` timestamp NOT NULL,
                                  PRIMARY KEY (`notification_id`),
                                  KEY `notifications_user_id_idx` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='알림';
-
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='알림';
 
 CREATE TABLE `reviews` (
                            `review_id` int NOT NULL AUTO_INCREMENT,
                            `user_id` int NOT NULL,
                            `coach_id` int NOT NULL,
-                           `contents` text COLLATE utf8mb4_bin NOT NULL,
+                           `contents` text NOT NULL,
                            `stars` int NOT NULL,
                            `created_at` timestamp NOT NULL,
                            PRIMARY KEY (`review_id`),
                            KEY `reviews_user_id_idx` (`user_id`),
                            KEY `reviews_coach_id_idx` (`coach_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='리뷰';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='리뷰';
 
 CREATE TABLE `user_coach_likes` (
                                     `user_coach_like_id` int NOT NULL AUTO_INCREMENT,
@@ -122,7 +123,7 @@ CREATE TABLE `user_coach_likes` (
                                     PRIMARY KEY (`user_coach_like_id`),
                                     KEY `user_coach_likes_user_id_idx` (`user_id`),
                                     KEY `user_coach_likes_coach_id_idx` (`coach_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='관심 코치';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='관심 코치';
 
 CREATE TABLE `user_coach_matching` (
                                        `user_coach_matching_id` int NOT NULL AUTO_INCREMENT,
@@ -132,7 +133,7 @@ CREATE TABLE `user_coach_matching` (
                                        PRIMARY KEY (`user_coach_matching_id`),
                                        KEY `user_coach_matching_user_id_idx` (`user_id`),
                                        KEY `user_coach_matching_coach_id_idx` (`coach_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='매칭 회원';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='매칭 회원';
 
 CREATE TABLE `user_records` (
                                 `user_record_id` int NOT NULL AUTO_INCREMENT,
@@ -144,9 +145,9 @@ CREATE TABLE `user_records` (
                                 `created_at` date NOT NULL,
                                 PRIMARY KEY (`user_record_id`),
                                 KEY `user_records_user_id_idx` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='유저 기록';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='유저 기록';
 
--- Add foreign key constraints
+-- 외래 키 제약 조건 추가
 ALTER TABLE `actions`
     ADD CONSTRAINT `fk_actions_routine_category_id` FOREIGN KEY (`routine_category_id`) REFERENCES `routine_categories` (`routine_category_id`);
 
