@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import site.coach_coach.coach_coach_server.common.domain.DateEntity;
 import site.coach_coach.coach_coach_server.common.domain.GenderEnum;
 
 @Table(name = "users")
@@ -20,7 +21,7 @@ import site.coach_coach.coach_coach_server.common.domain.GenderEnum;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class User extends DateEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "user_id")
