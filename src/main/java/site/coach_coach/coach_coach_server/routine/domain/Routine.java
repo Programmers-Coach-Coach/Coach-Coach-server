@@ -5,38 +5,39 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import site.coach_coach.coach_coach_server.common.domain.DateEntity;
 
-@NoArgsConstructor
+@Table(name = "routines")
+@Entity
 @Setter
 @Getter
-@Entity
-public class Routine {
-
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class Routine extends DateEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
+	@Column(name = "routine_id")
+	private Long routineId;
 
 	@Column(name = "user_id")
-	private Integer userId;
+	private Long userId;
 
 	@Column(name = "coach_id")
-	private Integer coachId;
+	private Long coachId;
 
-	@Column(name = "sports_id")
-	private Integer sportsId;
+	@Column(name = "sport_id")
+	private Long sportId;
 
 	@Column(name = "routine_Name")
 	private String routineName;
 
-	@Builder
-	public Routine(Integer userId, Integer coachId, Integer sportsId, String routineName) {
-		this.userId = userId;
-		this.coachId = coachId;
-		this.sportsId = sportsId;
-		this.routineName = routineName;
-	}
 }
+
+

@@ -27,7 +27,7 @@ public class SecurityConfig {
 			.httpBasic(AbstractHttpConfigurer::disable)
 			.authorizeHttpRequests((authorizeRequests) ->
 				authorizeRequests
-					.requestMatchers("/auth/login", "/auth/signup", "/test").permitAll()
+					.requestMatchers("/auth/login", "/auth/signup", "/test", "/routines").permitAll()
 					.anyRequest().authenticated()
 			)
 			.sessionManagement((sessionManagement) ->
