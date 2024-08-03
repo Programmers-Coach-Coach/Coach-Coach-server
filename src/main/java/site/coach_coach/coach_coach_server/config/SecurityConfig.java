@@ -53,7 +53,6 @@ public class SecurityConfig {
 		configuration.addAllowedHeader("*");
 		configuration.setAllowCredentials(true);
 		configuration.setMaxAge(1800L);
-		
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
 		return source;
