@@ -14,7 +14,7 @@ import jakarta.validation.Payload;
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ValidBoolean {
-	String message() default ErrorMessage.INVALID_VALUE;
+	ErrorMessage message() default ErrorMessage.INVALID_VALUE;
 
 	Class<?>[] groups() default {};
 

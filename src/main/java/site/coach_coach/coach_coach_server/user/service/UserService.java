@@ -21,10 +21,10 @@ public class UserService {
 	@Transactional
 	public void signup(SignupDto signupDto) {
 		if (userRepository.existsByNickname(signupDto.nickname())) {
-			throw new UserAlreadyExistException(ErrorMessage.DUPLICATE_NICKNAME);
+			throw new UserAlreadyExistException(ErrorMessage.DUPLICATE_NICKNAME.getMessage());
 		}
 		if (userRepository.existsByEmail(signupDto.email())) {
-			throw new UserAlreadyExistException(ErrorMessage.DUPLICATE_EMAIL);
+			throw new UserAlreadyExistException(ErrorMessage.DUPLICATE_EMAIL.getMessage());
 		}
 
 		User user = buildUser(signupDto);

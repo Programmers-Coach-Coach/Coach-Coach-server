@@ -8,7 +8,7 @@ public class ValidBooleanValidator implements ConstraintValidator<ValidBoolean, 
 	public boolean isValid(Boolean value, ConstraintValidatorContext context) {
 		if (value == null) {
 			context.disableDefaultConstraintViolation();
-			context.buildConstraintViolationWithTemplate(ErrorMessage.INVALID_VALUE)
+			context.buildConstraintViolationWithTemplate(ErrorMessage.INVALID_VALUE.getMessage())
 				.addConstraintViolation();
 			return false;
 		}

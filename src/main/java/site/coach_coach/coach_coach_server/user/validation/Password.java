@@ -18,7 +18,7 @@ public @interface Password {
 	String REGEX =
 		"^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,20}$";
 
-	String message() default ErrorMessage.INVALID_PASSWORD;
+	ErrorMessage message() default ErrorMessage.INVALID_PASSWORD;
 
 	Class<?>[] groups() default {};
 

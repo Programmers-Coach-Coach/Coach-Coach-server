@@ -17,7 +17,7 @@ import site.coach_coach.coach_coach_server.user.exception.UserAlreadyExistExcept
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-	public static final String DEFAULT_MESSAGE = ErrorMessage.INVALID_REQUEST;
+	public static final String DEFAULT_MESSAGE = ErrorMessage.INVALID_REQUEST.getMessage();
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
@@ -43,7 +43,7 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(HttpMessageNotReadableException.class)
 	public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-			.body(new ErrorResponse(ErrorMessage.INVALID_VALUE));
+			.body(new ErrorResponse(ErrorMessage.INVALID_VALUE.getMessage()));
 	}
 
 	@ExceptionHandler(UserAlreadyExistException.class)
@@ -61,6 +61,6 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ErrorResponse> handleException(Exception ex) {
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-			.body(new ErrorResponse(ErrorMessage.SERVER_ERROR));
+			.body(new ErrorResponse(ErrorMessage.SERVER_ERROR.getMessage()));
 	}
 }

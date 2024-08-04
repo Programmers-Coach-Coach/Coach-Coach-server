@@ -12,7 +12,7 @@ import jakarta.validation.Payload;
 @Retention(value = RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = EnumValidator.class)
 public @interface Enum {
-	String message() default ErrorMessage.INVALID_VALUE;
+	ErrorMessage message() default ErrorMessage.INVALID_VALUE;
 
 	Class<?>[] groups() default {};
 

@@ -18,7 +18,7 @@ public @interface Nickname {
 	String REGEX =
 		"^(?!.*\\s{2,})[0-9a-zA-Z가-힣][0-9a-zA-Z가-힣\\s]{0,8}[0-9a-zA-Z가-힣]$";
 
-	String message() default ErrorMessage.INVALID_NICKNAME;
+	ErrorMessage message() default ErrorMessage.INVALID_NICKNAME;
 
 	Class<?>[] groups() default {};
 

@@ -92,7 +92,7 @@ public class UserControllerTest {
 	public void testSignupNicknameConflict() throws Exception {
 		SignupDto signupDto = new SignupDto("nickname", "test@test.com", "password123!");
 
-		doThrow(new UserAlreadyExistException(ErrorMessage.DUPLICATE_NICKNAME))
+		doThrow(new UserAlreadyExistException(ErrorMessage.DUPLICATE_NICKNAME.getMessage()))
 			.when(userService).signup(signupDto);
 
 		mockMvc.perform(MockMvcRequestBuilders.post("/auth/signup")
@@ -107,7 +107,7 @@ public class UserControllerTest {
 	public void testSignupEmailConflict() throws Exception {
 		SignupDto signupDto = new SignupDto("nickname", "existing@example.com", "password123!");
 
-		doThrow(new UserAlreadyExistException(ErrorMessage.DUPLICATE_EMAIL))
+		doThrow(new UserAlreadyExistException(ErrorMessage.DUPLICATE_EMAIL.getMessage()))
 			.when(userService).signup(signupDto);
 
 		mockMvc.perform(MockMvcRequestBuilders.post("/auth/signup")
