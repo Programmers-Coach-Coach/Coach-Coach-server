@@ -23,7 +23,11 @@ public enum ErrorMessage {
 	DUPLICATE_EMAIL("이미 사용중인 이메일입니다."),
 	DUPLICATE_NICKNAME("이미 사용중인 닉네임입니다."),
 
-	NOT_FOUND_USER("회원 정보가 없습니다.");
+	NOT_FOUND_USER("회원 정보가 없습니다."),
+
+	NOT_FOUND_TOKEN("토큰이 존재하지 않습니다."),
+	EXPIRED_TOKEN("만료된 토큰입니다."),
+	INVALID_TOKEN("유효하지 않은 토큰입니다.");
 
 	private final String message;
 }
