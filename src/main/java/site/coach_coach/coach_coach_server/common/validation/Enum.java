@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
-@Target(value = {ElementType.FIELD})
+@Target(value = {ElementType.FIELD, ElementType.ANNOTATION_TYPE})
 @Retention(value = RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = EnumValidator.class)
 public @interface Enum {
@@ -19,4 +19,6 @@ public @interface Enum {
 	Class<? extends Payload>[] payload() default {};
 
 	Class<? extends java.lang.Enum<?>> enumClass();
+
+	boolean nullable() default false;
 }

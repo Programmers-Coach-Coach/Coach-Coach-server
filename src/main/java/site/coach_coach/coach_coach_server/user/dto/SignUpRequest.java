@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Size;
 import site.coach_coach.coach_coach_server.user.validation.Nickname;
 import site.coach_coach.coach_coach_server.user.validation.Password;
 
-public record SignupDto(
+public record SignUpRequest(
 	@Nickname
 	String nickname,
 

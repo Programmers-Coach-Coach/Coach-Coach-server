@@ -7,13 +7,18 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import site.coach_coach.coach_coach_server.common.domain.DateEntity;
 import site.coach_coach.coach_coach_server.common.domain.GenderEnum;
+import site.coach_coach.coach_coach_server.user.validation.Nickname;
+import site.coach_coach.coach_coach_server.user.validation.Password;
 
 @Table(name = "users")
 @Entity
@@ -28,15 +33,19 @@ public class User extends DateEntity {
 	private Long userId;
 
 	@Column(name = "nickname", unique = true, nullable = false, length = 45)
+	@Nickname
 	private String nickname;
 
 	@Column(name = "email", unique = true, nullable = false, length = 45)
+	@Email
 	private String email;
 
 	@Column(name = "password", nullable = false, length = 128)
+	@Password
 	private String password;
 
 	@Column(name = "profile_image_url", length = 400)
+	@Size(max = 400)
 	private String profileImageUrl;
 
 	@Column(name = "gender")
@@ -44,8 +53,10 @@ public class User extends DateEntity {
 	private GenderEnum gender;
 
 	@Column(name = "local_info", length = 200)
+	@Size(max = 200)
 	private String localInfo;
 
+	@Lob
 	@Column(name = "introduction")
 	private String introduction;
 }

@@ -7,7 +7,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
 import site.coach_coach.coach_coach_server.user.domain.User;
-import site.coach_coach.coach_coach_server.user.dto.SignupDto;
+import site.coach_coach.coach_coach_server.user.dto.SignUpRequest;
 import site.coach_coach.coach_coach_server.user.dto.UserDto;
 import site.coach_coach.coach_coach_server.user.exception.UserAlreadyExistException;
 import site.coach_coach.coach_coach_server.user.repository.UserRepository;
@@ -19,24 +19,24 @@ public class UserService {
 	private final PasswordEncoder passwordEncoder;
 
 	@Transactional
-	public void signup(SignupDto signupDto) {
-		if (userRepository.existsByNickname(signupDto.nickname())) {
+	public void signup(SignUpRequest signUpRequest) {
+		if (userRepository.existsByNickname(signUpRequest.nickname())) {
 			throw new UserAlreadyExistException(ErrorMessage.DUPLICATE_NICKNAME.getMessage());
 		}
-		if (userRepository.existsByEmail(signupDto.email())) {
+		if (userRepository.existsByEmail(signUpRequest.email())) {
 			throw new UserAlreadyExistException(ErrorMessage.DUPLICATE_EMAIL.getMessage());
 		}
 
-		User user = buildUser(signupDto);
+		User user = buildUser(signUpRequest);
 		userRepository.save(user);
 		UserDto.from(user);
 	}
 
-	private User buildUser(SignupDto signupDto) {
+	private User buildUser(SignUpRequest signUpRequest) {
 		return User.builder()
-			.email(signupDto.email())
-			.password(passwordEncoder.encode(signupDto.password()))
-			.nickname(signupDto.nickname())
+			.email(signUpRequest.email())
+			.password(passwordEncoder.encode(signUpRequest.password()))
+			.nickname(signUpRequest.nickname())
 			.build();
 	}
 }
