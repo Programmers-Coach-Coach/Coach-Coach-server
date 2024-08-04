@@ -1,17 +1,21 @@
 package site.coach_coach.coach_coach_server.auth.jwt;
 
+import java.util.Collections;
 import java.util.Date;
 
 import javax.crypto.SecretKey;
 
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import site.coach_coach.coach_coach_server.auth.userDetails.CustomUserDetailsService;
 import site.coach_coach.coach_coach_server.user.domain.User;
 
 @Component
@@ -21,8 +25,9 @@ public class TokenProvider {
 	private final String issuer;
 	private final SecretKey secretKey;
 	private final JwtParser jwtParser;
+	private final CustomUserDetailsService customUserDetailsService;
 
-	public TokenProvider(JwtProperties jwtProperties) {
+	public TokenProvider(JwtProperties jwtProperties, CustomUserDetailsService customUserDetailsService) {
 		byte[] secretKeyBytes = Decoders.BASE64.decode(jwtProperties.secretKey());
 
 		this.issuer = jwtProperties.issuer();
@@ -31,6 +36,7 @@ public class TokenProvider {
 			.setSigningKey(secretKey)
 			.requireIssuer(issuer)
 			.build();
+		this.customUserDetailsService = customUserDetailsService;
 	}
 
 	public String createAccessToken(User user) {
@@ -75,7 +81,29 @@ public class TokenProvider {
 	}
 
 	public Authentication getAuthentication(String token) {
-		long userId = jwtParser.parseClaimsJws(token).getSubject()
+		String userId = getUserId(token);
 
+		return new UsernamePasswordAuthenticationToken(userId, token, Collections.emptyList());
+	}
+
+	public Claims extractClaims(String token) {
+		return jwtParser.parseClaimsJws(token).getBody();
+	}
+
+	public String getUserId(String token) {
+		return extractClaims(token).getSubject();
+	}
+
+	public boolean validateAccessToken(String token) {
+		// try {
+		// 	Jws<Claims> claims = Jwts.parserBuilder()
+		// 		.setSigningKey(secretKey).build()
+		// 		.parseClaimsJws(token);
+		// 	if (!claims.getBody().get("token_type").equals("access")) {
+		// 		throw new JwtException()
+		// 	}
+		// } catch() {
+		//
+		// }
 	}
 }

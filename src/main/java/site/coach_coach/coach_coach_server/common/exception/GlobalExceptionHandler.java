@@ -1,6 +1,7 @@
 package site.coach_coach.coach_coach_server.common.exception;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,14 @@ public class GlobalExceptionHandler {
 
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 			.body(new ErrorResponse(message));
+	}
+
+	@ExceptionHandler(NoSuchElementException.class)
+	public ResponseEntity<ErrorResponse> handleNoSuchElementException(NoSuchElementException ex) {
+		ErrorResponse errorResponse = new ErrorResponse(ex.getMessage());
+
+		return ResponseEntity.status(HttpStatus.NOT_FOUND)
+			.body(errorResponse);
 	}
 
 	@ExceptionHandler(HttpMessageNotReadableException.class)

@@ -21,4 +21,6 @@ public final class ErrorMessage {
 
 	public static final String DUPLICATE_EMAIL = "이미 사용중인 이메일입니다.";
 	public static final String DUPLICATE_NICKNAME = "이미 사용중인 닉네임입니다.";
+
+	public static final String NOT_FOUND_USER = "회원 정보가 없습니다.";
 }
