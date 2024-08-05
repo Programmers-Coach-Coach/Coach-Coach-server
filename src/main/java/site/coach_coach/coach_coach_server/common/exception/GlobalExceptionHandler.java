@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
+import javax.naming.AuthenticationException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -39,6 +41,13 @@ public class GlobalExceptionHandler {
 		ErrorResponse errorResponse = new ErrorResponse(ex.getMessage());
 
 		return ResponseEntity.status(HttpStatus.NOT_FOUND)
+			.body(errorResponse);
+	}
+
+	@ExceptionHandler(AuthenticationException.class)
+	public ResponseEntity<ErrorResponse> handleAuthenticationException(AuthenticationException ex) {
+		ErrorResponse errorResponse = new ErrorResponse(ex.getMessage());
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
 			.body(errorResponse);
 	}
 
