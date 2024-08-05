@@ -42,13 +42,12 @@ public class UserService {
 		User user = userRepository.findByEmail(email)
 			.orElseThrow(UserNotFoundException::new);
 
-		if (!passwordEncoder.matches(password, user.getPassword())) {
+		boolean isIncorrectPassword = !passwordEncoder.matches(password, user.getPassword());
+		if (isIncorrectPassword) {
 			throw new IncorrectPasswordException();
 		}
 
-		TokenDto tokenDto = tokenProvider.generateJwt(user);
-
-		return tokenDto;
+		return tokenProvider.generateJwt(user);
 	}
 
 	private User buildUser(SignUpRequest signUpRequest) {
