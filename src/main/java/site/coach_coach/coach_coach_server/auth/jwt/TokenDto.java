@@ -9,6 +9,12 @@ public record TokenDto(
 	String accessToken,
 
 	@NotBlank
-	String refreshToken
+	Long accessTokenExpiresIn,
+
+	@NotBlank
+	String refreshToken,
+
+	@NotBlank
+	Long refreshTokenExpiresIn
 ) {
 }

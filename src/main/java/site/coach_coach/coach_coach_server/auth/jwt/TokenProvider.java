@@ -31,6 +31,8 @@ public class TokenProvider {
 
 	private final String issuer;
 	private final SecretKey secretKey;
+	private final long accessTokenExpireTime;
+	private final long refreshTokenExpireTime;
 	private final JwtParser jwtParser;
 	private final CustomUserDetailsService customUserDetailsService;
 
@@ -39,6 +41,8 @@ public class TokenProvider {
 
 		this.issuer = jwtProperties.issuer();
 		this.secretKey = Keys.hmacShaKeyFor(secretKeyBytes);
+		this.accessTokenExpireTime = jwtProperties.accessTokenExpireTime() * MILLIS;
+		this.refreshTokenExpireTime = jwtProperties.refreshTokenExpireTIme() * MILLIS;
 		this.jwtParser = Jwts.parserBuilder()
 			.setSigningKey(secretKey)
 			.requireIssuer(issuer)
@@ -47,12 +51,10 @@ public class TokenProvider {
 	}
 
 	public String createAccessToken(User user) {
-		long accessTokenExpireTime = 60 * 60 * 30 * MILLIS; // 30분
 		return createToken(user, accessTokenExpireTime, "access");
 	}
 
 	public String createRefreshToken(User user) {
-		long refreshTokenExpireTime = 60 * 60 * 24 * 14L * MILLIS; // 14일
 		return createToken(user, refreshTokenExpireTime, "refresh");
 	}
 
@@ -78,7 +80,9 @@ public class TokenProvider {
 
 		return TokenDto.builder()
 			.accessToken(accessToken)
+			.accessTokenExpiresIn(accessTokenExpireTime)
 			.refreshToken(refreshToken)
+			.refreshTokenExpiresIn(refreshTokenExpireTime)
 			.build();
 	}
 
