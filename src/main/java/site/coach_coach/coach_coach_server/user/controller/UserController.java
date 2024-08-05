@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
@@ -12,11 +13,12 @@ import site.coach_coach.coach_coach_server.user.dto.SignUpRequest;
 import site.coach_coach.coach_coach_server.user.service.UserService;
 
 @RestController
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class UserController {
 	private final UserService userService;
 
-	@PostMapping("/auth/signup")
+	@PostMapping("/v1/auth/signup")
 	public ResponseEntity<Void> signup(@RequestBody @Valid SignUpRequest signUpRequest) {
 		userService.signup(signUpRequest);
 		return new ResponseEntity<>(HttpStatus.CREATED);

@@ -44,7 +44,7 @@ public class UserControllerTest {
 	public void testSignupSuccess() throws Exception {
 		SignUpRequest signUpRequest = new SignUpRequest("test", "test@test.com", "password123!");
 
-		mockMvc.perform(MockMvcRequestBuilders.post("/auth/signup")
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/auth/signup")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(signUpRequest)))
 			.andExpect(MockMvcResultMatchers.status().isCreated())
@@ -56,7 +56,7 @@ public class UserControllerTest {
 	public void testSignupInvalidEmail() throws Exception {
 		SignUpRequest signUpRequest = new SignUpRequest("test", "invalid-email", "password123!");
 
-		mockMvc.perform(MockMvcRequestBuilders.post("/auth/signup")
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/auth/signup")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(signUpRequest)))
 			.andExpect(MockMvcResultMatchers.status().isBadRequest())
@@ -68,7 +68,7 @@ public class UserControllerTest {
 	public void testSignupInvalidPassword() throws Exception {
 		SignUpRequest signUpRequest = new SignUpRequest("test", "test@test.com", "short");
 
-		mockMvc.perform(MockMvcRequestBuilders.post("/auth/signup")
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/auth/signup")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(signUpRequest)))
 			.andExpect(MockMvcResultMatchers.status().isBadRequest())
@@ -80,7 +80,7 @@ public class UserControllerTest {
 	public void testSignupInvalidNickname() throws Exception {
 		SignUpRequest signUpRequest = new SignUpRequest(" test ", "test@test.com", "password123!");
 
-		mockMvc.perform(MockMvcRequestBuilders.post("/auth/signup")
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/auth/signup")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(signUpRequest)))
 			.andExpect(MockMvcResultMatchers.status().isBadRequest())
@@ -95,7 +95,7 @@ public class UserControllerTest {
 		doThrow(new UserAlreadyExistException(ErrorMessage.DUPLICATE_NICKNAME.getMessage()))
 			.when(userService).signup(signUpRequest);
 
-		mockMvc.perform(MockMvcRequestBuilders.post("/auth/signup")
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/auth/signup")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(signUpRequest)))
 			.andExpect(MockMvcResultMatchers.status().isConflict())
@@ -110,7 +110,7 @@ public class UserControllerTest {
 		doThrow(new UserAlreadyExistException(ErrorMessage.DUPLICATE_EMAIL.getMessage()))
 			.when(userService).signup(signUpRequest);
 
-		mockMvc.perform(MockMvcRequestBuilders.post("/auth/signup")
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/auth/signup")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(signUpRequest)))
 			.andExpect(MockMvcResultMatchers.status().isConflict())

@@ -19,13 +19,13 @@ public class SecurityConfigTest {
 	@Test
 	@DisplayName("CORS 설정 테스트 - 유효한 Origin")
 	public void corsConfigTest() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/test")
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/test")
 				.header("Origin", "https://coach-coach.site"))
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andExpect(MockMvcResultMatchers.header().string("Access-Control-Allow-Origin", "https://coach-coach.site"))
 			.andExpect(MockMvcResultMatchers.header().string("Access-Control-Allow-Credentials", "true"));
 
-		mockMvc.perform(MockMvcRequestBuilders.get("/test")
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/test")
 				.header("Origin", "http://localhost:3000"))
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andExpect(
@@ -36,7 +36,7 @@ public class SecurityConfigTest {
 	@Test
 	@DisplayName("CORS 설정 테스트 - 유효하지 않은 Origin")
 	public void corsConfigInvalidOriginTest() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/test")
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/test")
 				.header("Origin", "https://unauthorized-origin.com"))
 			.andExpect(MockMvcResultMatchers.status().isForbidden());
 	}
