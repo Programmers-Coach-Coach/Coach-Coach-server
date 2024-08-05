@@ -15,6 +15,10 @@ import site.coach_coach.coach_coach_server.routine.repository.RoutineRepository;
 public class RoutineServices {
 	private final RoutineRepository routineRepository;
 
+	public Optional<Integer> searchIsMatching(Long userId, Optional<Long> coachId) {
+		return routineRepository.findMatchingValue(userId, coachId);
+	}
+
 	public List<RoutineForListDto> searchRoutines(Long userId, Optional<Long> coachId) {
 		if (coachId.isEmpty()) {
 			return routineRepository.findMyRoutines(userId);

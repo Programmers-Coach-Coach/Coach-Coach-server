@@ -14,18 +14,25 @@ import site.coach_coach.coach_coach_server.routine.dto.RoutineListCoachInfoDto;
 
 @Repository
 public interface RoutineRepository extends JpaRepository<Routine, Long> {
+	@Query(value = "SELECT m.is_matching FROM user_coach_matching m "
+		+ "WHERE m.user_id = :userId AND m.coach_id = :coachId", nativeQuery = true)
+	Optional<Integer> findMatchingValue(@Param("userId") Long userId, @Param("coachId") Optional<Long> coachId);
+
 	@Query(value =
-		"SELECT r.routine_id AS routineId, r.routine_name AS routineName, s.sport_name AS sportName FROM routines r LEFT JOIN sports s "
+		"SELECT r.routine_id AS routineId, r.routine_name AS routineName, s.sport_name AS sportName FROM routines r "
+			+ "LEFT JOIN sports s "
 			+ "ON r.sport_id = s.sport_id WHERE r.user_id = :userId AND r.coach_id IS NULL", nativeQuery = true)
 	List<RoutineForListDto> findMyRoutines(@Param("userId") Long userId);
 
 	@Query(value =
-		"SELECT r.routine_id AS routineId, r.routine_name AS routineName, s.sport_name AS sportName FROM routines r LEFT JOIN sports s "
+		"SELECT r.routine_id AS routineId, r.routine_name AS routineName, s.sport_name AS sportName FROM routines r "
+			+ "LEFT JOIN sports s "
 			+ "ON r.sport_id = s.sport_id WHERE r.user_id = :userId AND r.coach_id = :coachId", nativeQuery = true)
 	List<RoutineForListDto> findRoutinesByCoach(@Param("userId") Long userId, @Param("coachId") Optional<Long> coachId);
 
 	@Query(value =
-		"SELECT c.coach_id AS coachId, u.nickname AS coachName, u.profile_image_url AS profileImageUrl FROM coaches c LEFT JOIN users u "
+		"SELECT c.coach_id AS coachId, u.nickname AS coachName, u.profile_image_url AS profileImageUrl FROM coaches c "
+			+ "LEFT JOIN users u "
 			+ "ON c.user_id = u.user_id WHERE c.coach_id = :coachId", nativeQuery = true)
 	Optional<RoutineListCoachInfoDto> findRoutineListCoachInfo(@Param("coachId") Optional<Long> coachId);
 }

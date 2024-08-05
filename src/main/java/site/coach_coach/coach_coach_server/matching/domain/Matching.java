@@ -1,4 +1,4 @@
-package site.coach_coach.coach_coach_server.routine.domain;
+package site.coach_coach.coach_coach_server.matching.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,20 +9,17 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import site.coach_coach.coach_coach_server.common.domain.DateEntity;
 
-@Table(name = "routines")
+@Table(name = "user_coach_matching")
 @Entity
-@Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Routine extends DateEntity {
+public class Matching {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "routine_id")
-	private Long routineId;
+	@Column(name = "user_coach_matching_id")
+	private Long userCoachMatchingId;
 
 	@Column(name = "user_id")
 	private Long userId;
@@ -30,12 +27,6 @@ public class Routine extends DateEntity {
 	@Column(name = "coach_id")
 	private Long coachId;
 
-	@Column(name = "sport_id")
-	private Long sportId;
-
-	@Column(name = "routine_Name")
-	private String routineName;
-
+	@Column(name = "is_matching")
+	private Boolean isMatching;
 }
-
-
