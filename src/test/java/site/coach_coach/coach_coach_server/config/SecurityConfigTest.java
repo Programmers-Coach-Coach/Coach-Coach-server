@@ -26,10 +26,10 @@ public class SecurityConfigTest {
 			.andExpect(MockMvcResultMatchers.header().string("Access-Control-Allow-Credentials", "true"));
 
 		mockMvc.perform(MockMvcRequestBuilders.get("/test")
-				.header("Origin", "https://api.coach-coach.site"))
+				.header("Origin", "http://localhost:3000"))
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andExpect(
-				MockMvcResultMatchers.header().string("Access-Control-Allow-Origin", "https://api.coach-coach.site"))
+				MockMvcResultMatchers.header().string("Access-Control-Allow-Origin", "http://localhost:3000"))
 			.andExpect(MockMvcResultMatchers.header().string("Access-Control-Allow-Credentials", "true"));
 	}
 
