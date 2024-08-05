@@ -48,7 +48,7 @@ public class SecurityConfig {
 		CorsConfiguration configuration = new CorsConfiguration();
 
 		configuration.addAllowedOrigin("https://coach-coach.site");
-		configuration.addAllowedOrigin("http://localhost:3000");
+		configuration.addAllowedOrigin("http://localhost:*");
 		configuration.addAllowedMethod("*");
 		configuration.addAllowedHeader("*");
 		configuration.setAllowCredentials(true);
