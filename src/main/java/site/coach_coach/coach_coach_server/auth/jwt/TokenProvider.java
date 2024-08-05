@@ -20,6 +20,8 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
+import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
+import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetailsService;
 import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
 import site.coach_coach.coach_coach_server.user.domain.User;
 
@@ -30,8 +32,9 @@ public class TokenProvider {
 	private final String issuer;
 	private final SecretKey secretKey;
 	private final JwtParser jwtParser;
+	private final CustomUserDetailsService customUserDetailsService;
 
-	public TokenProvider(JwtProperties jwtProperties) {
+	public TokenProvider(JwtProperties jwtProperties, CustomUserDetailsService customUserDetailsService) {
 		byte[] secretKeyBytes = Decoders.BASE64.decode(jwtProperties.secretKey());
 
 		this.issuer = jwtProperties.issuer();
@@ -40,6 +43,7 @@ public class TokenProvider {
 			.setSigningKey(secretKey)
 			.requireIssuer(issuer)
 			.build();
+		this.customUserDetailsService = customUserDetailsService;
 	}
 
 	public String createAccessToken(User user) {
@@ -79,9 +83,9 @@ public class TokenProvider {
 	}
 
 	public Authentication getAuthentication(String token) {
-		String userId = getUserId(token);
+		CustomUserDetails userDetails = customUserDetailsService.loadUserByUsername(getUserId(token));
 
-		return new UsernamePasswordAuthenticationToken(userId, token, Collections.emptyList());
+		return new UsernamePasswordAuthenticationToken(userDetails, "", Collections.emptyList());
 	}
 
 	public Claims extractClaims(String token) {

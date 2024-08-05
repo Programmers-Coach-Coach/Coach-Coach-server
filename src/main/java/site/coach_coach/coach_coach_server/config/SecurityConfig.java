@@ -16,7 +16,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.auth.jwt.JwtExceptionFilter;
-import site.coach_coach.coach_coach_server.auth.jwt.JwtTokenFilter;
+import site.coach_coach.coach_coach_server.auth.jwt.TokenFilter;
 import site.coach_coach.coach_coach_server.auth.jwt.TokenProvider;
 
 @Configuration
@@ -32,9 +32,9 @@ public class SecurityConfig {
 			.csrf(AbstractHttpConfigurer::disable)
 			.formLogin(AbstractHttpConfigurer::disable)
 			.httpBasic(AbstractHttpConfigurer::disable)
-			.addFilterBefore(new JwtTokenFilter(tokenProvider),
+			.addFilterBefore(new TokenFilter(tokenProvider),
 				UsernamePasswordAuthenticationFilter.class)
-			.addFilterBefore(jwtExceptionFilter, JwtTokenFilter.class)
+			.addFilterBefore(jwtExceptionFilter, TokenFilter.class)
 			.authorizeHttpRequests((authorizeRequests) ->
 				authorizeRequests
 					.requestMatchers("/api/v1/auth/login", "/api/v1/auth/signup", "/api/v1/test").permitAll()

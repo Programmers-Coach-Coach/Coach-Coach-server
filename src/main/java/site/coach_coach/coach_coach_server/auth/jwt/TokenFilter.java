@@ -17,7 +17,7 @@ import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
 
 @Component
 @RequiredArgsConstructor
-public class JwtTokenFilter extends OncePerRequestFilter {
+public class TokenFilter extends OncePerRequestFilter {
 	private static final String TOKEN_HEADER = "Authorization";
 	private static final String TOKEN_PREFIX = "Bearer ";
 
