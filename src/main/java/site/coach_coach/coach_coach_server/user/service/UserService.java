@@ -5,13 +5,12 @@ import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import site.coach_coach.coach_coach_server.auth.jwt.TokenDto;
 import site.coach_coach.coach_coach_server.auth.jwt.TokenProvider;
+import site.coach_coach.coach_coach_server.auth.jwt.dto.TokenDto;
 import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
 import site.coach_coach.coach_coach_server.user.domain.User;
 import site.coach_coach.coach_coach_server.user.dto.LoginRequest;
 import site.coach_coach.coach_coach_server.user.dto.SignUpRequest;
-import site.coach_coach.coach_coach_server.user.exception.IncorrectPasswordException;
 import site.coach_coach.coach_coach_server.user.exception.UserAlreadyExistException;
 import site.coach_coach.coach_coach_server.user.exception.UserNotFoundException;
 import site.coach_coach.coach_coach_server.user.repository.UserRepository;
@@ -36,17 +35,19 @@ public class UserService {
 		userRepository.save(user);
 	}
 
-	public TokenDto login(LoginRequest loginRequest) throws IncorrectPasswordException {
+	public User validateUser(LoginRequest loginRequest) {
 		String email = loginRequest.email();
 		String password = loginRequest.password();
-		User user = userRepository.findByEmail(email)
-			.orElseThrow(UserNotFoundException::new);
+		User user = userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
 
-		boolean isIncorrectPassword = !passwordEncoder.matches(password, user.getPassword());
-		if (isIncorrectPassword) {
-			throw new IncorrectPasswordException();
+		if (!passwordEncoder.matches(password, user.getPassword())) {
+			throw new UserNotFoundException();
 		}
 
+		return user;
+	}
+
+	public TokenDto createJwt(User user) {
 		return tokenProvider.generateJwt(user);
 	}
 

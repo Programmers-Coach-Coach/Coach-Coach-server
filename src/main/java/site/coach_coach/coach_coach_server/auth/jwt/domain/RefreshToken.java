@@ -1,4 +1,4 @@
-package site.coach_coach.coach_coach_server.auth.jwt;
+package site.coach_coach.coach_coach_server.auth.jwt.domain;
 
 import java.time.LocalDateTime;
 

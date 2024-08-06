@@ -7,19 +7,17 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
 
 @Component
 @RequiredArgsConstructor
 public class TokenFilter extends OncePerRequestFilter {
-	private static final String TOKEN_HEADER = "Authorization";
-	private static final String TOKEN_PREFIX = "Bearer ";
+	private static final String ACCESS_TOKEN = "access_token";
 
 	private final TokenProvider tokenProvider;
 
@@ -28,28 +26,32 @@ public class TokenFilter extends OncePerRequestFilter {
 		throws ServletException, IOException {
 		response.setCharacterEncoding("utf-8");
 
-		String authorizationHeader = request.getHeader(TOKEN_HEADER);
-
 		String requestUri = request.getRequestURI();
-		if (requestUri.equals("/auth/login")) {
+		if (requestUri.equals("/api/v1/auth/login") || requestUri.equals("/api/v1/auth/signup")) {
 			filterChain.doFilter(request, response);
 			return;
 		}
 
-		if (authorizationHeader == null) {
+		String accessToken = getCookieValue(request, ACCESS_TOKEN);
+		if (accessToken == null || !tokenProvider.validateAccessToken(accessToken)) {
 			filterChain.doFilter(request, response);
 			return;
 		}
 
-		if (!authorizationHeader.startsWith(TOKEN_PREFIX)) {
-			throw new JwtException(ErrorMessage.INVALID_TOKEN.getMessage());
-		}
-
-		String accessToken = authorizationHeader.split(" ")[1];
-		if (tokenProvider.validateAccessToken(accessToken)) {
-			Authentication authentication = tokenProvider.getAuthentication(accessToken);
-			SecurityContextHolder.getContext().setAuthentication(authentication);
-		}
+		Authentication authentication = tokenProvider.getAuthentication(accessToken);
+		SecurityContextHolder.getContext().setAuthentication(authentication);
 		filterChain.doFilter(request, response);
+	}
+
+	private String getCookieValue(HttpServletRequest request, String type) {
+		Cookie[] cookies = request.getCookies();
+		if (cookies != null) {
+			for (Cookie cookie : cookies) {
+				if (type.equals(cookie.getName())) {
+					return cookie.getValue();
+				}
+			}
+		}
+		return null;
 	}
 }

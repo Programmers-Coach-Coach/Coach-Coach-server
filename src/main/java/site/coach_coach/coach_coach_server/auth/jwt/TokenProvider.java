@@ -20,6 +20,8 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
+import jakarta.servlet.http.Cookie;
+import site.coach_coach.coach_coach_server.auth.jwt.dto.TokenDto;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetailsService;
 import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
@@ -51,16 +53,8 @@ public class TokenProvider {
 	}
 
 	public String createAccessToken(User user) {
-		return createToken(user, accessTokenExpireTime, "access");
-	}
-
-	public String createRefreshToken(User user) {
-		return createToken(user, refreshTokenExpireTime, "refresh");
-	}
-
-	public String createToken(User user, long expireTime, String tokenType) {
 		Date now = new Date();
-		Date expiryDate = new Date(now.getTime() + expireTime);
+		Date expiryDate = new Date(now.getTime() + accessTokenExpireTime);
 
 		return Jwts.builder()
 			.setIssuer(issuer)
@@ -69,7 +63,21 @@ public class TokenProvider {
 			.setSubject(user.getUserId().toString())
 			.claim("nickname", user.getNickname())
 			.claim("email", user.getEmail())
-			.claim("token_type", tokenType)
+			.claim("token_type", "access")
+			.signWith(secretKey, SignatureAlgorithm.HS256)
+			.compact();
+	}
+
+	public String createRefreshToken(User user) {
+		Date now = new Date();
+		Date expiryDate = new Date(now.getTime() + refreshTokenExpireTime);
+
+		return Jwts.builder()
+			.setIssuer(issuer)
+			.setIssuedAt(now)
+			.setExpiration(expiryDate)
+			.setSubject(user.getUserId().toString())
+			.claim("token_type", "refresh")
 			.signWith(secretKey, SignatureAlgorithm.HS256)
 			.compact();
 	}
@@ -78,12 +86,31 @@ public class TokenProvider {
 		String accessToken = createAccessToken(user);
 		String refreshToken = createRefreshToken(user);
 
+		long currentMillis = System.currentTimeMillis();
+
 		return TokenDto.builder()
 			.accessToken(accessToken)
-			.accessTokenExpiresIn(accessTokenExpireTime)
+			.accessTokenExpiresIn(currentMillis + accessTokenExpireTime)
 			.refreshToken(refreshToken)
-			.refreshTokenExpiresIn(refreshTokenExpireTime)
+			.refreshTokenExpiresIn(currentMillis + refreshTokenExpireTime)
 			.build();
+	}
+
+	public Cookie createCookie(String name, String value) {
+		long maxAge;
+		if (name.equals("access_token")) {
+			maxAge = accessTokenExpireTime;
+		} else if (name.equals("refresh_token")) {
+			maxAge = refreshTokenExpireTime;
+		} else {
+			return null;
+		}
+
+		Cookie cookie = new Cookie(name, value);
+		cookie.setHttpOnly(true);
+		cookie.setPath("/");
+		cookie.setMaxAge((int)(maxAge / 1000));
+		return cookie;
 	}
 
 	public Authentication getAuthentication(String token) {
