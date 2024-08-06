@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,8 +18,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import site.coach_coach.coach_coach_server.common.domain.DateEntity;
 import site.coach_coach.coach_coach_server.common.domain.GenderEnum;
-import site.coach_coach.coach_coach_server.user.validation.Nickname;
-import site.coach_coach.coach_coach_server.user.validation.Password;
 
 @Table(name = "users")
 @Entity
@@ -33,15 +32,19 @@ public class User extends DateEntity {
 	private Long userId;
 
 	@Column(name = "nickname", unique = true, nullable = false, length = 45)
-	@Nickname
+	@NotBlank
+	@Size(max = 45)
 	private String nickname;
 
 	@Column(name = "email", unique = true, nullable = false, length = 45)
 	@Email
+	@NotBlank
+	@Size(max = 45)
 	private String email;
 
 	@Column(name = "password", nullable = false, length = 128)
-	@Password
+	@NotBlank
+	@Size(max = 128)
 	private String password;
 
 	@Column(name = "profile_image_url", length = 400)

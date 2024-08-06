@@ -7,6 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
@@ -27,7 +28,7 @@ import site.coach_coach.coach_coach_server.user.domain.User;
 @AllArgsConstructor
 public class RefreshToken {
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "refresh_token_id")
 	private Long refreshTokenId;
 
@@ -44,7 +45,6 @@ public class RefreshToken {
 	@Column(name = "refresh_token")
 	private String refreshToken;
 
-	@NotNull
 	@CreationTimestamp
 	@Column(name = "created_at")
 	private LocalDateTime createdAt;
