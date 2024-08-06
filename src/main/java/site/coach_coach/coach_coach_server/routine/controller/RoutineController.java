@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineForListDto;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineListCoachInfoDto;
-import site.coach_coach.coach_coach_server.routine.dto.RoutineListDto;
-import site.coach_coach.coach_coach_server.routine.dto.RoutineListRequestDto;
+import site.coach_coach.coach_coach_server.routine.dto.RoutineListRequest;
+import site.coach_coach.coach_coach_server.routine.dto.RoutineListResponse;
 import site.coach_coach.coach_coach_server.routine.services.RoutineServices;
 
 @RestController
@@ -25,25 +25,26 @@ public class RoutineController {
 	@GetMapping("/v1/routines")
 	public ResponseEntity routines(@RequestParam("coachId") Long coachId) {
 		Long userId = 2L;
-		RoutineListRequestDto routineListRequestDto = new RoutineListRequestDto(userId, coachId);
+		RoutineListRequest routineListRequest = new RoutineListRequest(userId, coachId);
 
 		if (coachId == null) {
 			List<RoutineForListDto> routineListByMyself = routineServices.findRoutineForListServices(
-				routineListRequestDto);
+				routineListRequest);
 
 			return ResponseEntity.status(HttpStatus.OK).body(routineListByMyself);
 		} else {
-			Boolean checkMatching = routineServices.findIsMatchingServices(routineListRequestDto);
+			Boolean checkMatching = routineServices.findIsMatchingServices(routineListRequest);
 			if (!checkMatching) {
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("매칭되지 않은 코치입니다.");
 			} else {
 				RoutineListCoachInfoDto routineListCoachInfoDto = routineServices.findRoutineListCoachInfoServices(
-					routineListRequestDto);
+					routineListRequest);
 				List<RoutineForListDto> routineListByCoach = routineServices.findRoutineForListServices(
-					routineListRequestDto);
+					routineListRequest);
 
-				RoutineListDto routineListDto = new RoutineListDto(routineListCoachInfoDto, routineListByCoach);
-				return ResponseEntity.status(HttpStatus.OK).body(routineListDto);
+				RoutineListResponse routineListResponse = new RoutineListResponse(routineListCoachInfoDto,
+					routineListByCoach);
+				return ResponseEntity.status(HttpStatus.OK).body(routineListResponse);
 			}
 		}
 	}

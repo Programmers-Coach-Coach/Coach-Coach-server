@@ -1,9 +1,13 @@
 package site.coach_coach.coach_coach_server.routine.dto;
 
-public interface RoutineListCoachInfoDto {
-	Long getCoachId();
+import lombok.Builder;
 
-	String getNickname();
+@Builder
+public record RoutineListCoachInfoDto(
+	Long coachId,
 
-	String getProfileImageUrl();
+	String nickname,
+
+	String profileImageUrl) {
+
 }
