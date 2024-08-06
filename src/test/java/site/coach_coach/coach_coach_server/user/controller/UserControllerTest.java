@@ -16,6 +16,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import site.coach_coach.coach_coach_server.auth.jwt.TokenProvider;
+import site.coach_coach.coach_coach_server.auth.jwt.service.RefreshTokenService;
 import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
 import site.coach_coach.coach_coach_server.config.SecurityConfig;
 import site.coach_coach.coach_coach_server.user.dto.SignUpRequest;
@@ -31,6 +33,12 @@ public class UserControllerTest {
 
 	@MockBean
 	private UserService userService;
+
+	@MockBean
+	private TokenProvider tokenProvider;
+
+	@MockBean
+	private RefreshTokenService refreshTokenService;
 
 	private ObjectMapper objectMapper;
 

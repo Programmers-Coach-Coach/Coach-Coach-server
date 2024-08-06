@@ -22,6 +22,7 @@ import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.Cookie;
 import site.coach_coach.coach_coach_server.auth.jwt.dto.TokenDto;
+import site.coach_coach.coach_coach_server.auth.jwt.repository.RefreshTokenRepository;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetailsService;
 import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
@@ -38,7 +39,11 @@ public class TokenProvider {
 	private final JwtParser jwtParser;
 	private final CustomUserDetailsService customUserDetailsService;
 
-	public TokenProvider(JwtProperties jwtProperties, CustomUserDetailsService customUserDetailsService) {
+	private final RefreshTokenRepository refreshTokenRepository;
+
+	public TokenProvider(JwtProperties jwtProperties, CustomUserDetailsService customUserDetailsService,
+		RefreshTokenRepository refreshTokenRepository) {
+		this.refreshTokenRepository = refreshTokenRepository;
 		byte[] secretKeyBytes = Decoders.BASE64.decode(jwtProperties.secretKey());
 
 		this.issuer = jwtProperties.issuer();
@@ -150,5 +155,18 @@ public class TokenProvider {
 
 	public boolean validateRefreshToken(String token) {
 		return validateToken(token, "refresh");
+	}
+
+	public boolean existsRefreshToken(String refreshToken) {
+		return refreshTokenRepository.existsByRefreshToken(refreshToken);
+	}
+
+	public String regenerateAccessToken(String refreshToken) {
+		Claims claims = extractClaims(refreshToken);
+		String userId = claims.getSubject();
+		CustomUserDetails userDetails = customUserDetailsService.loadUserByUsername(userId);
+		User user = userDetails.getUser();
+
+		return createAccessToken(user);
 	}
 }

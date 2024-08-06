@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class TokenFilter extends OncePerRequestFilter {
 	private static final String ACCESS_TOKEN = "access_token";
+	private static final String REFRESH_TOKEN = "refresh_token";
 
 	private final TokenProvider tokenProvider;
 
@@ -33,13 +34,32 @@ public class TokenFilter extends OncePerRequestFilter {
 		}
 
 		String accessToken = getCookieValue(request, ACCESS_TOKEN);
-		if (accessToken == null || !tokenProvider.validateAccessToken(accessToken)) {
-			filterChain.doFilter(request, response);
-			return;
-		}
+		String refreshToken = getCookieValue(request, REFRESH_TOKEN);
+		if (accessToken != null) {
+			if (tokenProvider.validateAccessToken(accessToken)) {
+				Authentication authentication = tokenProvider.getAuthentication(accessToken);
+				SecurityContextHolder.getContext().setAuthentication(authentication);
+			} else if (!tokenProvider.validateAccessToken(accessToken) && refreshToken != null) {
+				boolean validRefreshToken = tokenProvider.validateRefreshToken(refreshToken);
+				boolean isRefreshToken = tokenProvider.existsRefreshToken(refreshToken);
 
-		Authentication authentication = tokenProvider.getAuthentication(accessToken);
-		SecurityContextHolder.getContext().setAuthentication(authentication);
+				if (validRefreshToken && isRefreshToken) {
+					String newAccessToken = tokenProvider.regenerateAccessToken(refreshToken);
+
+					Cookie oldAccessTokenCookie = new Cookie(ACCESS_TOKEN, null);
+					oldAccessTokenCookie.setHttpOnly(true);
+					oldAccessTokenCookie.setPath("/");
+					oldAccessTokenCookie.setMaxAge(0);
+					response.addCookie(oldAccessTokenCookie);
+					
+					Cookie newAccessTokenCookie = new Cookie(ACCESS_TOKEN, newAccessToken);
+					response.addCookie(newAccessTokenCookie);
+
+					Authentication authentication = tokenProvider.getAuthentication(newAccessToken);
+					SecurityContextHolder.getContext().setAuthentication(authentication);
+				}
+			}
+		}
 		filterChain.doFilter(request, response);
 	}
 

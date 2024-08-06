@@ -25,16 +25,20 @@ public class RefreshTokenService {
 			ZoneId.systemDefault()
 		);
 
+		RefreshToken existingRefreshToken = refreshTokenRepository.findByUserId(user.getUserId())
+			.orElse(null);
+
+		if (existingRefreshToken != null) {
+			refreshTokenRepository.delete(existingRefreshToken);
+		}
+
 		RefreshToken newRefreshToken = RefreshToken.builder()
 			.user(user)
 			.refreshToken(refreshToken)
 			.expireDate(expireDate)
 			.build();
-		refreshTokenRepository.save(newRefreshToken);
-	}
 
-	public RefreshToken getRefreshToken(String refreshToken) {
-		return refreshTokenRepository.findByRefreshToken(refreshToken).orElse(null);
+		refreshTokenRepository.save(newRefreshToken);
 	}
 
 	public void deleteRefreshToken(String refreshToken) {

@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -21,7 +22,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import site.coach_coach.coach_coach_server.user.domain.User;
 
-@Table(name = "refresh_tokens")
+@Table(name = "refresh_tokens", uniqueConstraints = @UniqueConstraint(columnNames = "user_id"))
 @Entity
 @Getter
 @Builder
@@ -37,7 +38,7 @@ public class RefreshToken {
 	@OneToOne
 	@JoinColumn(name = "user_id")
 	private User user;
-	
+
 	@Column(name = "expire_date")
 	private LocalDateTime expireDate;
 
