@@ -1,15 +1,14 @@
 package site.coach_coach.coach_coach_server.routine.dto;
 
 import java.util.List;
-import java.util.Optional;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Builder;
 
-@Data
+@Builder
 @AllArgsConstructor
 public class RoutineListDto {
-	private Optional<RoutineListCoachInfoDto> routineListCoachInfoDto;
+	private RoutineListCoachInfoDto routineListCoachInfoDto;
 	private List<RoutineForListDto> routineForListDtos;
 
 }

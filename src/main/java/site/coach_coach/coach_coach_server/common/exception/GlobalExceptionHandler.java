@@ -49,9 +49,9 @@ public class GlobalExceptionHandler {
 			.body(new ErrorResponse(ex.getMessage()));
 	}
 
-	@ExceptionHandler(Exception.class)
-	public ResponseEntity<ErrorResponse> handleException(Exception ex) {
-		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-			.body(new ErrorResponse(ErrorMessage.SERVER_ERROR));
-	}
+	// @ExceptionHandler(Exception.class)
+	// public ResponseEntity<ErrorResponse> handleException(Exception ex) {
+	// 	return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	// 		.body(new ErrorResponse(ErrorMessage.SERVER_ERROR));
+	// }
 }

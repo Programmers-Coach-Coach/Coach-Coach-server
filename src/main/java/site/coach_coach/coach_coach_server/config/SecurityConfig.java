@@ -50,7 +50,8 @@ public class SecurityConfig {
 		CorsConfiguration configuration = new CorsConfiguration();
 
 		configuration.addAllowedOrigin("https://coach-coach.site");
-		configuration.addAllowedOrigin("https://api.coach-coach.site");
+		configuration.addAllowedOrigin("http://localhost:5173");
+		configuration.addAllowedOrigin("http://localhost:8080");
 		configuration.addAllowedMethod("*");
 		configuration.addAllowedHeader("*");
 		configuration.setAllowCredentials(true);

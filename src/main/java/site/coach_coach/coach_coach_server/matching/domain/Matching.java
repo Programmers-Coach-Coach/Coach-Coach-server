@@ -1,5 +1,7 @@
 package site.coach_coach.coach_coach_server.matching.domain;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -29,4 +31,7 @@ public class Matching {
 
 	@Column(name = "is_matching")
 	private Boolean isMatching;
+
+	@Column(name = "created_at")
+	private LocalDateTime createdAt;
 }
