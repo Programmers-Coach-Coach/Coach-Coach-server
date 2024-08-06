@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -36,11 +37,11 @@ public class RefreshToken {
 	@OneToOne
 	@JoinColumn(name = "user_id")
 	private User user;
-
+	
 	@Column(name = "expire_date")
 	private LocalDateTime expireDate;
 
-	@NotNull
+	@NotBlank
 	@Size(max = 200)
 	@Column(name = "refresh_token")
 	private String refreshToken;
