@@ -32,9 +32,9 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
 		} catch (JwtException ex) {
 			String message = ex.getMessage();
 
-			if (ErrorMessage.EXPIRED_TOKEN.getMessage().equals(message)) {
+			if (ErrorMessage.EXPIRED_TOKEN.equals(message)) {
 				setErrorResponse(response, ErrorMessage.EXPIRED_TOKEN);
-			} else if (ErrorMessage.NOT_FOUND_TOKEN.getMessage().equals(message)) {
+			} else if (ErrorMessage.NOT_FOUND_TOKEN.equals(message)) {
 				setErrorResponse(response, ErrorMessage.NOT_FOUND_TOKEN);
 			} else {
 				setErrorResponse(response, ErrorMessage.INVALID_TOKEN);
@@ -42,13 +42,13 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
 		}
 	}
 
-	private void setErrorResponse(HttpServletResponse response, ErrorMessage message)
+	private void setErrorResponse(HttpServletResponse response, String message)
 		throws IOException {
 		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 		response.setContentType("application/json");
 
 		Map<String, String> errorResponse = new HashMap<>();
-		errorResponse.put("message", message.getMessage());
+		errorResponse.put("message", message);
 
 		String jsonResponse = objectMapper.writeValueAsString(errorResponse);
 		response.getWriter().write(jsonResponse);

@@ -8,11 +8,11 @@ public class PasswordValidator implements ConstraintValidator<Password, String> 
 	@Override
 	public boolean isValid(String password, ConstraintValidatorContext context) {
 		if (password == null || password.isBlank()) {
-			return addErrorMessage(context, ErrorMessage.EMPTY_PASSWORD.getMessage());
+			return addErrorMessage(context, ErrorMessage.EMPTY_PASSWORD);
 		}
 
 		if (!password.matches(Password.REGEX)) {
-			return addErrorMessage(context, ErrorMessage.INVALID_PASSWORD.getMessage());
+			return addErrorMessage(context, ErrorMessage.INVALID_PASSWORD);
 		}
 		return true;
 	}

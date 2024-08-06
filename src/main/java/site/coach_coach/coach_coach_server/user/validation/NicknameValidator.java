@@ -8,11 +8,11 @@ public class NicknameValidator implements ConstraintValidator<Nickname, String> 
 	@Override
 	public boolean isValid(String nickname, ConstraintValidatorContext context) {
 		if (nickname == null || nickname.isBlank()) {
-			return addErrorMessage(context, ErrorMessage.EMPTY_NICKNAME.getMessage());
+			return addErrorMessage(context, ErrorMessage.EMPTY_NICKNAME);
 		}
 
 		if (!nickname.matches(Nickname.REGEX)) {
-			return addErrorMessage(context, ErrorMessage.INVALID_NICKNAME.getMessage());
+			return addErrorMessage(context, ErrorMessage.INVALID_NICKNAME);
 		}
 		return true;
 	}

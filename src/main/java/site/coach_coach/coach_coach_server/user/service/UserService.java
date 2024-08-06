@@ -25,10 +25,10 @@ public class UserService {
 	@Transactional
 	public void signup(SignUpRequest signUpRequest) {
 		if (userRepository.existsByNickname(signUpRequest.nickname())) {
-			throw new UserAlreadyExistException(ErrorMessage.DUPLICATE_NICKNAME.getMessage());
+			throw new UserAlreadyExistException(ErrorMessage.DUPLICATE_NICKNAME);
 		}
 		if (userRepository.existsByEmail(signUpRequest.email())) {
-			throw new UserAlreadyExistException(ErrorMessage.DUPLICATE_EMAIL.getMessage());
+			throw new UserAlreadyExistException(ErrorMessage.DUPLICATE_EMAIL);
 		}
 
 		User user = buildUser(signUpRequest);

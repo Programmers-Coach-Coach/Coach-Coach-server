@@ -132,13 +132,13 @@ public class TokenProvider {
 			Claims claims = extractClaims(token);
 
 			if (!claims.get("token_type").equals(expectedType)) {
-				throw new JwtException(ErrorMessage.NOT_FOUND_TOKEN.getMessage());
+				throw new JwtException(ErrorMessage.NOT_FOUND_TOKEN);
 			}
 			return !claims.getExpiration().before(new Date());
 		} catch (ExpiredJwtException e) {
-			throw new JwtException(ErrorMessage.EXPIRED_TOKEN.getMessage());
+			throw new JwtException(ErrorMessage.EXPIRED_TOKEN);
 		} catch (SignatureException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
-			throw new JwtException(ErrorMessage.INVALID_TOKEN.getMessage());
+			throw new JwtException(ErrorMessage.INVALID_TOKEN);
 		} catch (JwtException e) {
 			throw new JwtException(e.getMessage());
 		}
