@@ -25,13 +25,6 @@ public class RefreshTokenService {
 			ZoneId.systemDefault()
 		);
 
-		RefreshToken existingRefreshToken = refreshTokenRepository.findByUserUserId(user.getUserId())
-			.orElse(null);
-
-		if (existingRefreshToken != null) {
-			refreshTokenRepository.delete(existingRefreshToken);
-		}
-
 		RefreshToken newRefreshToken = RefreshToken.builder()
 			.user(user)
 			.refreshToken(refreshToken)
