@@ -25,7 +25,7 @@ public class RefreshTokenService {
 			ZoneId.systemDefault()
 		);
 
-		RefreshToken existingRefreshToken = refreshTokenRepository.findByUserId(user.getUserId())
+		RefreshToken existingRefreshToken = refreshTokenRepository.findByUserUserId(user.getUserId())
 			.orElse(null);
 
 		if (existingRefreshToken != null) {
