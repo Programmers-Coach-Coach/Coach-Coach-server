@@ -23,8 +23,8 @@ public class RoutineController {
 	private final RoutineServices routineServices;
 
 	@GetMapping("/v1/routines")
-	public ResponseEntity routines(@RequestParam("coachId") Long coachId) {
-		Long userId = 2L;
+	public ResponseEntity routines(@RequestParam(name = "coachId", required = false) Long coachId) {
+		Long userId = 2L; //JWT 토큰 미구현으로 임시 값 사용
 		RoutineListRequest routineListRequest = new RoutineListRequest(userId, coachId);
 
 		if (coachId == null) {

@@ -1,9 +1,12 @@
 package site.coach_coach.coach_coach_server.routine.dto;
 
-public interface RoutineForListDto {
-	Long getRoutineId();
+import lombok.Builder;
 
-	String getRoutineName();
+@Builder
+public record RoutineForListDto(
+	Long routineId,
+	String routineName,
+	String sportName
+) {
 
-	String getSportName();
 }
