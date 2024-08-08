@@ -51,7 +51,7 @@ public class TokenFilter extends OncePerRequestFilter {
 					oldAccessTokenCookie.setPath("/");
 					oldAccessTokenCookie.setMaxAge(0);
 					response.addCookie(oldAccessTokenCookie);
-					
+
 					Cookie newAccessTokenCookie = new Cookie(ACCESS_TOKEN, newAccessToken);
 					response.addCookie(newAccessTokenCookie);
 
