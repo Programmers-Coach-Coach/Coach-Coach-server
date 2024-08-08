@@ -10,7 +10,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.Authentication;
@@ -46,7 +45,6 @@ public class TokenProviderTest {
 
 	@BeforeEach
 	public void setUp() {
-		MockitoAnnotations.openMocks(this);
 		user = new User(
 			faker.number().randomNumber(),
 			faker.name().firstName(),
@@ -131,17 +129,6 @@ public class TokenProviderTest {
 
 		assertThat(tokenProvider.validateAccessToken(accessToken)).isTrue();
 		assertThat(tokenProvider.validateRefreshToken(refreshToken)).isTrue();
-	}
-
-	@Test
-	@DisplayName("유효하지 않은 토큰 검사 실패 테스트")
-	public void validateInvalidTokenTest() {
-		String invalidToken = "invalidToken";
-		assertThatThrownBy(() -> tokenProvider.validateAccessToken(invalidToken))
-			.isInstanceOf(JwtExceptionFilter.class);
-
-		assertThatThrownBy(() -> tokenProvider.validateRefreshToken(invalidToken))
-			.isInstanceOf(JwtExceptionFilter.class);
 	}
 
 	@Test

@@ -18,6 +18,7 @@ import site.coach_coach.coach_coach_server.auth.exception.ExpiredTokenException;
 import site.coach_coach.coach_coach_server.auth.exception.InvalidTokenException;
 import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
 import site.coach_coach.coach_coach_server.user.exception.UserAlreadyExistException;
+import site.coach_coach.coach_coach_server.user.exception.UserNotFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -34,6 +35,14 @@ public class GlobalExceptionHandler {
 
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 			.body(new ErrorResponse(message));
+	}
+
+	@ExceptionHandler(UserNotFoundException.class)
+	public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException ex) {
+		ErrorResponse errorResponse = new ErrorResponse(ex.getMessage());
+
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+			.body(errorResponse);
 	}
 
 	@ExceptionHandler(NoSuchElementException.class)
