@@ -119,7 +119,7 @@ public class TokenProvider {
 	}
 
 	public Authentication getAuthentication(String token) {
-		CustomUserDetails userDetails = customUserDetailsService.loadUserByUsername(getUserId(token));
+		CustomUserDetails userDetails = customUserDetailsService.loadUserByUsername(getUserId(token).toString());
 
 		return new UsernamePasswordAuthenticationToken(userDetails, "", Collections.emptyList());
 	}
@@ -128,8 +128,8 @@ public class TokenProvider {
 		return jwtParser.parseClaimsJws(token).getBody();
 	}
 
-	public String getUserId(String token) {
-		return extractClaims(token).getSubject();
+	public Long getUserId(String token) {
+		return Long.parseLong(extractClaims(token).getSubject());
 	}
 
 	public boolean validateToken(String token, String expectedType) {
