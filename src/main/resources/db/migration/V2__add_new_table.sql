@@ -1,4 +1,4 @@
-CREATE TABLE `refresh_tokens`
+CREATE TABLE IF NOT EXISTS `refresh_tokens`
 (
     `refresh_token_id` bigint                           NOT NULL,
     `user_id`          bigint                           NOT NULL,

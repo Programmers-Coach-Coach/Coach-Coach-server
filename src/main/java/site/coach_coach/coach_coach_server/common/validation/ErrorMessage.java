@@ -21,4 +21,12 @@ public final class ErrorMessage {
 
 	public static final String DUPLICATE_EMAIL = "이미 사용중인 이메일입니다.";
 	public static final String DUPLICATE_NICKNAME = "이미 사용중인 닉네임입니다.";
+
+	public static final String NOT_FOUND_USER = "회원 정보가 잘못되었습니다.";
+
+	public static final String NOT_FOUND_TOKEN = "토큰이 존재하지 않습니다.";
+
+	public static final String EXPIRED_TOKEN = "만료된 토큰입니다.";
+	public static final String INVALID_TOKEN = "유효하지 않은 토큰입니다.";
 }
+
