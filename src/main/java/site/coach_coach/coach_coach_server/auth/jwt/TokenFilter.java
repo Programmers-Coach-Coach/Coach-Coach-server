@@ -35,29 +35,23 @@ public class TokenFilter extends OncePerRequestFilter {
 
 		String accessToken = getCookieValue(request, ACCESS_TOKEN);
 		String refreshToken = getCookieValue(request, REFRESH_TOKEN);
-		if (accessToken != null) {
-			if (tokenProvider.validateAccessToken(accessToken)) {
-				Authentication authentication = tokenProvider.getAuthentication(accessToken);
+		if (accessToken != null && tokenProvider.validateAccessToken(accessToken)) {
+			Authentication authentication = tokenProvider.getAuthentication(accessToken);
+			SecurityContextHolder.getContext().setAuthentication(authentication);
+		} else if (accessToken != null && !tokenProvider.validateAccessToken(accessToken) && refreshToken != null) {
+			boolean validRefreshToken = tokenProvider.validateRefreshToken(refreshToken);
+			boolean isRefreshToken = tokenProvider.existsRefreshToken(refreshToken);
+
+			if (validRefreshToken && isRefreshToken) {
+				String newAccessToken = tokenProvider.regenerateAccessToken(refreshToken);
+
+				clearCookie(response, ACCESS_TOKEN);
+
+				Cookie newAccessTokenCookie = tokenProvider.createCookie(ACCESS_TOKEN, newAccessToken);
+				response.addCookie(newAccessTokenCookie);
+
+				Authentication authentication = tokenProvider.getAuthentication(newAccessToken);
 				SecurityContextHolder.getContext().setAuthentication(authentication);
-			} else if (!tokenProvider.validateAccessToken(accessToken) && refreshToken != null) {
-				boolean validRefreshToken = tokenProvider.validateRefreshToken(refreshToken);
-				boolean isRefreshToken = tokenProvider.existsRefreshToken(refreshToken);
-
-				if (validRefreshToken && isRefreshToken) {
-					String newAccessToken = tokenProvider.regenerateAccessToken(refreshToken);
-
-					Cookie oldAccessTokenCookie = new Cookie(ACCESS_TOKEN, null);
-					oldAccessTokenCookie.setHttpOnly(true);
-					oldAccessTokenCookie.setPath("/");
-					oldAccessTokenCookie.setMaxAge(0);
-					response.addCookie(oldAccessTokenCookie);
-
-					Cookie newAccessTokenCookie = new Cookie(ACCESS_TOKEN, newAccessToken);
-					response.addCookie(newAccessTokenCookie);
-
-					Authentication authentication = tokenProvider.getAuthentication(newAccessToken);
-					SecurityContextHolder.getContext().setAuthentication(authentication);
-				}
 			}
 		}
 		filterChain.doFilter(request, response);
@@ -73,5 +67,13 @@ public class TokenFilter extends OncePerRequestFilter {
 			}
 		}
 		return null;
+	}
+
+	private void clearCookie(HttpServletResponse response, String type) {
+		Cookie oldCookie = new Cookie(type, null);
+		oldCookie.setHttpOnly(true);
+		oldCookie.setPath("/");
+		oldCookie.setMaxAge(0);
+		response.addCookie(oldCookie);
 	}
 }
