@@ -27,7 +27,7 @@ public class SecurityConfig {
 			.httpBasic(AbstractHttpConfigurer::disable)
 			.authorizeHttpRequests((authorizeRequests) ->
 				authorizeRequests
-					.requestMatchers("/api/v1/auth/login", "/api/v1/auth/signup", "/api/v1/test").permitAll()
+					.requestMatchers("/api/v1/auth/login", "/api/v1/auth/signup", "/api/v1/test","/api/v1/*").permitAll()
 					.anyRequest().authenticated()
 			)
 			.sessionManagement((sessionManagement) ->
