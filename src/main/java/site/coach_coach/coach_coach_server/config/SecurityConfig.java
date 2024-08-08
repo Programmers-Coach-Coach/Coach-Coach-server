@@ -59,7 +59,6 @@ public class SecurityConfig {
 
 		configuration.addAllowedOrigin("https://coach-coach.site");
 		configuration.addAllowedOrigin("http://localhost:5173");
-		configuration.addAllowedOrigin("http://localhost:5000");
 		configuration.addAllowedMethod("*");
 		configuration.addAllowedHeader("*");
 		configuration.setAllowCredentials(true);
