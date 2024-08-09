@@ -58,19 +58,13 @@ public class UserService {
 		String accessToken = tokenProvider.getCookieValue(request, "access_token");
 		String refreshToken = tokenProvider.getCookieValue(request, "refresh_token");
 
-		System.out.println("확인 시작");
-
 		if (accessToken != null && tokenProvider.validateAccessToken(accessToken)) {
-			System.out.println("accesstoken 삭제");
 			tokenProvider.clearCookie(response, "access_token");
 		}
-		System.out.println("accesstoken validation " + tokenProvider.validateAccessToken(accessToken));
 
 		if (refreshToken != null && tokenProvider.validateRefreshToken(refreshToken)) {
-			System.out.println("refreshtoken 삭제");
 			tokenProvider.clearCookie(response, "refresh_token");
 		}
-		System.out.println("refreshtoken validation " + tokenProvider.validateRefreshToken(refreshToken));
 
 		SecurityContextHolder.clearContext();
 		return refreshToken;
