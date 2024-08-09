@@ -9,7 +9,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -34,26 +33,10 @@ public class TokenFilter extends OncePerRequestFilter {
 		}
 
 		String accessToken = tokenProvider.getCookieValue(request, ACCESS_TOKEN);
-		String refreshToken = tokenProvider.getCookieValue(request, REFRESH_TOKEN);
 
-		if ((accessToken != null && tokenProvider.validateAccessToken(accessToken))) {
+		if (accessToken != null && tokenProvider.validateAccessToken(accessToken)) {
 			Authentication authentication = tokenProvider.getAuthentication(accessToken);
 			SecurityContextHolder.getContext().setAuthentication(authentication);
-		} else if ((accessToken == null || !tokenProvider.validateAccessToken(accessToken)) && refreshToken != null) {
-			boolean validRefreshToken = tokenProvider.validateRefreshToken(refreshToken);
-			boolean isRefreshToken = tokenProvider.existsRefreshToken(refreshToken);
-
-			if (validRefreshToken && isRefreshToken) {
-				String newAccessToken = tokenProvider.regenerateAccessToken(refreshToken);
-
-				tokenProvider.clearCookie(response, ACCESS_TOKEN);
-
-				Cookie newAccessTokenCookie = tokenProvider.createCookie(ACCESS_TOKEN, newAccessToken);
-				response.addCookie(newAccessTokenCookie);
-
-				Authentication authentication = tokenProvider.getAuthentication(newAccessToken);
-				SecurityContextHolder.getContext().setAuthentication(authentication);
-			}
 		}
 		filterChain.doFilter(request, response);
 	}
