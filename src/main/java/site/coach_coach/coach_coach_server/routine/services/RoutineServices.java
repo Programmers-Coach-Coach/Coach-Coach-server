@@ -2,11 +2,13 @@ package site.coach_coach.coach_coach_server.routine.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.coach.repository.CoachRepository;
+import site.coach_coach.coach_coach_server.matching.Dto.CheckMatchingDto;
 import site.coach_coach.coach_coach_server.matching.repository.MatchingRepository;
 import site.coach_coach.coach_coach_server.routine.domain.Routine;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineForListDto;
@@ -23,8 +25,14 @@ public class RoutineServices {
 	private final CoachRepository coachRepository;
 
 	public Boolean findIsMatchingServices(RoutineListRequest routineListRequest) {
-		return matchingRepository.findByUserIdAndCoachId(routineListRequest.userId(),
-			routineListRequest.coachId()).getIsMatching();
+		Optional<CheckMatchingDto> checkMatchingDto =
+			matchingRepository.findByUserIdAndCoachId(routineListRequest.userId(),
+				routineListRequest.coachId());
+		if (checkMatchingDto.isEmpty() || checkMatchingDto.get().getIsMatching().equals(false)) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	public RoutineListCoachInfoDto findRoutineListCoachInfoServices(RoutineListRequest routineListRequest) {
@@ -54,7 +62,6 @@ public class RoutineServices {
 				.routineName(routine.getRoutineName())
 				.sportName(routine.getSport().getSportName())
 				.build();
-			System.out.println(routine.getRoutineId());
 			routineForListDtos.add(dto);
 		});
 
