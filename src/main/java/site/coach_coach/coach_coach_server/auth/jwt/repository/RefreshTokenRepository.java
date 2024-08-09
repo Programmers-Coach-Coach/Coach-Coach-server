@@ -11,5 +11,7 @@ import site.coach_coach.coach_coach_server.auth.jwt.domain.RefreshToken;
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {
 	Optional<RefreshToken> findByRefreshToken(String token);
 
+	Optional<RefreshToken> findByUser_UserIdAndRefreshToken(Long userId, String refreshToken);
+
 	boolean existsByRefreshToken(String token);
 }
