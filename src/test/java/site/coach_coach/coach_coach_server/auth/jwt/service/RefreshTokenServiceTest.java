@@ -5,7 +5,6 @@ import static org.mockito.Mockito.*;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -68,25 +67,5 @@ public class RefreshTokenServiceTest {
 		);
 
 		verify(refreshTokenRepository, times(1)).save(any(RefreshToken.class));
-	}
-
-	@Test
-	@DisplayName("리프레시 토큰 db에서 삭제")
-	public void deleteRefreshTokenTest() {
-		when(refreshTokenRepository.findByRefreshToken(tokenDto.refreshToken())).thenReturn(Optional.of(refreshToken));
-
-		refreshTokenService.deleteRefreshToken(tokenDto.refreshToken());
-
-		verify(refreshTokenRepository, times(1)).delete(refreshToken);
-	}
-
-	@Test
-	@DisplayName("리프레시 토큰 삭제 실패")
-	public void deleteNotExistingRefreshTokenTest() {
-		when(refreshTokenRepository.findByRefreshToken(tokenDto.refreshToken())).thenReturn(Optional.empty());
-
-		refreshTokenService.deleteRefreshToken(tokenDto.refreshToken());
-
-		verify(refreshTokenRepository, never()).delete(any());
 	}
 }

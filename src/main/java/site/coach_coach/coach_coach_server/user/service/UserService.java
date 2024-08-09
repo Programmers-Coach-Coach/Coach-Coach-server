@@ -1,8 +1,11 @@
 package site.coach_coach.coach_coach_server.user.service;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.auth.jwt.TokenProvider;
@@ -49,6 +52,22 @@ public class UserService {
 
 	public TokenDto createJwt(User user) {
 		return tokenProvider.generateJwt(user);
+	}
+
+	public String logout(HttpServletRequest request, HttpServletResponse response) {
+		String accessToken = tokenProvider.getCookieValue(request, "access_token");
+		String refreshToken = tokenProvider.getCookieValue(request, "refresh_token");
+
+		if (accessToken != null && tokenProvider.validateAccessToken(accessToken)) {
+			tokenProvider.clearCookie(response, "access_token");
+		}
+
+		if (refreshToken != null && tokenProvider.validateRefreshToken(refreshToken)) {
+			tokenProvider.clearCookie(response, "refresh_token");
+		}
+
+		SecurityContextHolder.clearContext();
+		return refreshToken;
 	}
 
 	private User buildUser(SignUpRequest signUpRequest) {

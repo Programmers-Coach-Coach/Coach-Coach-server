@@ -25,6 +25,7 @@ import site.coach_coach.coach_coach_server.auth.jwt.TokenProvider;
 public class SecurityConfig {
 	private final TokenProvider tokenProvider;
 	private final JwtExceptionFilter jwtExceptionFilter;
+	private final ExceptionHandlerConfig exceptionHandlerConfig;
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -42,6 +43,7 @@ public class SecurityConfig {
 					.anyRequest()
 					.authenticated()
 			)
+			.exceptionHandling(exceptionHandlerConfig)
 			.sessionManagement((sessionManagement) ->
 				sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			)

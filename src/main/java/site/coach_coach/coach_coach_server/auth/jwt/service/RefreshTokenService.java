@@ -34,7 +34,8 @@ public class RefreshTokenService {
 		refreshTokenRepository.save(newRefreshToken);
 	}
 
-	public void deleteRefreshToken(String refreshToken) {
-		refreshTokenRepository.findByRefreshToken(refreshToken).ifPresent(refreshTokenRepository::delete);
+	public void deleteRefreshToken(Long userId, String refreshToken) {
+		refreshTokenRepository.findByUser_UserIdAndRefreshToken(userId, refreshToken)
+			.ifPresent(refreshTokenRepository::delete);
 	}
 }

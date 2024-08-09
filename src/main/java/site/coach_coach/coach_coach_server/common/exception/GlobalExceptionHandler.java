@@ -13,6 +13,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
 import site.coach_coach.coach_coach_server.auth.exception.ExpiredTokenException;
 import site.coach_coach.coach_coach_server.auth.exception.InvalidTokenException;
@@ -23,6 +24,19 @@ import site.coach_coach.coach_coach_server.user.exception.UserNotFoundException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 	public static final String DEFAULT_MESSAGE = ErrorMessage.INVALID_REQUEST;
+
+	@ExceptionHandler(HandlerMethodValidationException.class)
+	public ResponseEntity<ErrorResponse> handlerMethodValidationException(HandlerMethodValidationException ex) {
+		String errorMessage = ex.getAllValidationResults()
+			.getFirst()
+			.getResolvableErrors()
+			.getFirst()
+			.getDefaultMessage();
+		ErrorResponse errorResponse = new ErrorResponse(errorMessage);
+
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+			.body(errorResponse);
+	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
@@ -55,9 +69,8 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(AuthenticationException.class)
 	public ResponseEntity<ErrorResponse> handleAuthenticationException(AuthenticationException ex) {
-		ErrorResponse errorResponse = new ErrorResponse(ex.getMessage());
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-			.body(errorResponse);
+			.body(new ErrorResponse(ErrorMessage.NOT_FOUND_TOKEN));
 	}
 
 	@ExceptionHandler(HttpMessageNotReadableException.class)
