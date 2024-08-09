@@ -26,8 +26,8 @@ public class GlobalExceptionHandler {
 	public static final String DEFAULT_MESSAGE = ErrorMessage.INVALID_REQUEST;
 
 	@ExceptionHandler(HandlerMethodValidationException.class)
-	public ResponseEntity<ErrorResponse> handlerMethodValidationException(HandlerMethodValidationException e) {
-		String errorMessage = e.getAllValidationResults()
+	public ResponseEntity<ErrorResponse> handlerMethodValidationException(HandlerMethodValidationException ex) {
+		String errorMessage = ex.getAllValidationResults()
 			.getFirst()
 			.getResolvableErrors()
 			.getFirst()
