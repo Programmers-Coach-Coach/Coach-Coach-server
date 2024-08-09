@@ -7,11 +7,11 @@ import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
 import site.coach_coach.coach_coach_server.user.validation.Nickname;
 import site.coach_coach.coach_coach_server.user.validation.Password;
 
-public record SignupDto(
+public record SignUpRequest(
 	@Nickname
 	String nickname,
 
-	@NotBlank(message = ErrorMessage.EMPTY_EMAIL)
+	@NotBlank(message = ErrorMessage.INVALID_VALUE)
 	@Email(message = ErrorMessage.INVALID_EMAIL)
 	@Size(max = 45, message = ErrorMessage.INVALID_VALUE)
 	String email,
