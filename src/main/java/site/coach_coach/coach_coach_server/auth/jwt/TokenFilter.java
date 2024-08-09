@@ -46,7 +46,7 @@ public class TokenFilter extends OncePerRequestFilter {
 			if (validRefreshToken && isRefreshToken) {
 				String newAccessToken = tokenProvider.regenerateAccessToken(refreshToken);
 
-				clearCookie(response, ACCESS_TOKEN);
+				tokenProvider.clearCookie(response, ACCESS_TOKEN);
 
 				Cookie newAccessTokenCookie = tokenProvider.createCookie(ACCESS_TOKEN, newAccessToken);
 				response.addCookie(newAccessTokenCookie);
@@ -58,11 +58,4 @@ public class TokenFilter extends OncePerRequestFilter {
 		filterChain.doFilter(request, response);
 	}
 
-	private void clearCookie(HttpServletResponse response, String type) {
-		Cookie oldCookie = new Cookie(type, null);
-		oldCookie.setHttpOnly(true);
-		oldCookie.setPath("/");
-		oldCookie.setMaxAge(0);
-		response.addCookie(oldCookie);
-	}
 }

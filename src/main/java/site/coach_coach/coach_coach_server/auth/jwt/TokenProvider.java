@@ -22,6 +22,7 @@ import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import site.coach_coach.coach_coach_server.auth.jwt.dto.TokenDto;
 import site.coach_coach.coach_coach_server.auth.jwt.repository.RefreshTokenRepository;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
@@ -132,7 +133,7 @@ public class TokenProvider {
 	}
 
 	public Authentication getAuthentication(String token) {
-		CustomUserDetails userDetails = customUserDetailsService.loadUserByUsername(getUserId(token).toString());
+		CustomUserDetails userDetails = customUserDetailsService.loadUserByUsername(getUserId(token));
 
 		return new UsernamePasswordAuthenticationToken(userDetails, "", Collections.emptyList());
 	}
@@ -141,8 +142,8 @@ public class TokenProvider {
 		return jwtParser.parseClaimsJws(token).getBody();
 	}
 
-	public Long getUserId(String token) {
-		return Long.parseLong(extractClaims(token).getSubject());
+	public String getUserId(String token) {
+		return extractClaims(token).getSubject();
 	}
 
 	public boolean validateAccessToken(String token) {
@@ -153,7 +154,7 @@ public class TokenProvider {
 				throw new JwtException(ErrorMessage.NOT_FOUND_TOKEN);
 			}
 
-			return claims.getExpiration().before(new Date());
+			return !claims.getExpiration().before(new Date());
 		} catch (ExpiredJwtException e) {
 			return false;
 		} catch (SignatureException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
@@ -192,5 +193,13 @@ public class TokenProvider {
 		User user = userDetails.getUser();
 
 		return createAccessToken(user);
+	}
+
+	public void clearCookie(HttpServletResponse response, String type) {
+		Cookie oldCookie = new Cookie(type, null);
+		oldCookie.setHttpOnly(true);
+		oldCookie.setPath("/");
+		oldCookie.setMaxAge(0);
+		response.addCookie(oldCookie);
 	}
 }

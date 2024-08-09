@@ -1,8 +1,11 @@
 package site.coach_coach.coach_coach_server.user.service;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.auth.jwt.TokenProvider;
@@ -49,6 +52,28 @@ public class UserService {
 
 	public TokenDto createJwt(User user) {
 		return tokenProvider.generateJwt(user);
+	}
+
+	public String logout(HttpServletRequest request, HttpServletResponse response) {
+		String accessToken = tokenProvider.getCookieValue(request, "access_token");
+		String refreshToken = tokenProvider.getCookieValue(request, "refresh_token");
+
+		System.out.println("확인 시작");
+
+		if (accessToken != null && tokenProvider.validateAccessToken(accessToken)) {
+			System.out.println("accesstoken 삭제");
+			tokenProvider.clearCookie(response, "access_token");
+		}
+		System.out.println("accesstoken validation " + tokenProvider.validateAccessToken(accessToken));
+
+		if (refreshToken != null && tokenProvider.validateRefreshToken(refreshToken)) {
+			System.out.println("refreshtoken 삭제");
+			tokenProvider.clearCookie(response, "refresh_token");
+		}
+		System.out.println("refreshtoken validation " + tokenProvider.validateRefreshToken(refreshToken));
+
+		SecurityContextHolder.clearContext();
+		return refreshToken;
 	}
 
 	private User buildUser(SignUpRequest signUpRequest) {
