@@ -66,7 +66,7 @@ public class TokenProviderTest {
 		assertThat(claims.getSubject()).isEqualTo(user.getUserId().toString());
 		assertThat(claims.get("nickname")).isEqualTo(user.getNickname());
 		assertThat(claims.get("email")).isEqualTo(user.getEmail());
-		assertThat(claims.get("token_type")).isEqualTo("access_token");
+		assertThat(claims.get("token_type")).isEqualTo("access");
 		assertThat(claims.getExpiration()).isAfter(new Date());
 	}
 
@@ -78,7 +78,7 @@ public class TokenProviderTest {
 
 		Claims claims = tokenProvider.extractClaims(refreshToken);
 		assertThat(claims.getSubject()).isEqualTo(user.getUserId().toString());
-		assertThat(claims.get("token_type")).isEqualTo("refresh_token");
+		assertThat(claims.get("token_type")).isEqualTo("refresh");
 		assertThat(claims.getExpiration()).isAfter(new Date());
 	}
 
@@ -140,7 +140,7 @@ public class TokenProviderTest {
 		assertThat(newAccessToken).isNotNull();
 		Claims claims = tokenProvider.extractClaims(newAccessToken);
 		assertThat(claims.getSubject()).isEqualTo(user.getUserId().toString());
-		assertThat(claims.get("token_type")).isEqualTo("access_token");
+		assertThat(claims.get("token_type")).isEqualTo("access");
 		assertThat(claims.getExpiration()).isAfter(new Date());
 	}
 }
