@@ -54,7 +54,7 @@ public class UserController {
 	@GetMapping("/v1/auth")
 	public ResponseEntity<Map<String, Boolean>> auth() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		boolean isAuthenticated = authentication != null && authenticationUtil.isAuthenticated(authentication);
+		boolean isAuthenticated = authenticationUtil.isAuthenticated(authentication);
 
 		Map<String, Boolean> response = new HashMap<>();
 		response.put("isLogin", isAuthenticated);

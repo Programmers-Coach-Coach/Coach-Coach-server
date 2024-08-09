@@ -21,6 +21,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import site.coach_coach.coach_coach_server.auth.jwt.dto.TokenDto;
 import site.coach_coach.coach_coach_server.auth.jwt.repository.RefreshTokenRepository;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
@@ -68,7 +69,7 @@ public class TokenProvider {
 			.setSubject(user.getUserId().toString())
 			.claim("nickname", user.getNickname())
 			.claim("email", user.getEmail())
-			.claim("token_type", "access")
+			.claim("token_type", "access_token")
 			.signWith(secretKey, SignatureAlgorithm.HS256)
 			.compact();
 	}
@@ -82,7 +83,7 @@ public class TokenProvider {
 			.setIssuedAt(now)
 			.setExpiration(expiryDate)
 			.setSubject(user.getUserId().toString())
-			.claim("token_type", "refresh")
+			.claim("token_type", "refresh_token")
 			.signWith(secretKey, SignatureAlgorithm.HS256)
 			.compact();
 	}
@@ -118,6 +119,18 @@ public class TokenProvider {
 		return cookie;
 	}
 
+	public String getCookieValue(HttpServletRequest request, String type) {
+		Cookie[] cookies = request.getCookies();
+		if (cookies != null) {
+			for (Cookie cookie : cookies) {
+				if (type.equals(cookie.getName())) {
+					return cookie.getValue();
+				}
+			}
+		}
+		return null;
+	}
+
 	public Authentication getAuthentication(String token) {
 		CustomUserDetails userDetails = customUserDetailsService.loadUserByUsername(getUserId(token).toString());
 
@@ -132,14 +145,34 @@ public class TokenProvider {
 		return Long.parseLong(extractClaims(token).getSubject());
 	}
 
-	public boolean validateToken(String token, String expectedType) {
+	public boolean validateAccessToken(String token) {
 		try {
 			Claims claims = extractClaims(token);
 
-			if (!claims.get("token_type").equals(expectedType)) {
+			if (!claims.get("token_type").equals("access_token")) {
 				throw new JwtException(ErrorMessage.NOT_FOUND_TOKEN);
 			}
-			return !claims.getExpiration().before(new Date());
+
+			return claims.getExpiration().before(new Date());
+		} catch (ExpiredJwtException e) {
+			return false;
+		} catch (SignatureException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
+			throw new JwtException(ErrorMessage.INVALID_TOKEN);
+		} catch (JwtException e) {
+			throw new JwtException(e.getMessage());
+		}
+	}
+
+	public boolean validateRefreshToken(String token) {
+		try {
+			Claims claims = extractClaims(token);
+			if (!claims.get("token_type").equals("refresh_token")) {
+				throw new JwtException(ErrorMessage.NOT_FOUND_TOKEN);
+			}
+			if (claims.getExpiration().before(new Date())) {
+				throw new JwtException(ErrorMessage.EXPIRED_TOKEN);
+			}
+			return existsRefreshToken(token);
 		} catch (ExpiredJwtException e) {
 			throw new JwtException(ErrorMessage.EXPIRED_TOKEN);
 		} catch (SignatureException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
@@ -149,21 +182,12 @@ public class TokenProvider {
 		}
 	}
 
-	public boolean validateAccessToken(String token) {
-		return validateToken(token, "access");
-	}
-
-	public boolean validateRefreshToken(String token) {
-		return validateToken(token, "refresh");
-	}
-
 	public boolean existsRefreshToken(String refreshToken) {
 		return refreshTokenRepository.existsByRefreshToken(refreshToken);
 	}
 
 	public String regenerateAccessToken(String refreshToken) {
-		Claims claims = extractClaims(refreshToken);
-		String userId = claims.getSubject();
+		String userId = extractClaims(refreshToken).getSubject();
 		CustomUserDetails userDetails = customUserDetailsService.loadUserByUsername(userId);
 		User user = userDetails.getUser();
 

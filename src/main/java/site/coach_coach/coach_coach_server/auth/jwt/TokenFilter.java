@@ -33,12 +33,13 @@ public class TokenFilter extends OncePerRequestFilter {
 			return;
 		}
 
-		String accessToken = getCookieValue(request, ACCESS_TOKEN);
-		String refreshToken = getCookieValue(request, REFRESH_TOKEN);
-		if (accessToken != null && tokenProvider.validateAccessToken(accessToken)) {
+		String accessToken = tokenProvider.getCookieValue(request, ACCESS_TOKEN);
+		String refreshToken = tokenProvider.getCookieValue(request, REFRESH_TOKEN);
+
+		if ((accessToken != null && tokenProvider.validateAccessToken(accessToken))) {
 			Authentication authentication = tokenProvider.getAuthentication(accessToken);
 			SecurityContextHolder.getContext().setAuthentication(authentication);
-		} else if (accessToken != null && !tokenProvider.validateAccessToken(accessToken) && refreshToken != null) {
+		} else if ((accessToken == null || !tokenProvider.validateAccessToken(accessToken)) && refreshToken != null) {
 			boolean validRefreshToken = tokenProvider.validateRefreshToken(refreshToken);
 			boolean isRefreshToken = tokenProvider.existsRefreshToken(refreshToken);
 
@@ -55,18 +56,6 @@ public class TokenFilter extends OncePerRequestFilter {
 			}
 		}
 		filterChain.doFilter(request, response);
-	}
-
-	private String getCookieValue(HttpServletRequest request, String type) {
-		Cookie[] cookies = request.getCookies();
-		if (cookies != null) {
-			for (Cookie cookie : cookies) {
-				if (type.equals(cookie.getName())) {
-					return cookie.getValue();
-				}
-			}
-		}
-		return null;
 	}
 
 	private void clearCookie(HttpServletResponse response, String type) {
