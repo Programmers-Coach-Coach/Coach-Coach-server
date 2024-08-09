@@ -37,7 +37,7 @@ public class SecurityConfig {
 			.addFilterBefore(jwtExceptionFilter, TokenFilter.class)
 			.authorizeHttpRequests((authorizeRequests) ->
 				authorizeRequests
-					.requestMatchers("/api/v1/auth/login", "/api/v1/auth/signup", "api/v1/test", "api/v1/routines")
+					.requestMatchers("/api/v1/auth/login", "/api/v1/auth/signup", "/api/v1/test", "/api/v1/auth")
 					.permitAll()
 					.anyRequest()
 					.authenticated()
@@ -61,7 +61,6 @@ public class SecurityConfig {
 
 		configuration.addAllowedOrigin("https://coach-coach.site");
 		configuration.addAllowedOrigin("http://localhost:5173");
-		configuration.addAllowedOrigin("http://localhost:8080");
 		configuration.addAllowedMethod("*");
 		configuration.addAllowedHeader("*");
 		configuration.setAllowCredentials(true);

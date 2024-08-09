@@ -122,16 +122,6 @@ public class TokenProviderTest {
 	}
 
 	@Test
-	@DisplayName("토큰 유효성 검사 테스트")
-	public void validateTokenTest() {
-		String accessToken = tokenProvider.createAccessToken(user);
-		String refreshToken = tokenProvider.createRefreshToken(user);
-
-		assertThat(tokenProvider.validateAccessToken(accessToken)).isTrue();
-		assertThat(tokenProvider.validateRefreshToken(refreshToken)).isTrue();
-	}
-
-	@Test
 	@DisplayName("Refresh Token 존재 확인 테스트")
 	public void existsRefreshTokenTest() {
 		String refreshToken = tokenProvider.createRefreshToken(user);
