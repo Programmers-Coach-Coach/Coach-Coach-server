@@ -24,7 +24,9 @@ import jakarta.servlet.http.Cookie;
 import site.coach_coach.coach_coach_server.auth.jwt.TokenProvider;
 import site.coach_coach.coach_coach_server.auth.jwt.dto.TokenDto;
 import site.coach_coach.coach_coach_server.auth.jwt.service.TokenService;
+import site.coach_coach.coach_coach_server.common.utils.AuthenticationUtil;
 import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
+import site.coach_coach.coach_coach_server.config.ExceptionHandlerConfig;
 import site.coach_coach.coach_coach_server.config.SecurityConfig;
 import site.coach_coach.coach_coach_server.user.domain.User;
 import site.coach_coach.coach_coach_server.user.dto.LoginRequest;
@@ -34,7 +36,7 @@ import site.coach_coach.coach_coach_server.user.exception.UserNotFoundException;
 import site.coach_coach.coach_coach_server.user.service.UserService;
 
 @WebMvcTest(UserController.class)
-@Import(SecurityConfig.class)
+@Import({SecurityConfig.class, ExceptionHandlerConfig.class})
 public class UserControllerTest {
 
 	@Autowired
@@ -48,6 +50,9 @@ public class UserControllerTest {
 
 	@MockBean
 	private TokenService tokenService;
+
+	@MockBean
+	private AuthenticationUtil authenticationUtil;
 
 	private ObjectMapper objectMapper;
 	Faker faker = new Faker();
