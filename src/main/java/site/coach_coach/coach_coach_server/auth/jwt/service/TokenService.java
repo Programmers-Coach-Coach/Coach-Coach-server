@@ -50,12 +50,9 @@ public class TokenService {
 		if (!tokenProvider.validateRefreshToken(refreshToken)) {
 			throw new InvalidTokenException(ErrorMessage.INVALID_TOKEN);
 		}
-		System.out.println(
-			"tokenProvider.validateRefreshToken(refreshToken)" + tokenProvider.validateRefreshToken(refreshToken));
 
 		userRepository.findByUserId(tokenProvider.getUserId(refreshToken))
 			.orElseThrow(() -> new UsernameNotFoundException(ErrorMessage.NOT_FOUND_USER));
-		System.out.println(userRepository.findByUserId(tokenProvider.getUserId(refreshToken)));
 
 		return tokenProvider.regenerateAccessToken(refreshToken);
 	}

@@ -67,12 +67,9 @@ public class UserController {
 	@GetMapping("/v1/auth/reissue")
 	public ResponseEntity<Void> reissue(HttpServletRequest request, HttpServletResponse response) {
 		String refreshToken = tokenProvider.getCookieValue(request, "refresh_token");
-		System.out.println("refresh token 가져오기 " + refreshToken);
 
 		String newAccessToken = tokenService.reissueAccessToken(refreshToken);
-		System.out.println("발급완료");
 		tokenProvider.clearCookie(response, "access_token");
-		System.out.println("삭제완료");
 
 		Cookie newAccessTokenCookie = tokenProvider.createCookie("access_token", newAccessToken);
 		response.addCookie(newAccessTokenCookie);
