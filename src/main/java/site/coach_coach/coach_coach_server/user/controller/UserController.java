@@ -4,7 +4,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -66,13 +65,14 @@ public class UserController {
 	}
 
 	@GetMapping("/v1/auth/reissue")
-	public ResponseEntity<Void> reissue(@CookieValue(name = "refresh_token") HttpServletRequest request,
-		HttpServletResponse response) {
+	public ResponseEntity<Void> reissue(HttpServletRequest request, HttpServletResponse response) {
 		String refreshToken = tokenProvider.getCookieValue(request, "refresh_token");
-		tokenService.reissueAccessToken(refreshToken);
+		System.out.println("refresh token 가져오기 " + refreshToken);
 
-		tokenProvider.clearCookie(response, "access_token");
 		String newAccessToken = tokenService.reissueAccessToken(refreshToken);
+		System.out.println("발급완료");
+		tokenProvider.clearCookie(response, "access_token");
+		System.out.println("삭제완료");
 
 		Cookie newAccessTokenCookie = tokenProvider.createCookie("access_token", newAccessToken);
 		response.addCookie(newAccessTokenCookie);

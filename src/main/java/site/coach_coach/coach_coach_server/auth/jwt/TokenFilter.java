@@ -17,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class TokenFilter extends OncePerRequestFilter {
 	private static final String ACCESS_TOKEN = "access_token";
-	private static final String REFRESH_TOKEN = "refresh_token";
 
 	private final TokenProvider tokenProvider;
 

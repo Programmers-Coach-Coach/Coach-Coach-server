@@ -7,7 +7,6 @@ import java.time.ZoneId;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import io.jsonwebtoken.JwtException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.auth.exception.InvalidTokenException;
@@ -48,15 +47,15 @@ public class TokenService {
 	}
 
 	public String reissueAccessToken(String refreshToken) {
-		if (refreshToken == null) {
-			throw new JwtException(ErrorMessage.NOT_FOUND_TOKEN);
-		}
 		if (!tokenProvider.validateRefreshToken(refreshToken)) {
 			throw new InvalidTokenException(ErrorMessage.INVALID_TOKEN);
 		}
+		System.out.println(
+			"tokenProvider.validateRefreshToken(refreshToken)" + tokenProvider.validateRefreshToken(refreshToken));
 
 		userRepository.findByUserId(tokenProvider.getUserId(refreshToken))
 			.orElseThrow(() -> new UsernameNotFoundException(ErrorMessage.NOT_FOUND_USER));
+		System.out.println(userRepository.findByUserId(tokenProvider.getUserId(refreshToken)));
 
 		return tokenProvider.regenerateAccessToken(refreshToken);
 	}

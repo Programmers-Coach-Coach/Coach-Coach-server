@@ -173,16 +173,20 @@ public class TokenProvider {
 	}
 
 	public boolean validateRefreshToken(String token) {
-		return validateToken(token, "refresh_token");
+		return validateToken(token, "refresh_token") && existsRefreshToken(token);
 	}
 
 	public boolean existsRefreshToken(String refreshToken) {
-		return refreshTokenRepository.existsByRefreshToken(refreshToken);
+		if (refreshTokenRepository.existsByRefreshToken(refreshToken)) {
+			return true;
+		} else {
+			throw new JwtException(ErrorMessage.NOT_FOUND_TOKEN);
+		}
 	}
 
 	public String regenerateAccessToken(String refreshToken) {
-		String userId = extractClaims(refreshToken).getSubject();
-		CustomUserDetails userDetails = customUserDetailsService.loadUserByUsername(userId);
+		Long userId = getUserId(refreshToken);
+		CustomUserDetails userDetails = customUserDetailsService.loadUserByUsername(String.valueOf(userId));
 		User user = userDetails.getUser();
 
 		return createAccessToken(user);
