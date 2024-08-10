@@ -1,7 +1,5 @@
 package site.coach_coach.coach_coach_server.matching.domain;
 
-import java.time.LocalDateTime;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,13 +10,14 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import site.coach_coach.coach_coach_server.common.domain.DateEntity;
 
 @Table(name = "user_coach_matching")
 @Entity
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Matching {
+public class Matching extends DateEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@NotBlank
@@ -35,8 +34,4 @@ public class Matching {
 
 	@Column(name = "is_matching")
 	private Boolean isMatching;
-
-	@NotBlank
-	@Column(name = "created_at")
-	private LocalDateTime createdAt;
 }

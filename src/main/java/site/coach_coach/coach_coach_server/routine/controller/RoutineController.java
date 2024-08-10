@@ -4,8 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -26,10 +25,10 @@ public class RoutineController {
 	private final RoutineServices routineServices;
 
 	@GetMapping("/v1/routines")
-	public ResponseEntity routines(@RequestParam(name = "coachId", required = false) Long coachId) {
+	public ResponseEntity routines(@AuthenticationPrincipal CustomUserDetails userDetails,
+		@RequestParam(name = "coachId", required = false) Long coachId) {
 
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Long userId = ((CustomUserDetails)authentication.getPrincipal()).getUserId();
+		Long userId = userDetails.getUserId();
 
 		RoutineListRequest routineListRequest = new RoutineListRequest(userId, coachId);
 

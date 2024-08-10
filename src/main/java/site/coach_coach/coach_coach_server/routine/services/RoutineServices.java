@@ -49,7 +49,7 @@ public class RoutineServices {
 		List<RoutineForListDto> routineForListDtos = new ArrayList<>();
 		List<Routine> routineList;
 
-		if (routineListRequest == null) {
+		if (routineListRequest.coachId() == null) {
 			routineList = routineRepository.findByUserIdAndCoachIdIsNull(routineListRequest.userId());
 		} else {
 			routineList = routineRepository.findByUserIdAndCoachId(routineListRequest.userId(),

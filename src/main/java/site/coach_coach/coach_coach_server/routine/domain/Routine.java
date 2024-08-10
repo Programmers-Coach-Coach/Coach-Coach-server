@@ -38,9 +38,8 @@ public class Routine extends DateEntity {
 	@Column(name = "coach_id")
 	private Long coachId;
 
-	@NotBlank
 	@Size(max = 45)
-	@Column(name = "routine_Name")
+	@Column(name = "routine_Name", nullable = false, length = 45)
 	private String routineName;
 
 	@NotBlank

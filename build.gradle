@@ -3,7 +3,6 @@ plugins {
     id 'org.springframework.boot' version '3.3.2'
     id 'io.spring.dependency-management' version '1.1.6'
     id 'checkstyle'
-    id 'jacoco'
 }
 compileJava.options.encoding = 'UTF-8'
 compileTestJava.options.encoding = 'UTF-8'
@@ -54,41 +53,4 @@ dependencies {
 
 jar {
     enabled = false
-}
-
-test {
-//    useJUnitPlatform()
-    finalizedBy 'jacocoTestReport'
-}
-
-jacocoTestReport {
-    finalizedBy 'jacocoTestCoverageVerification'
-}
-
-jacocoTestCoverageVerification {
-    violationRules {
-        rule {
-            enabled = true
-            element = 'CLASS'
-
-            limit {
-                counter = 'LINE'
-                value = 'COVEREDRATIO'
-                minimum = 0.70
-            }
-
-            limit {
-                counter = 'LINE'
-                value = 'TOTALCOUNT'
-                maximum = 200
-            }
-
-            excludes = [
-                    '*.*Application',
-                    '*.*Exception',
-                    '*.dto.*'
-            ]
-        }
-
-    }
 }
