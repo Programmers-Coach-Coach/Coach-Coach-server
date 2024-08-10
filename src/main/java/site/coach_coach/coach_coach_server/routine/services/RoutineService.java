@@ -2,7 +2,6 @@ package site.coach_coach.coach_coach_server.routine.services;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -19,23 +18,18 @@ import site.coach_coach.coach_coach_server.user.domain.User;
 
 @Service
 @RequiredArgsConstructor
-public class RoutineServices {
+public class RoutineService {
 	private final RoutineRepository routineRepository;
 	private final MatchingRepository matchingRepository;
 	private final CoachRepository coachRepository;
 
-	public Boolean findIsMatchingServices(RoutineListRequest routineListRequest) {
-		Optional<CheckMatchingDto> checkMatchingDto =
-			matchingRepository.findByUserIdAndCoachId(routineListRequest.userId(),
-				routineListRequest.coachId());
-		if (checkMatchingDto.isEmpty() || checkMatchingDto.get().getIsMatching().equals(false)) {
-			return false;
-		} else {
-			return true;
-		}
+	public Boolean getIsMatching(RoutineListRequest routineListRequest) {
+		return matchingRepository.findByUserIdAndCoachId(routineListRequest.userId(), routineListRequest.coachId())
+			.map(CheckMatchingDto::getIsMatching)
+			.orElseThrow(); // 반환값이 null인 경우 [404, message : No value present] 응답
 	}
 
-	public RoutineListCoachInfoDto findRoutineListCoachInfoServices(RoutineListRequest routineListRequest) {
+	public RoutineListCoachInfoDto getRoutineListCoachInfo(RoutineListRequest routineListRequest) {
 		User coachInfoForRoutineList = coachRepository.findById(routineListRequest.coachId()).get().getUser();
 		RoutineListCoachInfoDto routineListCoachInfoDto = RoutineListCoachInfoDto.builder()
 			.coachId(routineListRequest.coachId())
@@ -45,7 +39,7 @@ public class RoutineServices {
 		return routineListCoachInfoDto;
 	}
 
-	public List<RoutineForListDto> findRoutineForListServices(RoutineListRequest routineListRequest) {
+	public List<RoutineForListDto> getRoutineForList(RoutineListRequest routineListRequest) {
 		List<RoutineForListDto> routineForListDtos = new ArrayList<>();
 		List<Routine> routineList;
 

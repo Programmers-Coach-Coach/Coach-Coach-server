@@ -16,42 +16,45 @@ import site.coach_coach.coach_coach_server.routine.dto.RoutineForListDto;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineListCoachInfoDto;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineListRequest;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineListResponse;
-import site.coach_coach.coach_coach_server.routine.services.RoutineServices;
+import site.coach_coach.coach_coach_server.routine.services.RoutineService;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
 public class RoutineController {
-	private final RoutineServices routineServices;
+	private final RoutineService routineService;
 
 	@GetMapping("/v1/routines")
-	public ResponseEntity routines(@AuthenticationPrincipal CustomUserDetails userDetails,
+	public ResponseEntity getRoutineList(@AuthenticationPrincipal CustomUserDetails userDetails,
 		@RequestParam(name = "coachId", required = false) Long coachId) {
-
 		Long userId = userDetails.getUserId();
-
 		RoutineListRequest routineListRequest = new RoutineListRequest(userId, coachId);
 
-		if (coachId == null) {
-			List<RoutineForListDto> routineListByMyself = routineServices.findRoutineForListServices(
-				routineListRequest);
-
-			return ResponseEntity.status(HttpStatus.OK).body(routineListByMyself);
+		Boolean isMatching = routineService.getIsMatching(routineListRequest);
+		if (!isMatching) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("message : 매칭되지 않은 코치입니다.");
 		} else {
-			Boolean checkMatching = routineServices.findIsMatchingServices(routineListRequest);
-			if (!checkMatching) {
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("아직 매칭이 되지 않은 코치입니다.");
+			if (coachId == null) {
+				return getRoutineListByMyself(routineListRequest);
 			} else {
-				RoutineListCoachInfoDto routineListCoachInfoDto = routineServices.findRoutineListCoachInfoServices(
-					routineListRequest);
-				List<RoutineForListDto> routineListByCoach = routineServices.findRoutineForListServices(
-					routineListRequest);
-
-				RoutineListResponse routineListResponse = new RoutineListResponse(routineListCoachInfoDto,
-					routineListByCoach);
-				return ResponseEntity.status(HttpStatus.OK).body(routineListResponse);
+				return getRoutineListByCoach(routineListRequest);
 			}
 		}
+	}
+
+	private ResponseEntity<RoutineListResponse> getRoutineListByMyself(RoutineListRequest routineListRequest) {
+		List<RoutineForListDto> routineListByMyself = routineService.getRoutineForList(routineListRequest);
+		RoutineListResponse routineListResponse = new RoutineListResponse(null, routineListByMyself);
+		return ResponseEntity.ok(routineListResponse);
+	}
+
+	private ResponseEntity<RoutineListResponse> getRoutineListByCoach(RoutineListRequest routineListRequest) {
+		RoutineListCoachInfoDto routineListCoachInfoDto = routineService.getRoutineListCoachInfo(
+			routineListRequest);
+		List<RoutineForListDto> routineListByCoach = routineService.getRoutineForList(routineListRequest);
+		RoutineListResponse routineListResponse = new RoutineListResponse(routineListCoachInfoDto,
+			routineListByCoach);
+		return ResponseEntity.ok(routineListResponse);
 	}
 
 	@GetMapping("/v1/test")

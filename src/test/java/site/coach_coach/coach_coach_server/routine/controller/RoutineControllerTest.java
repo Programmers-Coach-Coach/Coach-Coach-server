@@ -27,7 +27,7 @@ import site.coach_coach.coach_coach_server.routine.dto.RoutineForListDto;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineListCoachInfoDto;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineListRequest;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineListResponse;
-import site.coach_coach.coach_coach_server.routine.services.RoutineServices;
+import site.coach_coach.coach_coach_server.routine.services.RoutineService;
 
 public class RoutineControllerTest {
 
@@ -35,7 +35,7 @@ public class RoutineControllerTest {
 	private MockMvc mockMvc;
 
 	@Mock
-	private RoutineServices routineServices;
+	private RoutineService routineService;
 
 	@InjectMocks
 	private RoutineController routineController;
@@ -60,7 +60,7 @@ public class RoutineControllerTest {
 	public void testGetRoutinesWithoutCoachId() throws Exception {
 		// Arrange
 		List<RoutineForListDto> mockRoutineList = List.of(new RoutineForListDto(1L, "나의헬스루틴", "헬스"));
-		when(routineServices.findRoutineForListServices(any(RoutineListRequest.class))).thenReturn(mockRoutineList);
+		when(routineService.findRoutineForListServices(any(RoutineListRequest.class))).thenReturn(mockRoutineList);
 
 		// Act & Assert
 		mockMvc.perform(get("/api/v1/routines")
@@ -81,9 +81,9 @@ public class RoutineControllerTest {
 		Long coachId = 2L;
 		RoutineListCoachInfoDto mockCoachInfo = new RoutineListCoachInfoDto(1L, "coach1", "coach1ImageUrl");
 		List<RoutineForListDto> mockRoutineList = List.of(new RoutineForListDto(3L, "코치의헬스루틴", "헬스"));
-		when(routineServices.findIsMatchingServices(any(RoutineListRequest.class))).thenReturn(true);
-		when(routineServices.findRoutineListCoachInfoServices(any(RoutineListRequest.class))).thenReturn(mockCoachInfo);
-		when(routineServices.findRoutineForListServices(any(RoutineListRequest.class))).thenReturn(mockRoutineList);
+		when(routineService.findIsMatchingServices(any(RoutineListRequest.class))).thenReturn(true);
+		when(routineService.findRoutineListCoachInfoServices(any(RoutineListRequest.class))).thenReturn(mockCoachInfo);
+		when(routineService.findRoutineForListServices(any(RoutineListRequest.class))).thenReturn(mockRoutineList);
 
 		// Act & Assert
 		mockMvc.perform(get("/api/v1/routines?coachId=" + coachId)
