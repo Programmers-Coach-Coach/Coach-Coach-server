@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
 import site.coach_coach.coach_coach_server.auth.jwt.TokenProvider;
 import site.coach_coach.coach_coach_server.auth.jwt.dto.TokenDto;
-import site.coach_coach.coach_coach_server.auth.jwt.service.RefreshTokenService;
+import site.coach_coach.coach_coach_server.auth.jwt.service.TokenService;
 import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
 import site.coach_coach.coach_coach_server.config.SecurityConfig;
 import site.coach_coach.coach_coach_server.user.domain.User;
@@ -47,7 +47,7 @@ public class UserControllerTest {
 	private TokenProvider tokenProvider;
 
 	@MockBean
-	private RefreshTokenService refreshTokenService;
+	private TokenService tokenService;
 
 	private ObjectMapper objectMapper;
 	Faker faker = new Faker();
@@ -214,7 +214,7 @@ public class UserControllerTest {
 			new Cookie("access_token", tokenDto.accessToken()));
 		when(tokenProvider.createCookie(eq("refresh_token"), anyString())).thenReturn(
 			new Cookie("refresh_token", tokenDto.refreshToken()));
-		doNothing().when(refreshTokenService).createRefreshToken(user, tokenDto.refreshToken(), tokenDto);
+		doNothing().when(tokenService).createRefreshToken(user, tokenDto.refreshToken(), tokenDto);
 
 		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/auth/login")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -228,7 +228,7 @@ public class UserControllerTest {
 		verify(userService, times(1)).createJwt(user);
 		verify(tokenProvider, times(1)).createCookie("access_token", tokenDto.accessToken());
 		verify(tokenProvider, times(1)).createCookie("refresh_token", tokenDto.refreshToken());
-		verify(refreshTokenService, times(1)).createRefreshToken(user, tokenDto.refreshToken(), tokenDto);
+		verify(tokenService, times(1)).createRefreshToken(user, tokenDto.refreshToken(), tokenDto);
 	}
 
 	@Test

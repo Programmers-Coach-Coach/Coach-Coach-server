@@ -4,19 +4,27 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import io.jsonwebtoken.JwtException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import site.coach_coach.coach_coach_server.auth.exception.InvalidTokenException;
+import site.coach_coach.coach_coach_server.auth.jwt.TokenProvider;
 import site.coach_coach.coach_coach_server.auth.jwt.domain.RefreshToken;
 import site.coach_coach.coach_coach_server.auth.jwt.dto.TokenDto;
 import site.coach_coach.coach_coach_server.auth.jwt.repository.RefreshTokenRepository;
+import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
 import site.coach_coach.coach_coach_server.user.domain.User;
+import site.coach_coach.coach_coach_server.user.repository.UserRepository;
 
 @Service
 @RequiredArgsConstructor
-public class RefreshTokenService {
+public class TokenService {
 	private final RefreshTokenRepository refreshTokenRepository;
+	private final TokenProvider tokenProvider;
+	private final UserRepository userRepository;
 
 	@Transactional
 	public void createRefreshToken(User user, String refreshToken, TokenDto tokenDto) {
@@ -37,5 +45,19 @@ public class RefreshTokenService {
 	public void deleteRefreshToken(Long userId, String refreshToken) {
 		refreshTokenRepository.findByUser_UserIdAndRefreshToken(userId, refreshToken)
 			.ifPresent(refreshTokenRepository::delete);
+	}
+
+	public String reissueAccessToken(String refreshToken) {
+		if (refreshToken == null) {
+			throw new JwtException(ErrorMessage.NOT_FOUND_TOKEN);
+		}
+		if (!tokenProvider.validateRefreshToken(refreshToken)) {
+			throw new InvalidTokenException(ErrorMessage.INVALID_TOKEN);
+		}
+
+		userRepository.findByUserId(tokenProvider.getUserId(refreshToken))
+			.orElseThrow(() -> new UsernameNotFoundException(ErrorMessage.NOT_FOUND_USER));
+
+		return tokenProvider.regenerateAccessToken(refreshToken);
 	}
 }
