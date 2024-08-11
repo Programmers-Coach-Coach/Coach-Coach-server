@@ -26,7 +26,7 @@ import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetailsSer
 import site.coach_coach.coach_coach_server.user.domain.User;
 
 @TestPropertySource(locations = "/application.properties")
-@SpringBootTest
+@SpringBootTest(classes = TokenProviderTest.class)
 public class TokenProviderTest {
 	@Autowired
 	private JwtProperties jwtProperties;
