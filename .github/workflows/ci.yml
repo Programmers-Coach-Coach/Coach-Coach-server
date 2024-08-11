@@ -39,7 +39,7 @@ jobs:
       # (5) Wait for MySQL to be ready
       - name: Wait for MySQL to be ready
         run: |
-          until docker exec coachcoach-db mysql -hlocalhost -P3307 -u coachcoach -p coach1234 -e "SHOW DATABASES;"; do
+          until docker exec coachcoach-db mysql -h127.0.0.1 -P3307 -u coachcoach -p coach1234 -e "SHOW DATABASES;"; do
             echo "Waiting for MySQL to be ready..."
             sleep 5
           done
@@ -57,15 +57,14 @@ jobs:
 
       # (8) Gradle test and build
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v3 # 수정된 Gradle 버전 사용
 
       - name: Test with Gradle Wrapper
         run: ./gradlew test
         env:
           SPRING_DATASOURCE_URL: ${{secrets.DB_URL}}
-          SPRING_DATASOURCE_USERNAME: ${{secrets.DB_USERNAME}}
+          SPRING_DATASOURCE_USERNAME: ${{secrets.DB_URL}}
           SPRING_DATASOURCE_PASSWORD: ${{secrets.DB_PASSWORD}}
-          JWT_KEY: ${{ secrets.JWT_KEY }}
 
       - name: Build with Gradle Wrapper
         run: ./gradlew build
