@@ -28,32 +28,27 @@ jobs:
           echo "${{ secrets.CI_APPLICATION }}" > ./src/main/resources/application.properties
           cat ./src/main/resources/application.properties
 
-      # (3) Docker & MySQL 설정
-      - name: Set up Docker Compose
-        run: sudo apt-get update && sudo apt-get install docker-compose
+      # (3) Setup MySQL
+      - name: Set up MySQL
+        uses: mirromutth/mysql-action@v1.1
+        with:
+          host port: 3307
+          container port: 3306
+          mysql database: 'coachcoach'
+          mysql root password: ${{ secrets.DB_PASSWORD }}
 
-      - name: Build and start services
-        run: docker-compose up -d
-
-      - name: Wait for MySQL to be ready
-        run: |
-          until docker exec coachcoach-db mysql -h127.0.0.1 -P3306 -ucoachcoach -pcoach1234 -e "SHOW DATABASES;"; do
-            echo "Waiting for MySQL to be ready..."
-            sleep 5
-          done
-
-      # (3) gradlew 권한 추가
+      # (4) gradlew 권한 추가
       - name: Run chmod to make gradlew executable
         run: chmod +x ./gradlew
 
-      # (4) JDK 21 세팅
+      # (5) JDK 21 세팅
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
 
-      # (5) Gradle test and build
+      # (6) Gradle test and build
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5 # v3.1.0
 
@@ -68,7 +63,7 @@ jobs:
       - name: Build with Gradle Wrapper
         run: ./gradlew build
 
-      # (6) checkStyle 검사
+      # (7) checkStyle 검사
       - name: Run java checkstyle
         uses: dbelyaev/action-checkstyle@master
         with:
