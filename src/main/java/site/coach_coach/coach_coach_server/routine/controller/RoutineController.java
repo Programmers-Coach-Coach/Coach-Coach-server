@@ -30,12 +30,12 @@ public class RoutineController {
 		Long userId = userDetails.getUserId();
 		RoutineListRequest routineListRequest = new RoutineListRequest(userId, coachId);
 
-		Boolean isMatching = routineService.getIsMatching(routineListRequest);
-		if (!isMatching) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("message : 매칭되지 않은 코치입니다.");
+		if (coachId == null) {
+			return getRoutineListByMyself(routineListRequest);
 		} else {
-			if (coachId == null) {
-				return getRoutineListByMyself(routineListRequest);
+			Boolean isMatching = routineService.getIsMatching(routineListRequest);
+			if (!isMatching) {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("message : 매칭되지 않은 코치입니다.");
 			} else {
 				return getRoutineListByCoach(routineListRequest);
 			}
