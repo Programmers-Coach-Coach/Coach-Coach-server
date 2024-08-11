@@ -39,7 +39,7 @@ jobs:
       # (5) Wait for MySQL to be ready
       - name: Wait for MySQL to be ready
         run: |
-          until docker exec coachcoach-db mysql -h127.0.0.1 -P3306 -u coachcoach -p coach1234 -e "SHOW DATABASES;"; do
+          until docker exec coachcoach-db mysql -hlocalhost -P3307 -u coachcoach -p coach1234 -e "SHOW DATABASES;"; do
             echo "Waiting for MySQL to be ready..."
             sleep 5
           done
