@@ -22,12 +22,12 @@ import site.coach_coach.coach_coach_server.auth.jwt.repository.RefreshTokenRepos
 import site.coach_coach.coach_coach_server.user.domain.User;
 
 @ExtendWith(MockitoExtension.class)
-public class RefreshTokenServiceTest {
+public class TokenServiceTest {
 	@Mock
 	private RefreshTokenRepository refreshTokenRepository;
 
 	@InjectMocks
-	private RefreshTokenService refreshTokenService;
+	private TokenService tokenService;
 
 	private User user;
 	private TokenDto tokenDto;
@@ -59,7 +59,7 @@ public class RefreshTokenServiceTest {
 	@Test
 	@DisplayName("리프레시 토큰 db에 저장")
 	public void createRefreshTokenTest() {
-		refreshTokenService.createRefreshToken(user, tokenDto.refreshToken(), tokenDto);
+		tokenService.createRefreshToken(user, tokenDto.refreshToken(), tokenDto);
 
 		LocalDateTime expectedExpireDate = LocalDateTime.ofInstant(
 			Instant.ofEpochMilli(tokenDto.refreshTokenExpiresIn()),
