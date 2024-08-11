@@ -42,7 +42,7 @@ public class TokenService {
 	}
 
 	public void deleteRefreshToken(Long userId, String refreshToken) {
-		refreshTokenRepository.findByUser_UserIdAndRefreshToken(userId, refreshToken)
+		refreshTokenRepository.findByUserUserIdAndRefreshToken(userId, refreshToken)
 			.ifPresent(refreshTokenRepository::delete);
 	}
 
