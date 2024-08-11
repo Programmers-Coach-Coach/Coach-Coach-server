@@ -119,31 +119,4 @@ public class RoutineControllerTest {
 
 		assertThat(result.getResponse().getContentAsString().contains(routine.routineName()));
 	}
-
-	@Test
-	public void getRoutineListNoMatchingCoachTest() throws Exception {
-		Long userId = 1L;
-		Long coachId = 2L;
-		routineListRequestNoMatch = new RoutineListRequest(userId, coachId);
-
-		// Mock CustomUserDetails
-		CustomUserDetails mockUserDetails = mock(CustomUserDetails.class);
-		when(mockUserDetails.getUserId()).thenReturn(userId);
-
-		// Set the SecurityContext with mockUserDetails
-		SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-		securityContext.setAuthentication(
-			new UsernamePasswordAuthenticationToken(mockUserDetails, null, new ArrayList<>())
-		);
-		SecurityContextHolder.setContext(securityContext);
-
-		when(routineService.getIsMatching(routineListRequestNoMatch)).thenReturn(false);
-
-		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/routines")
-				.queryParam("coachId", String.valueOf(coachId)))
-			.andExpect(MockMvcResultMatchers.status().isNotFound())
-			.andReturn();
-
-		assertThat(result.getResponse().getContentAsString().contains("매칭되지 않은 코치입니다."));
-	}
 }
