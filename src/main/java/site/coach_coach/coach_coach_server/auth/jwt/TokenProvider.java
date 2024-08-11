@@ -1,5 +1,6 @@
 package site.coach_coach.coach_coach_server.auth.jwt;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 
@@ -121,19 +122,24 @@ public class TokenProvider {
 	}
 
 	public String getCookieValue(HttpServletRequest request, String type) {
-		Cookie[] cookies = request.getCookies();
-		if (cookies != null) {
-			for (Cookie cookie : cookies) {
-				if (type.equals(cookie.getName())) {
-					return cookie.getValue();
-				}
-			}
+		if (request == null || type == null) {
+			throw new IllegalArgumentException();
 		}
-		return null;
+
+		Cookie[] cookies = request.getCookies();
+		if (cookies == null) {
+			return null;
+		}
+
+		return Arrays.stream(cookies)
+			.filter(cookie -> type.equals(cookie.getName()))
+			.map(Cookie::getValue)
+			.findFirst()
+			.orElse(null);
 	}
 
 	public Authentication getAuthentication(String token) {
-		CustomUserDetails userDetails = customUserDetailsService.loadUserByUsername(getUserId(token));
+		CustomUserDetails userDetails = customUserDetailsService.loadUserByUsername(getUserId(token).toString());
 
 		return new UsernamePasswordAuthenticationToken(userDetails, "", Collections.emptyList());
 	}
@@ -142,38 +148,17 @@ public class TokenProvider {
 		return jwtParser.parseClaimsJws(token).getBody();
 	}
 
-	public String getUserId(String token) {
-		return extractClaims(token).getSubject();
+	public Long getUserId(String token) {
+		return Long.parseLong(extractClaims(token).getSubject());
 	}
 
-	public boolean validateAccessToken(String token) {
+	public boolean validateToken(String token, String type) {
 		try {
 			Claims claims = extractClaims(token);
-
-			if (!claims.get("token_type").equals("access_token")) {
+			if (!claims.get("token_type").equals(type)) {
 				throw new JwtException(ErrorMessage.NOT_FOUND_TOKEN);
 			}
-
 			return !claims.getExpiration().before(new Date());
-		} catch (ExpiredJwtException e) {
-			return false;
-		} catch (SignatureException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
-			throw new JwtException(ErrorMessage.INVALID_TOKEN);
-		} catch (JwtException e) {
-			throw new JwtException(e.getMessage());
-		}
-	}
-
-	public boolean validateRefreshToken(String token) {
-		try {
-			Claims claims = extractClaims(token);
-			if (!claims.get("token_type").equals("refresh_token")) {
-				throw new JwtException(ErrorMessage.NOT_FOUND_TOKEN);
-			}
-			if (claims.getExpiration().before(new Date())) {
-				throw new JwtException(ErrorMessage.EXPIRED_TOKEN);
-			}
-			return existsRefreshToken(token);
 		} catch (ExpiredJwtException e) {
 			throw new JwtException(ErrorMessage.EXPIRED_TOKEN);
 		} catch (SignatureException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
@@ -183,13 +168,25 @@ public class TokenProvider {
 		}
 	}
 
+	public boolean validateAccessToken(String token) {
+		return validateToken(token, "access_token");
+	}
+
+	public boolean validateRefreshToken(String token) {
+		return validateToken(token, "refresh_token") && existsRefreshToken(token);
+	}
+
 	public boolean existsRefreshToken(String refreshToken) {
-		return refreshTokenRepository.existsByRefreshToken(refreshToken);
+		if (refreshTokenRepository.existsByRefreshToken(refreshToken)) {
+			return true;
+		} else {
+			throw new JwtException(ErrorMessage.NOT_FOUND_TOKEN);
+		}
 	}
 
 	public String regenerateAccessToken(String refreshToken) {
-		String userId = extractClaims(refreshToken).getSubject();
-		CustomUserDetails userDetails = customUserDetailsService.loadUserByUsername(userId);
+		Long userId = getUserId(refreshToken);
+		CustomUserDetails userDetails = customUserDetailsService.loadUserByUsername(String.valueOf(userId));
 		User user = userDetails.getUser();
 
 		return createAccessToken(user);
