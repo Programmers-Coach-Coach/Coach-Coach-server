@@ -69,7 +69,7 @@ public class RoutineControllerTest {
 
 	@Test
 	@WithMockUser
-	public void getRoutineList_WithCoachIdTest() throws Exception {
+	public void getRoutineListWithCoachIdTest() throws Exception {
 		// Given
 		Long userId = 1L;
 		routineListRequest_Myself = new RoutineListRequest(1L, null);
@@ -96,7 +96,7 @@ public class RoutineControllerTest {
 	}
 
 	@Test
-	public void getRoutineList_WithoutCoachIdTest() throws Exception {
+	public void getRoutineListWithoutCoachIdTest() throws Exception {
 		// Given
 		Long userId = 1L;
 		Long coachId = null;
@@ -123,7 +123,7 @@ public class RoutineControllerTest {
 	}
 
 	@Test
-	public void getRoutineList_NoMatchingCoachTest() throws Exception {
+	public void getRoutineListNoMatchingCoachTest() throws Exception {
 		Long userId = 1L;
 		Long coachId = 2L;
 		routineListRequest_NoMatch = new RoutineListRequest(userId, coachId);
