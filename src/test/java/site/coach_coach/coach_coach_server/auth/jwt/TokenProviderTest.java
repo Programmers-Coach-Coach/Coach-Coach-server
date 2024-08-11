@@ -9,9 +9,9 @@ import java.util.Date;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.core.Authentication;
 import org.springframework.test.context.TestPropertySource;
 
@@ -26,15 +26,15 @@ import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetailsSer
 import site.coach_coach.coach_coach_server.user.domain.User;
 
 @TestPropertySource(locations = "/application.properties")
-@SpringBootTest(classes = TokenProviderTest.class)
+@SpringBootTest
 public class TokenProviderTest {
 	@Autowired
 	private JwtProperties jwtProperties;
 
-	@Mock
+	@MockBean
 	private CustomUserDetailsService customUserDetailsService;
 
-	@Mock
+	@MockBean
 	private RefreshTokenRepository refreshTokenRepository;
 
 	@Autowired
