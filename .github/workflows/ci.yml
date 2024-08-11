@@ -22,10 +22,25 @@ jobs:
         uses: actions/checkout@v4
 
       # (2) application.properties 설정
-      - uses: actions/checkout@v4
-      - run: touch ./src/main/resources/application.properties
-      - run: echo "${{ secrets.CI_APPLICATION }}" > ./src/main/resources/application.properties
-      - run: cat ./src/main/resources/application.properties
+      - name: Setup application.properties
+        run: |
+          touch ./src/main/resources/application.properties
+          echo "${{ secrets.CI_APPLICATION }}" > ./src/main/resources/application.properties
+          cat ./src/main/resources/application.properties
+
+      # (3) Docker & MySQL 설정
+      - name: Set up Docker Compose
+        run: sudo apt-get update && sudo apt-get install docker-compose
+
+      - name: Build and start services
+        run: docker-compose up -d
+
+      - name: Wait for MySQL to be ready
+        run: |
+          until docker exec coachcoach-db mysql -h127.0.0.1 -P3306 -ucoachcoach -pcoach1234 -e "SHOW DATABASES;"; do
+            echo "Waiting for MySQL to be ready..."
+            sleep 5
+          done
 
       # (3) gradlew 권한 추가
       - name: Run chmod to make gradlew executable
