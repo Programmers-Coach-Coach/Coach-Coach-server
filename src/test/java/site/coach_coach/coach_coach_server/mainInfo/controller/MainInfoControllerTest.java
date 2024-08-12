@@ -94,16 +94,13 @@ public class MainInfoControllerTest {
 		);
 		SecurityContextHolder.setContext(securityContext);
 
-		// 서비스가 반환할 값을 설정
 		when(mainService.getMainResponse(mockUserDetails.getUser())).thenReturn(mainResponseDto);
 
-		// API 호출 및 응답 검증
 		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/main")
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn();
 
-		// 응답 내용 검증
 		assertThat(result.getResponse().getContentAsString()).contains("John Doe");
 		assertThat(result.getResponse().getContentAsString()).contains("Soccer");
 	}
