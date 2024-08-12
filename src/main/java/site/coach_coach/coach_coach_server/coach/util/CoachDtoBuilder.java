@@ -1,14 +1,14 @@
 package site.coach_coach.coach_coach_server.coach.util;
 
-import site.coach_coach.coach_coach_server.coach.domain.Coach;
-import site.coach_coach.coach_coach_server.coach.dto.CoachDto;
-import site.coach_coach.coach_coach_server.like.repository.*;
-import site.coach_coach.coach_coach_server.sport.dto.CoachingSportDto;
-import site.coach_coach.coach_coach_server.user.domain.*;
-
-import java.time.*;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import site.coach_coach.coach_coach_server.coach.domain.Coach;
+import site.coach_coach.coach_coach_server.coach.dto.CoachDto;
+import site.coach_coach.coach_coach_server.like.repository.UserCoachLikeRepository;
+import site.coach_coach.coach_coach_server.sport.dto.CoachingSportDto;
+import site.coach_coach.coach_coach_server.user.domain.User;
 
 public class CoachDtoBuilder {
 	public static CoachDto buildCoachDto(Coach coach, User user, UserCoachLikeRepository userCoachLikeRepository) {
