@@ -16,7 +16,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.annotation.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import site.coach_coach.coach_coach_server.coach.domain.Coach;
 
 @Entity
@@ -42,14 +43,4 @@ public class CoachingSport {
 	@ManyToOne
 	@JoinColumn(name = "sport_id")
 	private Sport sport;
-
-	@NotNull
-	@CreatedDate
-	@Column(name = "created_at", updatable = false)
-	private LocalDateTime createdAt = LocalDateTime.now();
-
-	@NotNull
-	@LastModifiedDate
-	@Column(name = "updated_at")
-	private LocalDateTime updatedAt = LocalDateTime.now();
 }
