@@ -25,7 +25,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import site.coach_coach.coach_coach_server.auth.jwt.dto.TokenDto;
-import site.coach_coach.coach_coach_server.auth.jwt.repository.RefreshTokenRepository;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetailsService;
 import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
@@ -42,13 +41,8 @@ public class TokenProvider {
 	private final JwtParser jwtParser;
 	private final CustomUserDetailsService customUserDetailsService;
 
-	private final RefreshTokenRepository refreshTokenRepository;
-
-	public TokenProvider(JwtProperties jwtProperties, CustomUserDetailsService customUserDetailsService,
-		RefreshTokenRepository refreshTokenRepository) {
-		this.refreshTokenRepository = refreshTokenRepository;
+	public TokenProvider(JwtProperties jwtProperties, CustomUserDetailsService customUserDetailsService) {
 		byte[] secretKeyBytes = Decoders.BASE64.decode(jwtProperties.secretKey());
-
 		this.issuer = jwtProperties.issuer();
 		this.secretKey = Keys.hmacShaKeyFor(secretKeyBytes);
 		this.accessTokenExpireTime = jwtProperties.accessTokenExpireTime() * MILLIS;
@@ -155,7 +149,7 @@ public class TokenProvider {
 	public boolean validateToken(String token, String type) {
 		try {
 			Claims claims = extractClaims(token);
-			if (!claims.get("token_type").equals(type)) {
+			if (!claims.get("token_type").equals(type) || token == null) {
 				throw new JwtException(ErrorMessage.NOT_FOUND_TOKEN);
 			}
 			return !claims.getExpiration().before(new Date());
@@ -173,15 +167,7 @@ public class TokenProvider {
 	}
 
 	public boolean validateRefreshToken(String token) {
-		return validateToken(token, "refresh_token") && existsRefreshToken(token);
-	}
-
-	public boolean existsRefreshToken(String refreshToken) {
-		if (refreshTokenRepository.existsByRefreshToken(refreshToken)) {
-			return true;
-		} else {
-			throw new JwtException(ErrorMessage.NOT_FOUND_TOKEN);
-		}
+		return validateToken(token, "refresh_token");
 	}
 
 	public String regenerateAccessToken(String refreshToken) {

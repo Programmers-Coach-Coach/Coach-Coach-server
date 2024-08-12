@@ -33,7 +33,7 @@ public class TokenFilter extends OncePerRequestFilter {
 
 		String accessToken = tokenProvider.getCookieValue(request, ACCESS_TOKEN);
 
-		if (accessToken != null && tokenProvider.validateAccessToken(accessToken)) {
+		if (tokenProvider.validateAccessToken(accessToken)) {
 			Authentication authentication = tokenProvider.getAuthentication(accessToken);
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 		}

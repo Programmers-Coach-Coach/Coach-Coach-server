@@ -26,7 +26,6 @@ import site.coach_coach.coach_coach_server.auth.jwt.dto.TokenDto;
 import site.coach_coach.coach_coach_server.auth.jwt.service.TokenService;
 import site.coach_coach.coach_coach_server.common.utils.AuthenticationUtil;
 import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
-import site.coach_coach.coach_coach_server.config.ExceptionHandlerConfig;
 import site.coach_coach.coach_coach_server.config.SecurityConfig;
 import site.coach_coach.coach_coach_server.user.domain.User;
 import site.coach_coach.coach_coach_server.user.dto.LoginRequest;
@@ -36,7 +35,7 @@ import site.coach_coach.coach_coach_server.user.exception.UserNotFoundException;
 import site.coach_coach.coach_coach_server.user.service.UserService;
 
 @WebMvcTest(UserController.class)
-@Import({SecurityConfig.class, ExceptionHandlerConfig.class})
+@Import(SecurityConfig.class)
 public class UserControllerTest {
 
 	@Autowired

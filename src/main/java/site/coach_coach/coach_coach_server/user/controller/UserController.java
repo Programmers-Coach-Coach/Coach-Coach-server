@@ -2,7 +2,7 @@ package site.coach_coach.coach_coach_server.user.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -53,14 +53,18 @@ public class UserController {
 	}
 
 	@DeleteMapping("/v1/auth/logout")
-	public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authentication != null && authenticationUtil.isAuthenticated(authentication)) {
-			Long userId = ((CustomUserDetails)authentication.getPrincipal()).getUserId();
+	public ResponseEntity<Void> logout(@AuthenticationPrincipal CustomUserDetails userDetails,
+		HttpServletRequest request, HttpServletResponse response) {
+		Long userId = userDetails.getUserId();
 
-			String refreshToken = userService.logout(request, response);
-			tokenService.deleteRefreshToken(userId, refreshToken);
-		}
+		String refreshToken = tokenProvider.getCookieValue(request, "refresh_token");
+		tokenService.deleteRefreshToken(userId, refreshToken);
+
+		tokenProvider.clearCookie(response, "access_token");
+		tokenProvider.clearCookie(response, "refresh_token");
+
+		SecurityContextHolder.clearContext();
+
 		return ResponseEntity.noContent().build();
 	}
 
