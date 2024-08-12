@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.Cookie;
@@ -65,6 +66,18 @@ public class UserController {
 
 		SecurityContextHolder.clearContext();
 
+		return ResponseEntity.noContent().build();
+	}
+
+	@GetMapping("/v1/auth/check-nickname")
+	public ResponseEntity<Void> checkNickname(@RequestParam("nickname") String nickname) {
+		userService.checkNicknameDuplicate(nickname);
+		return ResponseEntity.noContent().build();
+	}
+
+	@GetMapping("/v1/auth/check-email")
+	public ResponseEntity<Void> checkEmail(@RequestParam("email") String email) {
+		userService.checkEmailDuplicate(email);
 		return ResponseEntity.noContent().build();
 	}
 
