@@ -33,12 +33,8 @@ public class RoutineController {
 		if (coachId == null) {
 			return getRoutineListByMyself(routineListRequest);
 		} else {
-			Boolean isMatching = routineService.getIsMatching(routineListRequest);
-			if (!isMatching) {
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("message : 매칭되지 않은 코치입니다.");
-			} else {
-				return getRoutineListByCoach(routineListRequest);
-			}
+			routineService.getIsMatching(routineListRequest);
+			return getRoutineListByCoach(routineListRequest);
 		}
 	}
 

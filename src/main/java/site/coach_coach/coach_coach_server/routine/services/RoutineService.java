@@ -7,12 +7,14 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.coach.repository.CoachRepository;
+import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
 import site.coach_coach.coach_coach_server.matching.Dto.CheckMatchingDto;
 import site.coach_coach.coach_coach_server.matching.repository.MatchingRepository;
 import site.coach_coach.coach_coach_server.routine.domain.Routine;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineForListDto;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineListCoachInfoDto;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineListRequest;
+import site.coach_coach.coach_coach_server.routine.exception.NotMatchingException;
 import site.coach_coach.coach_coach_server.routine.repository.RoutineRepository;
 import site.coach_coach.coach_coach_server.user.domain.User;
 
@@ -26,7 +28,8 @@ public class RoutineService {
 	public Boolean getIsMatching(RoutineListRequest routineListRequest) {
 		return matchingRepository.findByUserIdAndCoachId(routineListRequest.userId(), routineListRequest.coachId())
 			.map(CheckMatchingDto::getIsMatching)
-			.orElseThrow(); // 반환값이 null인 경우 [404, message : No value present] 응답
+			.filter(isMatching -> isMatching) // isMatching이 true일 때만 통과
+			.orElseThrow(() -> new NotMatchingException(ErrorMessage.NOT_MATCHING));
 	}
 
 	public RoutineListCoachInfoDto getRoutineListCoachInfo(RoutineListRequest routineListRequest) {
