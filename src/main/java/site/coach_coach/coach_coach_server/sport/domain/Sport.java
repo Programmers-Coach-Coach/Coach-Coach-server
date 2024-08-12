@@ -16,7 +16,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.annotation.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 @Entity
 @Table(name = "sports")
@@ -25,7 +26,7 @@ import org.springframework.data.annotation.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Sport {
+public class Sport extends DateEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,14 +42,4 @@ public class Sport {
 	@Size(max = 400)
 	@Column(name = "sport_image_url")
 	private String sportImageUrl;
-
-	@NotNull
-	@CreatedDate
-	@Column(name = "created_at", updatable = false)
-	private LocalDateTime createdAt = LocalDateTime.now();
-
-	@NotNull
-	@LastModifiedDate
-	@Column(name = "updated_at")
-	private LocalDateTime updatedAt = LocalDateTime.now();
 }
