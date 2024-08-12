@@ -1,4 +1,4 @@
-package site.coach_coach.coach_coach_server.coach.service;
+package site.coach_coach.coach_coach_server.coach.util;
 
 import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.coach.dto.CoachDto;
@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class CoachDtoBuilder {
-
-
 	public static CoachDto buildCoachDto(Coach coach, User user, UserCoachLikeRepository userCoachLikeRepository) {
 		List<CoachingSportDto> coachingSports = coach.getCoachingSports().stream()
 			.map(cs -> CoachingSportDto.builder()
@@ -27,7 +25,7 @@ public class CoachDtoBuilder {
 		return CoachDto.builder()
 			.coachId(coach.getCoachId())
 			.coachName(coach.getUser().getNickname())
-			.coachImageUrl(coach.getUser().getProfileImageUrl())
+			.profileImageUrl(coach.getUser().getProfileImageUrl())
 			.description(coach.getCoachIntroduction())
 			.countOfLikes(countOfLikes)
 			.liked(liked)

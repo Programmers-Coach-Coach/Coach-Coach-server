@@ -16,6 +16,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.*;
 import site.coach_coach.coach_coach_server.coach.domain.Coach;
 
 @Entity
@@ -43,10 +44,12 @@ public class CoachingSport {
 	private Sport sport;
 
 	@NotNull
+	@CreatedDate
 	@Column(name = "created_at", updatable = false)
 	private LocalDateTime createdAt = LocalDateTime.now();
 
 	@NotNull
+	@LastModifiedDate
 	@Column(name = "updated_at")
 	private LocalDateTime updatedAt = LocalDateTime.now();
 }

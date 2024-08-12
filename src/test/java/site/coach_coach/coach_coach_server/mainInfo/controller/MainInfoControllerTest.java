@@ -53,25 +53,22 @@ public class MainInfoControllerTest {
 	public void setUp() {
 		MockitoAnnotations.openMocks(this);
 
-		// CoachDto 생성
 		CoachDto coachDto = CoachDto.builder()
 			.coachId(1L)
 			.coachName("John Doe")
-			.coachImageUrl("http://example.com/image.jpg")
+			.profileImageUrl("http://example.com/image.jpg")
 			.description("Experienced coach in multiple sports.")
 			.countOfLikes(10)
 			.liked(true)
 			.coachingSports(new ArrayList<>())
 			.build();
 
-		// SportDto 생성
 		SportDto sportDto = SportDto.builder()
 			.sportId(1L)
 			.sportName("Soccer")
 			.sportImageUrl("http://example.com/soccer.jpg")
 			.build();
 
-		// MainResponseDto 생성
 		List<CoachDto> coaches = List.of(coachDto);
 		List<SportDto> sports = List.of(sportDto);
 

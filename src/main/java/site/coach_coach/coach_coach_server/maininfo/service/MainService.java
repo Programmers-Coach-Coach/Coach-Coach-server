@@ -5,13 +5,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import org.springframework.transaction.annotation.Transactional;
 import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.coach.dto.CoachDto;
 import site.coach_coach.coach_coach_server.coach.repository.CoachRepository;
-import site.coach_coach.coach_coach_server.coach.service.CoachDtoBuilder;
+import site.coach_coach.coach_coach_server.coach.util.CoachDtoBuilder;
+import site.coach_coach.coach_coach_server.common.exception.UserNotFoundException;
 import site.coach_coach.coach_coach_server.like.repository.UserCoachLikeRepository;
 import site.coach_coach.coach_coach_server.maininfo.dto.MainResponseDto;
 import site.coach_coach.coach_coach_server.sport.dto.SportDto;
@@ -19,6 +21,7 @@ import site.coach_coach.coach_coach_server.sport.repository.SportRepository;
 import site.coach_coach.coach_coach_server.user.domain.User;
 
 @Service
+@Transactional(readOnly = true)
 public class MainService {
 
 	private final SportRepository sportRepository;
@@ -27,7 +30,6 @@ public class MainService {
 	@Autowired
 	public MainService(
 		SportRepository sportRepository,
-		CoachRepository coachRepository,
 		UserCoachLikeRepository userCoachLikeRepository
 	) {
 		this.sportRepository = sportRepository;
@@ -42,8 +44,9 @@ public class MainService {
 				.sports(sports)
 				.coaches(coaches)
 				.build();
+		} catch (UserNotFoundException e) {
+			throw e;
 		} catch (Exception e) {
-			e.printStackTrace();
 			throw new RuntimeException("Error fetching main response data", e);
 		}
 	}
@@ -65,5 +68,4 @@ public class MainService {
 			.map(coach -> CoachDtoBuilder.buildCoachDto(coach, user, userCoachLikeRepository))
 			.collect(Collectors.toList());
 	}
-
 }

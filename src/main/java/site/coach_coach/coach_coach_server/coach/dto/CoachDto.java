@@ -17,7 +17,7 @@ import site.coach_coach.coach_coach_server.sport.dto.CoachingSportDto;
 public class CoachDto {
 	private Long coachId;
 	private String coachName;
-	private String coachImageUrl;
+	private String profileImageUrl;
 	private String description;
 	private int countOfLikes;
 	private boolean liked;

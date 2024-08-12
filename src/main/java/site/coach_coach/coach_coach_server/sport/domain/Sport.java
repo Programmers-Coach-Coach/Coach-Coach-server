@@ -16,6 +16,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.*;
 
 @Entity
 @Table(name = "sports")
@@ -42,10 +43,12 @@ public class Sport {
 	private String sportImageUrl;
 
 	@NotNull
+	@CreatedDate
 	@Column(name = "created_at", updatable = false)
 	private LocalDateTime createdAt = LocalDateTime.now();
 
 	@NotNull
+	@LastModifiedDate
 	@Column(name = "updated_at")
 	private LocalDateTime updatedAt = LocalDateTime.now();
 }
