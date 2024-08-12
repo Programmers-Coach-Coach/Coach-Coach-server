@@ -25,7 +25,7 @@ import site.coach_coach.coach_coach_server.auth.jwt.TokenProvider;
 public class SecurityConfig {
 	private final TokenProvider tokenProvider;
 	private final JwtExceptionFilter jwtExceptionFilter;
-	private final ExceptionHandlerConfig exceptionHandlerConfig;
+	private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -38,12 +38,14 @@ public class SecurityConfig {
 			.addFilterBefore(jwtExceptionFilter, TokenFilter.class)
 			.authorizeHttpRequests((authorizeRequests) ->
 				authorizeRequests
-					.requestMatchers("/api/v1/auth/login", "/api/v1/auth/signup", "/api/v1/auth/reissue","/api/v1/test")
+					.requestMatchers("/api/v1/auth/login", "/api/v1/auth/signup", "/api/v1/test")
 					.permitAll()
 					.anyRequest()
 					.authenticated()
 			)
-			.exceptionHandling(exceptionHandlerConfig)
+			.exceptionHandling(exceptionHandling ->
+				exceptionHandling.authenticationEntryPoint(customAuthenticationEntryPoint)
+			)
 			.sessionManagement((sessionManagement) ->
 				sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			)

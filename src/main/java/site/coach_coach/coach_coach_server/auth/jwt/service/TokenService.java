@@ -7,6 +7,7 @@ import java.time.ZoneId;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import io.jsonwebtoken.JwtException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.auth.exception.InvalidTokenException;
@@ -20,12 +21,12 @@ import site.coach_coach.coach_coach_server.user.repository.UserRepository;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class TokenService {
 	private final RefreshTokenRepository refreshTokenRepository;
 	private final TokenProvider tokenProvider;
 	private final UserRepository userRepository;
 
-	@Transactional
 	public void createRefreshToken(User user, String refreshToken, TokenDto tokenDto) {
 		LocalDateTime expireDate = LocalDateTime.ofInstant(
 			Instant.ofEpochMilli(tokenDto.refreshTokenExpiresIn()),
@@ -41,13 +42,23 @@ public class TokenService {
 		refreshTokenRepository.save(newRefreshToken);
 	}
 
+	public boolean existsRefreshToken(String refreshToken) {
+		if (refreshTokenRepository.existsByRefreshToken(refreshToken)) {
+			return true;
+		} else {
+			throw new JwtException(ErrorMessage.NOT_FOUND_TOKEN);
+		}
+	}
+
 	public void deleteRefreshToken(Long userId, String refreshToken) {
-		refreshTokenRepository.findByUser_UserIdAndRefreshToken(userId, refreshToken)
-			.ifPresent(refreshTokenRepository::delete);
+		RefreshToken token = refreshTokenRepository.findByUserUserIdAndRefreshToken(userId, refreshToken)
+			.orElseThrow(() -> new JwtException(ErrorMessage.NOT_FOUND_TOKEN));
+
+		refreshTokenRepository.delete(token);
 	}
 
 	public String reissueAccessToken(String refreshToken) {
-		if (!tokenProvider.validateRefreshToken(refreshToken)) {
+		if (!tokenProvider.validateRefreshToken(refreshToken) || !existsRefreshToken(refreshToken)) {
 			throw new InvalidTokenException(ErrorMessage.INVALID_TOKEN);
 		}
 

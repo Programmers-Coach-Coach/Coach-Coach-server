@@ -1,6 +1,8 @@
 package site.coach_coach.coach_coach_server.auth.jwt;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -32,11 +34,23 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
 		try {
 			filterChain.doFilter(request, response);
 		} catch (ExpiredJwtException e) {
-			throw new JwtException(ErrorMessage.EXPIRED_TOKEN);
+			setErrorResponse(response, ErrorMessage.EXPIRED_TOKEN);
 		} catch (SignatureException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
-			throw new JwtException(ErrorMessage.INVALID_TOKEN);
+			setErrorResponse(response, ErrorMessage.INVALID_TOKEN);
 		} catch (JwtException e) {
-			throw new JwtException(e.getMessage());
+			setErrorResponse(response, ErrorMessage.NOT_FOUND_TOKEN);
 		}
+	}
+
+	private void setErrorResponse(HttpServletResponse response, String message)
+		throws IOException {
+		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+		response.setContentType("application/json");
+
+		Map<String, String> errorResponse = new HashMap<>();
+		errorResponse.put("message", message);
+
+		String jsonResponse = objectMapper.writeValueAsString(errorResponse);
+		response.getWriter().write(jsonResponse);
 	}
 }

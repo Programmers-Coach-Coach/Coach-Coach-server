@@ -25,7 +25,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import site.coach_coach.coach_coach_server.auth.jwt.dto.TokenDto;
-import site.coach_coach.coach_coach_server.auth.jwt.repository.RefreshTokenRepository;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetailsService;
 import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
@@ -42,21 +41,16 @@ public class TokenProvider {
 	private final JwtParser jwtParser;
 	private final CustomUserDetailsService customUserDetailsService;
 
-	private final RefreshTokenRepository refreshTokenRepository;
-
-	public TokenProvider(JwtProperties jwtProperties, CustomUserDetailsService customUserDetailsService,
-						 RefreshTokenRepository refreshTokenRepository) {
-		this.refreshTokenRepository = refreshTokenRepository;
+	public TokenProvider(JwtProperties jwtProperties, CustomUserDetailsService customUserDetailsService) {
 		byte[] secretKeyBytes = Decoders.BASE64.decode(jwtProperties.secretKey());
-
 		this.issuer = jwtProperties.issuer();
 		this.secretKey = Keys.hmacShaKeyFor(secretKeyBytes);
 		this.accessTokenExpireTime = jwtProperties.accessTokenExpireTime() * MILLIS;
 		this.refreshTokenExpireTime = jwtProperties.refreshTokenExpireTIme() * MILLIS;
 		this.jwtParser = Jwts.parserBuilder()
-			.setSigningKey(secretKey)
-			.requireIssuer(issuer)
-			.build();
+				.setSigningKey(secretKey)
+				.requireIssuer(issuer)
+				.build();
 		this.customUserDetailsService = customUserDetailsService;
 	}
 
@@ -65,15 +59,15 @@ public class TokenProvider {
 		Date expiryDate = new Date(now.getTime() + accessTokenExpireTime);
 
 		return Jwts.builder()
-			.setIssuer(issuer)
-			.setIssuedAt(now)
-			.setExpiration(expiryDate)
-			.setSubject(user.getUserId().toString())
-			.claim("nickname", user.getNickname())
-			.claim("email", user.getEmail())
-			.claim("token_type", "access_token")
-			.signWith(secretKey, SignatureAlgorithm.HS256)
-			.compact();
+				.setIssuer(issuer)
+				.setIssuedAt(now)
+				.setExpiration(expiryDate)
+				.setSubject(user.getUserId().toString())
+				.claim("nickname", user.getNickname())
+				.claim("email", user.getEmail())
+				.claim("token_type", "access_token")
+				.signWith(secretKey, SignatureAlgorithm.HS256)
+				.compact();
 	}
 
 	public String createRefreshToken(User user) {
@@ -81,13 +75,13 @@ public class TokenProvider {
 		Date expiryDate = new Date(now.getTime() + refreshTokenExpireTime);
 
 		return Jwts.builder()
-			.setIssuer(issuer)
-			.setIssuedAt(now)
-			.setExpiration(expiryDate)
-			.setSubject(user.getUserId().toString())
-			.claim("token_type", "refresh_token")
-			.signWith(secretKey, SignatureAlgorithm.HS256)
-			.compact();
+				.setIssuer(issuer)
+				.setIssuedAt(now)
+				.setExpiration(expiryDate)
+				.setSubject(user.getUserId().toString())
+				.claim("token_type", "refresh_token")
+				.signWith(secretKey, SignatureAlgorithm.HS256)
+				.compact();
 	}
 
 	public TokenDto generateJwt(User user) {
@@ -97,11 +91,11 @@ public class TokenProvider {
 		long currentMillis = System.currentTimeMillis();
 
 		return TokenDto.builder()
-			.accessToken(accessToken)
-			.accessTokenExpiresIn(currentMillis + accessTokenExpireTime)
-			.refreshToken(refreshToken)
-			.refreshTokenExpiresIn(currentMillis + refreshTokenExpireTime)
-			.build();
+				.accessToken(accessToken)
+				.accessTokenExpiresIn(currentMillis + accessTokenExpireTime)
+				.refreshToken(refreshToken)
+				.refreshTokenExpiresIn(currentMillis + refreshTokenExpireTime)
+				.build();
 	}
 
 	public Cookie createCookie(String name, String value) {
@@ -132,10 +126,10 @@ public class TokenProvider {
 		}
 
 		return Arrays.stream(cookies)
-			.filter(cookie -> type.equals(cookie.getName()))
-			.map(Cookie::getValue)
-			.findFirst()
-			.orElse(null);
+				.filter(cookie -> type.equals(cookie.getName()))
+				.map(Cookie::getValue)
+				.findFirst()
+				.orElse(null);
 	}
 
 	public Authentication getAuthentication(String token) {
@@ -155,7 +149,7 @@ public class TokenProvider {
 	public boolean validateToken(String token, String type) {
 		try {
 			Claims claims = extractClaims(token);
-			if (!claims.get("token_type").equals(type)) {
+			if (!claims.get("token_type").equals(type) || token == null) {
 				throw new JwtException(ErrorMessage.NOT_FOUND_TOKEN);
 			}
 			return !claims.getExpiration().before(new Date());
@@ -173,15 +167,7 @@ public class TokenProvider {
 	}
 
 	public boolean validateRefreshToken(String token) {
-		return validateToken(token, "refresh_token") && existsRefreshToken(token);
-	}
-
-	public boolean existsRefreshToken(String refreshToken) {
-		if (refreshTokenRepository.existsByRefreshToken(refreshToken)) {
-			return true;
-		} else {
-			throw new JwtException(ErrorMessage.NOT_FOUND_TOKEN);
-		}
+		return validateToken(token, "refresh_token");
 	}
 
 	public String regenerateAccessToken(String refreshToken) {
