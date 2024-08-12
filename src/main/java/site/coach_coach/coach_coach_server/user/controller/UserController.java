@@ -9,12 +9,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.auth.jwt.TokenProvider;
 import site.coach_coach.coach_coach_server.auth.jwt.dto.TokenDto;
@@ -25,6 +27,7 @@ import site.coach_coach.coach_coach_server.user.domain.User;
 import site.coach_coach.coach_coach_server.user.dto.LoginRequest;
 import site.coach_coach.coach_coach_server.user.dto.SignUpRequest;
 import site.coach_coach.coach_coach_server.user.service.UserService;
+import site.coach_coach.coach_coach_server.user.validation.Nickname;
 
 @RestController
 @RequestMapping("/api")
@@ -65,6 +68,18 @@ public class UserController {
 
 		SecurityContextHolder.clearContext();
 
+		return ResponseEntity.noContent().build();
+	}
+
+	@GetMapping("/v1/auth/check-nickname")
+	public ResponseEntity<Void> checkNickname(@RequestParam("nickname") @Nickname String nickname) {
+		userService.checkNicknameDuplicate(nickname);
+		return ResponseEntity.noContent().build();
+	}
+
+	@GetMapping("/v1/auth/check-email")
+	public ResponseEntity<Void> checkEmail(@RequestParam("email") @Email String email) {
+		userService.checkEmailDuplicate(email);
 		return ResponseEntity.noContent().build();
 	}
 
