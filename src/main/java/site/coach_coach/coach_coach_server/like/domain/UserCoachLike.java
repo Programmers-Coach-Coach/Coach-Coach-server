@@ -16,7 +16,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.annotation.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.user.domain.User;
 
@@ -28,7 +29,7 @@ import site.coach_coach.coach_coach_server.user.domain.User;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserCoachLike {
+public class UserCoachLike extends DateEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,16 +42,6 @@ public class UserCoachLike {
 	@ManyToOne
 	@JoinColumn(name = "coach_id")
 	private Coach coach;
-
-	@NotNull
-	@CreatedDate
-	@Column(name = "created_at", updatable = false)
-	private LocalDateTime createdAt = LocalDateTime.now();
-
-	@NotNull
-	@LastModifiedDate
-	@Column(name = "updated_at")
-	private LocalDateTime updatedAt = LocalDateTime.now();
 
 	private int recentLikes;
 }
