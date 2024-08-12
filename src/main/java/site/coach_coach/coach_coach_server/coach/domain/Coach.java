@@ -17,8 +17,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.annotation.*;
-import site.coach_coach.coach_coach_server.common.domain.DateEntity;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;import site.coach_coach.coach_coach_server.common.domain.DateEntity;
 import site.coach_coach.coach_coach_server.sport.domain.CoachingSport;
 import site.coach_coach.coach_coach_server.user.domain.User;
 
@@ -69,16 +69,6 @@ public class Coach extends DateEntity {
 	@NotNull
 	@Column(name = "is_open")
 	private Boolean isOpen;
-
-	@NotNull
-	@CreatedDate
-	@Column(name = "created_at", updatable = false)
-	private LocalDateTime createdAt = LocalDateTime.now();
-
-	@NotNull
-	@LastModifiedDate
-	@Column(name = "updated_at")
-	private LocalDateTime updatedAt = LocalDateTime.now();
 
 	@OneToMany(mappedBy = "coach")
 	private List<CoachingSport> coachingSports;
