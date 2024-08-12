@@ -20,7 +20,7 @@ import net.datafaker.Faker;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
 import site.coach_coach.coach_coach_server.auth.jwt.dto.TokenDto;
-import site.coach_coach.coach_coach_server.auth.jwt.repository.RefreshTokenRepository;
+import site.coach_coach.coach_coach_server.auth.jwt.service.TokenService;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetailsService;
 import site.coach_coach.coach_coach_server.user.domain.User;
@@ -35,7 +35,7 @@ public class TokenProviderTest {
 	private CustomUserDetailsService customUserDetailsService;
 
 	@MockBean
-	private RefreshTokenRepository refreshTokenRepository;
+	private TokenService tokenService;
 
 	@Autowired
 	private TokenProvider tokenProvider;
@@ -52,7 +52,7 @@ public class TokenProviderTest {
 			"test1234!",
 			null, null, null, null
 		);
-		tokenProvider = new TokenProvider(jwtProperties, customUserDetailsService, refreshTokenRepository);
+		tokenProvider = new TokenProvider(jwtProperties, customUserDetailsService, tokenService);
 	}
 
 	@Test
@@ -119,14 +119,6 @@ public class TokenProviderTest {
 		Authentication authentication = tokenProvider.getAuthentication(tokenProvider.createAccessToken(user));
 		assertThat(Collections.singletonList(authentication)).isNotNull();
 		assertThat((authentication).getPrincipal()).isEqualTo(userDetails);
-	}
-
-	@Test
-	@DisplayName("Refresh Token 존재 확인 테스트")
-	public void existsRefreshTokenTest() {
-		String refreshToken = tokenProvider.createRefreshToken(user);
-		when(refreshTokenRepository.existsByRefreshToken(refreshToken)).thenReturn(true);
-		assertThat(tokenProvider.existsRefreshToken(refreshToken)).isTrue();
 	}
 
 	@Test
