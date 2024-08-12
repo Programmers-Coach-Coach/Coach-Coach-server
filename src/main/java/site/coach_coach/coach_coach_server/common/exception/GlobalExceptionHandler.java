@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
+import io.jsonwebtoken.JwtException;
 import site.coach_coach.coach_coach_server.auth.exception.ExpiredTokenException;
 import site.coach_coach.coach_coach_server.auth.exception.InvalidTokenException;
 import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
@@ -65,6 +66,12 @@ public class GlobalExceptionHandler {
 
 		return ResponseEntity.status(HttpStatus.NOT_FOUND)
 			.body(errorResponse);
+	}
+
+	@ExceptionHandler(JwtException.class)
+	public ResponseEntity<ErrorResponse> handleJwtException(JwtException ex) {
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+			.body(new ErrorResponse(ex.getMessage()));
 	}
 
 	@ExceptionHandler(AuthenticationException.class)

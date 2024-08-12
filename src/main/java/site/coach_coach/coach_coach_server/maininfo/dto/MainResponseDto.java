@@ -1,10 +1,14 @@
 package site.coach_coach.coach_coach_server.maininfo.dto;
 
-import lombok.*;
-import site.coach_coach.coach_coach_server.coach.dto.*;
-import site.coach_coach.coach_coach_server.sport.dto.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import site.coach_coach.coach_coach_server.coach.dto.CoachDto;
+import site.coach_coach.coach_coach_server.sport.dto.SportDto;
 
-import java.util.*;
+import java.util.List;
 
 
 @Getter

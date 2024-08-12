@@ -38,15 +38,12 @@ public class SecurityConfig {
 			.addFilterBefore(jwtExceptionFilter, TokenFilter.class)
 			.authorizeHttpRequests((authorizeRequests) ->
 				authorizeRequests
-<<<<<<< HEAD
-					.requestMatchers("/api/v1/auth/login", "/api/v1/auth/signup", "/api/v1/test","/api/v1/*").permitAll()
-					.anyRequest().authenticated()
-=======
-					.requestMatchers("/api/v1/auth/login", "/api/v1/auth/signup", "/api/v1/test", "/api/v1/auth")
+
+					.requestMatchers("/api/v1/auth/login", "/api/v1/auth/signup", "/api/v1/auth/reissue", "/api/v1/**",
+						"/api/v1/test")
 					.permitAll()
 					.anyRequest()
 					.authenticated()
->>>>>>> origin/main
 			)
 			.exceptionHandling(exceptionHandlerConfig)
 			.sessionManagement((sessionManagement) ->

@@ -62,4 +62,5 @@ public class User extends DateEntity {
 	@Lob
 	@Column(name = "introduction")
 	private String introduction;
+
 }

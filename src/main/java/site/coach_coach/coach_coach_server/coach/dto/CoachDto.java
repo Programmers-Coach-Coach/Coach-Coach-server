@@ -1,9 +1,13 @@
 package site.coach_coach.coach_coach_server.coach.dto;
 
-import lombok.*;
-import site.coach_coach.coach_coach_server.sport.dto.*;
+import java.util.List;
 
-import java.util.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import site.coach_coach.coach_coach_server.sport.dto.CoachingSportDto;
 
 @Getter
 @Setter
@@ -18,6 +22,4 @@ public class CoachDto {
 	private int countOfLikes;
 	private boolean liked;
 	private List<CoachingSportDto> coachingSports;
-	private int likes;
-	private int recentLikes;
 }

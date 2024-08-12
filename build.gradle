@@ -33,6 +33,11 @@ repositories {
     mavenCentral()
 }
 
+test {
+    useJUnitPlatform()
+    include '**/*Test.class'
+}
+
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -55,9 +60,9 @@ dependencies {
     testImplementation 'org.mockito:mockito-core'
     testImplementation 'org.mockito:mockito-junit-jupiter'
     implementation("com.slack.api:slack-api-client:1.30.0")
-
-
 }
+
+
 
 jar {
     enabled = false

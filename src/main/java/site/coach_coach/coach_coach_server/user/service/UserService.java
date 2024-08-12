@@ -1,10 +1,6 @@
 package site.coach_coach.coach_coach_server.user.service;
 
-<<<<<<< HEAD
-import org.springframework.beans.factory.annotation.*;
-=======
 import org.springframework.security.core.context.SecurityContextHolder;
->>>>>>> origin/main
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 

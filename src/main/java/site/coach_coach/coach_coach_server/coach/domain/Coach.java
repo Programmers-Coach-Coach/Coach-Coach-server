@@ -1,13 +1,28 @@
 package site.coach_coach.coach_coach_server.coach.domain;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import site.coach_coach.coach_coach_server.common.domain.DateEntity;
+import site.coach_coach.coach_coach_server.sport.domain.CoachingSport;
+import site.coach_coach.coach_coach_server.user.domain.User;
 
-import jakarta.persistence.*;
-import lombok.*;
-import site.coach_coach.coach_coach_server.sport.domain.*;
-import site.coach_coach.coach_coach_server.user.domain.*;
-
-import java.time.*;
-import java.util.*;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "coaches")
@@ -15,45 +30,55 @@ import java.util.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class Coach {
+public class Coach extends DateEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "coach_id")
 	private Long coachId;
 
-	@ManyToOne
-	@JoinColumn(name = "user_id", nullable = false)
+	@OneToOne
+	@JoinColumn(name = "userId")
 	private User user;
 
 	@Lob
-	@Column(name = "coach_introduction", nullable = false)
+	@NotBlank
+	@Column(name = "coach_introduction")
 	private String coachIntroduction;
 
-	@Column(name = "active_center", nullable = false)
+	@Size(max = 100)
+	@Column(name = "active_center")
 	private String activeCenter;
 
-	@Column(name = "active_hours_on", nullable = false)
-	private int activeHoursOn;
+	@Size(max = 100)
+	@Column(name = "active_center_detail")
+	private String activeCenterDetail;
 
-	@Column(name = "active_hours_off", nullable = false)
-	private int activeHoursOff;
+	@NotBlank
+	@Size(max = 100)
+	@NotBlank
+	@Column(name = "active_hours")
+	private String activeHours;
 
-	@Column(name = "chatting_url", nullable = false)
+	@Size(max = 400)
+	@NotBlank
+	@Column(name = "chatting_url")
 	private String chattingUrl;
 
-	@Column(name = "is_open", nullable = false)
-	private boolean isOpen;
+	@NotNull
+	@Column(name = "is_open")
+	private Boolean isOpen;
 
-	@Column(name = "created_at", nullable = false, updatable = false)
+	@NotNull
+	@Column(name = "created_at", updatable = false)
 	private LocalDateTime createdAt = LocalDateTime.now();
 
-	@Column(name = "updated_at", nullable = false)
+	@NotNull
+	@Column(name = "updated_at")
 	private LocalDateTime updatedAt = LocalDateTime.now();
 
 	@OneToMany(mappedBy = "coach")
 	private List<CoachingSport> coachingSports;
 
-	private int likes;
+	private Integer likes;
 }

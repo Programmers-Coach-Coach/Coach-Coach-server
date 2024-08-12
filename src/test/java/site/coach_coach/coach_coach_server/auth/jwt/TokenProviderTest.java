@@ -9,9 +9,9 @@ import java.util.Date;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.core.Authentication;
 import org.springframework.test.context.TestPropertySource;
 
@@ -31,10 +31,10 @@ public class TokenProviderTest {
 	@Autowired
 	private JwtProperties jwtProperties;
 
-	@Mock
+	@MockBean
 	private CustomUserDetailsService customUserDetailsService;
 
-	@Mock
+	@MockBean
 	private RefreshTokenRepository refreshTokenRepository;
 
 	@Autowired
@@ -66,7 +66,7 @@ public class TokenProviderTest {
 		assertThat(claims.getSubject()).isEqualTo(user.getUserId().toString());
 		assertThat(claims.get("nickname")).isEqualTo(user.getNickname());
 		assertThat(claims.get("email")).isEqualTo(user.getEmail());
-		assertThat(claims.get("token_type")).isEqualTo("access");
+		assertThat(claims.get("token_type")).isEqualTo("access_token");
 		assertThat(claims.getExpiration()).isAfter(new Date());
 	}
 
@@ -78,7 +78,7 @@ public class TokenProviderTest {
 
 		Claims claims = tokenProvider.extractClaims(refreshToken);
 		assertThat(claims.getSubject()).isEqualTo(user.getUserId().toString());
-		assertThat(claims.get("token_type")).isEqualTo("refresh");
+		assertThat(claims.get("token_type")).isEqualTo("refresh_token");
 		assertThat(claims.getExpiration()).isAfter(new Date());
 	}
 
@@ -140,7 +140,7 @@ public class TokenProviderTest {
 		assertThat(newAccessToken).isNotNull();
 		Claims claims = tokenProvider.extractClaims(newAccessToken);
 		assertThat(claims.getSubject()).isEqualTo(user.getUserId().toString());
-		assertThat(claims.get("token_type")).isEqualTo("access");
+		assertThat(claims.get("token_type")).isEqualTo("access_token");
 		assertThat(claims.getExpiration()).isAfter(new Date());
 	}
 }

@@ -1,9 +1,21 @@
 package site.coach_coach.coach_coach_server.sport.domain;
 
-import jakarta.persistence.*;
-import lombok.*;
+import java.time.LocalDateTime;
 
-import java.time.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "sports")
@@ -14,22 +26,26 @@ import java.time.*;
 @Builder
 public class Sport {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long sportId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "sport_id")
+	private Long sportId;
 
-    @Column(nullable = false, length = 45)
-    private String sportName;
+	@NotBlank
+	@Size(max = 45)
+	@Column(name = "sport_name")
+	private String sportName;
 
-    @Column(name = "sport_image_url", nullable = false, length = 400)
-    private String sportImageUrl;
+	@NotBlank
+	@Size(max = 400)
+	@Column(name = "sport_image_url")
+	private String sportImageUrl;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+	@NotNull
+	@Column(name = "created_at", updatable = false)
+	private LocalDateTime createdAt = LocalDateTime.now();
 
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt = LocalDateTime.now();
-
-	public Sport(long l, String soccer, String soccerImageUrl) {
-	}
+	@NotNull
+	@Column(name = "updated_at")
+	private LocalDateTime updatedAt = LocalDateTime.now();
 }

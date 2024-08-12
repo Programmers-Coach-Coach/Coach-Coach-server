@@ -1,11 +1,22 @@
 package site.coach_coach.coach_coach_server.sport.domain;
 
+import java.time.LocalDateTime;
 
-import jakarta.persistence.*;
-import lombok.*;
-import site.coach_coach.coach_coach_server.user.domain.*;
-
-import java.time.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import site.coach_coach.coach_coach_server.user.domain.User;
 
 @Entity
 @Table(name = "interested_sports")
@@ -18,6 +29,7 @@ public class InterestedSport {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "interested_sport_id")
 	private Long interestedSportId;
 
 	@ManyToOne
@@ -28,9 +40,11 @@ public class InterestedSport {
 	@JoinColumn(name = "sport_id", nullable = false)
 	private Sport sport;
 
-	@Column(name = "created_at", nullable = false, updatable = false)
+	@NotNull
+	@Column(name = "created_at", updatable = false)
 	private LocalDateTime createdAt = LocalDateTime.now();
 
+	@NotNull
 	@Column(name = "updated_at")
 	private LocalDateTime updatedAt = LocalDateTime.now();
 
