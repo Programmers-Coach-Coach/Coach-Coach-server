@@ -58,7 +58,7 @@ public class TokenService {
 	}
 
 	public String reissueAccessToken(String refreshToken) {
-		if (!tokenProvider.validateRefreshToken(refreshToken) && !existsRefreshToken(refreshToken)) {
+		if (!tokenProvider.validateRefreshToken(refreshToken) || !existsRefreshToken(refreshToken)) {
 			throw new InvalidTokenException(ErrorMessage.INVALID_TOKEN);
 		}
 
