@@ -27,7 +27,7 @@ import site.coach_coach.coach_coach_server.coach.domain.Coach;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CoachingSport {
+public class CoachingSport extends DateEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
