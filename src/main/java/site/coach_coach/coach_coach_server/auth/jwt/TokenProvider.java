@@ -48,9 +48,9 @@ public class TokenProvider {
 		this.accessTokenExpireTime = jwtProperties.accessTokenExpireTime() * MILLIS;
 		this.refreshTokenExpireTime = jwtProperties.refreshTokenExpireTIme() * MILLIS;
 		this.jwtParser = Jwts.parserBuilder()
-				.setSigningKey(secretKey)
-				.requireIssuer(issuer)
-				.build();
+			.setSigningKey(secretKey)
+			.requireIssuer(issuer)
+			.build();
 		this.customUserDetailsService = customUserDetailsService;
 	}
 
@@ -59,15 +59,15 @@ public class TokenProvider {
 		Date expiryDate = new Date(now.getTime() + accessTokenExpireTime);
 
 		return Jwts.builder()
-				.setIssuer(issuer)
-				.setIssuedAt(now)
-				.setExpiration(expiryDate)
-				.setSubject(user.getUserId().toString())
-				.claim("nickname", user.getNickname())
-				.claim("email", user.getEmail())
-				.claim("token_type", "access_token")
-				.signWith(secretKey, SignatureAlgorithm.HS256)
-				.compact();
+			.setIssuer(issuer)
+			.setIssuedAt(now)
+			.setExpiration(expiryDate)
+			.setSubject(user.getUserId().toString())
+			.claim("nickname", user.getNickname())
+			.claim("email", user.getEmail())
+			.claim("token_type", "access_token")
+			.signWith(secretKey, SignatureAlgorithm.HS256)
+			.compact();
 	}
 
 	public String createRefreshToken(User user) {
@@ -75,13 +75,13 @@ public class TokenProvider {
 		Date expiryDate = new Date(now.getTime() + refreshTokenExpireTime);
 
 		return Jwts.builder()
-				.setIssuer(issuer)
-				.setIssuedAt(now)
-				.setExpiration(expiryDate)
-				.setSubject(user.getUserId().toString())
-				.claim("token_type", "refresh_token")
-				.signWith(secretKey, SignatureAlgorithm.HS256)
-				.compact();
+			.setIssuer(issuer)
+			.setIssuedAt(now)
+			.setExpiration(expiryDate)
+			.setSubject(user.getUserId().toString())
+			.claim("token_type", "refresh_token")
+			.signWith(secretKey, SignatureAlgorithm.HS256)
+			.compact();
 	}
 
 	public TokenDto generateJwt(User user) {
@@ -91,11 +91,11 @@ public class TokenProvider {
 		long currentMillis = System.currentTimeMillis();
 
 		return TokenDto.builder()
-				.accessToken(accessToken)
-				.accessTokenExpiresIn(currentMillis + accessTokenExpireTime)
-				.refreshToken(refreshToken)
-				.refreshTokenExpiresIn(currentMillis + refreshTokenExpireTime)
-				.build();
+			.accessToken(accessToken)
+			.accessTokenExpiresIn(currentMillis + accessTokenExpireTime)
+			.refreshToken(refreshToken)
+			.refreshTokenExpiresIn(currentMillis + refreshTokenExpireTime)
+			.build();
 	}
 
 	public Cookie createCookie(String name, String value) {
@@ -126,10 +126,10 @@ public class TokenProvider {
 		}
 
 		return Arrays.stream(cookies)
-				.filter(cookie -> type.equals(cookie.getName()))
-				.map(Cookie::getValue)
-				.findFirst()
-				.orElse(null);
+			.filter(cookie -> type.equals(cookie.getName()))
+			.map(Cookie::getValue)
+			.findFirst()
+			.orElse(null);
 	}
 
 	public Authentication getAuthentication(String token) {
