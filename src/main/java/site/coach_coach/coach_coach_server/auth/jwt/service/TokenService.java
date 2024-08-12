@@ -51,12 +51,14 @@ public class TokenService {
 	}
 
 	public void deleteRefreshToken(Long userId, String refreshToken) {
-		refreshTokenRepository.findByUserUserIdAndRefreshToken(userId, refreshToken)
-			.ifPresent(refreshTokenRepository::delete);
+		RefreshToken token = refreshTokenRepository.findByUserUserIdAndRefreshToken(userId, refreshToken)
+			.orElseThrow(() -> new JwtException(ErrorMessage.NOT_FOUND_TOKEN));
+
+		refreshTokenRepository.delete(token);
 	}
 
 	public String reissueAccessToken(String refreshToken) {
-		if (!tokenProvider.validateRefreshToken(refreshToken)) {
+		if (!tokenProvider.validateRefreshToken(refreshToken) && !existsRefreshToken(refreshToken)) {
 			throw new InvalidTokenException(ErrorMessage.INVALID_TOKEN);
 		}
 

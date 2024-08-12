@@ -20,7 +20,6 @@ import net.datafaker.Faker;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
 import site.coach_coach.coach_coach_server.auth.jwt.dto.TokenDto;
-import site.coach_coach.coach_coach_server.auth.jwt.service.TokenService;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetailsService;
 import site.coach_coach.coach_coach_server.user.domain.User;
@@ -33,9 +32,6 @@ public class TokenProviderTest {
 
 	@MockBean
 	private CustomUserDetailsService customUserDetailsService;
-
-	@MockBean
-	private TokenService tokenService;
 
 	@Autowired
 	private TokenProvider tokenProvider;
@@ -52,7 +48,7 @@ public class TokenProviderTest {
 			"test1234!",
 			null, null, null, null
 		);
-		tokenProvider = new TokenProvider(jwtProperties, customUserDetailsService, tokenService);
+		tokenProvider = new TokenProvider(jwtProperties, customUserDetailsService);
 	}
 
 	@Test

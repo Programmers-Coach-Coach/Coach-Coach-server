@@ -25,7 +25,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import site.coach_coach.coach_coach_server.auth.jwt.dto.TokenDto;
-import site.coach_coach.coach_coach_server.auth.jwt.service.TokenService;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetailsService;
 import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
@@ -41,10 +40,8 @@ public class TokenProvider {
 	private final long refreshTokenExpireTime;
 	private final JwtParser jwtParser;
 	private final CustomUserDetailsService customUserDetailsService;
-	private final TokenService tokenService;
 
-	public TokenProvider(JwtProperties jwtProperties, CustomUserDetailsService customUserDetailsService,
-		TokenService tokenService) {
+	public TokenProvider(JwtProperties jwtProperties, CustomUserDetailsService customUserDetailsService) {
 		byte[] secretKeyBytes = Decoders.BASE64.decode(jwtProperties.secretKey());
 		this.issuer = jwtProperties.issuer();
 		this.secretKey = Keys.hmacShaKeyFor(secretKeyBytes);
@@ -55,7 +52,6 @@ public class TokenProvider {
 			.requireIssuer(issuer)
 			.build();
 		this.customUserDetailsService = customUserDetailsService;
-		this.tokenService = tokenService;
 	}
 
 	public String createAccessToken(User user) {
@@ -171,7 +167,7 @@ public class TokenProvider {
 	}
 
 	public boolean validateRefreshToken(String token) {
-		return validateToken(token, "refresh_token") && tokenService.existsRefreshToken(token);
+		return validateToken(token, "refresh_token");
 	}
 
 	public String regenerateAccessToken(String refreshToken) {
