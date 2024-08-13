@@ -149,7 +149,8 @@ public class TokenProvider {
 	public boolean validateToken(String token, String type) {
 		try {
 			Claims claims = extractClaims(token);
-			if (!claims.get("token_type").equals(type) || token == null) {
+			Object tokenType = claims.get("token_type");
+			if (tokenType == null || !tokenType.equals(type) || token == null) {
 				throw new JwtException(ErrorMessage.NOT_FOUND_TOKEN);
 			}
 			return !claims.getExpiration().before(new Date());
