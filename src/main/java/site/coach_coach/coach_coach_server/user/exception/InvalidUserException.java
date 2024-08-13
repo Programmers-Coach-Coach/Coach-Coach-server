@@ -1,11 +1,11 @@
 package site.coach_coach.coach_coach_server.user.exception;
 
-import java.util.NoSuchElementException;
+import org.springframework.security.core.AuthenticationException;
 
 import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
 
-public class UserNotFoundException extends NoSuchElementException {
-	public UserNotFoundException() {
+public class InvalidUserException extends AuthenticationException {
+	public InvalidUserException() {
 		super(ErrorMessage.NOT_FOUND_USER);
 	}
 }

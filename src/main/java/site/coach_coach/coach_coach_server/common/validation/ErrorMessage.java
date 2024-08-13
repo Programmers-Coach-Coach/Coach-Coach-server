@@ -30,5 +30,6 @@ public final class ErrorMessage {
 	public static final String INVALID_TOKEN = "유효하지 않은 토큰입니다.";
 
 	public static final String NOT_MATCHING = "매칭되지 않은 대상입니다.";
+	public static final String NOT_FOUND_COACH = "존재하지 않는 코치입니다.";
 }
 

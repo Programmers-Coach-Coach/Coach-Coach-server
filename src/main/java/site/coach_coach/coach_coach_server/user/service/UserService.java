@@ -11,8 +11,8 @@ import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
 import site.coach_coach.coach_coach_server.user.domain.User;
 import site.coach_coach.coach_coach_server.user.dto.LoginRequest;
 import site.coach_coach.coach_coach_server.user.dto.SignUpRequest;
+import site.coach_coach.coach_coach_server.user.exception.InvalidUserException;
 import site.coach_coach.coach_coach_server.user.exception.UserAlreadyExistException;
-import site.coach_coach.coach_coach_server.user.exception.UserNotFoundException;
 import site.coach_coach.coach_coach_server.user.repository.UserRepository;
 
 @Service
@@ -45,10 +45,10 @@ public class UserService {
 	public User validateUser(LoginRequest loginRequest) {
 		String email = loginRequest.email();
 		String password = loginRequest.password();
-		User user = userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
+		User user = userRepository.findByEmail(email).orElseThrow(InvalidUserException::new);
 
 		if (!passwordEncoder.matches(password, user.getPassword())) {
-			throw new UserNotFoundException();
+			throw new InvalidUserException();
 		}
 
 		return user;

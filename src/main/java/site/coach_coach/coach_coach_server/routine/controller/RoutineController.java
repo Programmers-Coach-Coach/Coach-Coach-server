@@ -23,27 +23,29 @@ public class RoutineController {
 	private final RoutineService routineService;
 
 	@GetMapping("/v1/routines")
-	public ResponseEntity getRoutineList(@AuthenticationPrincipal CustomUserDetails userDetails,
+	public ResponseEntity<List<RoutineForListDto>> getRoutineList(
+		@AuthenticationPrincipal CustomUserDetails userDetails,
 		@RequestParam(name = "coachId", required = false) Long coachIdParam,
 		@RequestParam(name = "userId", required = false) Long userIdParam) {
-		Long userIdByJwt = userDetails.getUserId();
-		RoutineListRequest routineListRequest;
 
+		Long userIdByJwt = userDetails.getUserId();
+		RoutineListRequest routineListRequest = createRoutineListRequest(userIdParam, coachIdParam, userIdByJwt);
+
+		routineService.checkIsMatching(routineListRequest);
+
+		List<RoutineForListDto> routineList = routineService.getRoutineForList(routineListRequest);
+		return ResponseEntity.ok(routineList);
+	}
+
+	public RoutineListRequest createRoutineListRequest(Long userIdParam, Long coachIdParam, Long userIdByJwt) {
 		if (coachIdParam == null && userIdParam == null) {
-			routineListRequest = new RoutineListRequest(userIdByJwt, null);
-			List<RoutineForListDto> routineListByMyself = routineService.getRoutineForList(routineListRequest);
-			return ResponseEntity.ok(routineListByMyself);
+			return new RoutineListRequest(userIdByJwt, null);
 		} else if (coachIdParam == null) {
 			Long coachId = routineService.getCoachId(userIdByJwt);
-			routineListRequest = new RoutineListRequest(userIdParam, coachId);
+			return new RoutineListRequest(userIdParam, coachId);
 		} else {
-			routineListRequest = new RoutineListRequest(userIdByJwt, coachIdParam);
+			return new RoutineListRequest(userIdByJwt, coachIdParam);
 		}
-
-		routineService.getIsMatching(routineListRequest);
-
-		List<RoutineForListDto> routineListByCoach = routineService.getRoutineForList(routineListRequest);
-		return ResponseEntity.ok(routineListByCoach);
 	}
 
 	@GetMapping("/v1/test")

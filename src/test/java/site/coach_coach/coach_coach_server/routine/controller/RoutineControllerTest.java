@@ -46,7 +46,7 @@ public class RoutineControllerTest {
 	private RoutineController routineController;
 
 	private RoutineListRequest routineListRequestMyself;
-	private RoutineListRequest routineListRequestCoach;
+	private RoutineListRequest routineListRequest;
 
 	private RoutineForListDto routine;
 
@@ -75,6 +75,7 @@ public class RoutineControllerTest {
 		);
 		SecurityContextHolder.setContext(securityContext);
 
+		doNothing().when(routineService).checkIsMatching(routineListRequestMyself);
 		when(routineService.getRoutineForList(routineListRequestMyself)).thenReturn(routineList);
 
 		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/routines"))
@@ -91,7 +92,7 @@ public class RoutineControllerTest {
 		Long userIdByParam = 2L;
 		Long coachId = 2L;
 		when(routineService.getCoachId(userIdByJwt)).thenReturn(2L);
-		routineListRequestCoach = new RoutineListRequest(userIdByParam, coachId);
+		routineListRequest = new RoutineListRequest(userIdByParam, coachId);
 
 		// Mock CustomUserDetails
 		CustomUserDetails mockUserDetails = mock(CustomUserDetails.class);
@@ -104,8 +105,8 @@ public class RoutineControllerTest {
 		);
 		SecurityContextHolder.setContext(securityContext);
 
-		doNothing().when(routineService).getIsMatching(routineListRequestCoach);
-		when(routineService.getRoutineForList(routineListRequestCoach)).thenReturn(routineList);
+		doNothing().when(routineService).checkIsMatching(routineListRequest);
+		when(routineService.getRoutineForList(routineListRequest)).thenReturn(routineList);
 
 		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/routines"))
 			.andExpect(MockMvcResultMatchers.status().isOk())
