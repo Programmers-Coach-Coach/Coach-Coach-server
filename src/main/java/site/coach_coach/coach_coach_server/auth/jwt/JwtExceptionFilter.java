@@ -1,8 +1,6 @@
 package site.coach_coach.coach_coach_server.auth.jwt;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -19,6 +17,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import site.coach_coach.coach_coach_server.common.response.ErrorResponse;
 import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
 
 @Component
@@ -47,9 +46,10 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
 		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 		response.setContentType("application/json");
 
-		Map<String, Object> errorResponse = new HashMap<>();
-		errorResponse.put("message", message);
-		errorResponse.put("statusCode", HttpServletResponse.SC_UNAUTHORIZED);
+		ErrorResponse errorResponse = new ErrorResponse(
+			HttpServletResponse.SC_UNAUTHORIZED,
+			message
+		);
 
 		String jsonResponse = objectMapper.writeValueAsString(errorResponse);
 		response.getWriter().write(jsonResponse);

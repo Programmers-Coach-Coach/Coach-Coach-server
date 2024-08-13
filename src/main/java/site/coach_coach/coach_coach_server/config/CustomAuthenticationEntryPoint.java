@@ -1,8 +1,6 @@
 package site.coach_coach.coach_coach_server.config;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -12,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import site.coach_coach.coach_coach_server.common.response.ErrorResponse;
 import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
 
 @Component
@@ -25,9 +24,10 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 		response.setContentType("application/json");
 
-		Map<String, Object> errorResponse = new HashMap<>();
-		errorResponse.put("statusCode", HttpServletResponse.SC_UNAUTHORIZED);
-		errorResponse.put("message", ErrorMessage.NOT_FOUND_TOKEN);
+		ErrorResponse errorResponse = new ErrorResponse(
+			HttpServletResponse.SC_UNAUTHORIZED,
+			ErrorMessage.NOT_FOUND_TOKEN
+		);
 
 		String jsonResponse = objectMapper.writeValueAsString(errorResponse);
 		response.getWriter().write(jsonResponse);
