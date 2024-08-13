@@ -44,11 +44,11 @@ public class User extends DateEntity {
 
 	@Column(name = "password", nullable = false, length = 200)
 	@NotBlank
-	@Size(max = 128)
+	@Size(max = 200)
 	private String password;
 
 	@Column(name = "profile_image_url", length = 500)
-	@Size(max = 400)
+	@Size(max = 500)
 	private String profileImageUrl;
 
 	@Column(name = "gender")
