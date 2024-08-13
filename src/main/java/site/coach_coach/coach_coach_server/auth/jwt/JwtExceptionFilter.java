@@ -47,8 +47,9 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
 		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 		response.setContentType("application/json");
 
-		Map<String, String> errorResponse = new HashMap<>();
+		Map<String, Object> errorResponse = new HashMap<>();
 		errorResponse.put("message", message);
+		errorResponse.put("statusCode", HttpServletResponse.SC_UNAUTHORIZED);
 
 		String jsonResponse = objectMapper.writeValueAsString(errorResponse);
 		response.getWriter().write(jsonResponse);

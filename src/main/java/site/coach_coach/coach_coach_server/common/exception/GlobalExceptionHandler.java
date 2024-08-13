@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
+import site.coach_coach.coach_coach_server.common.response.ErrorResponse;
 import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
 import site.coach_coach.coach_coach_server.user.exception.UserAlreadyExistException;
 import site.coach_coach.coach_coach_server.user.exception.UserNotFoundException;

@@ -25,6 +25,14 @@ public class TokenFilter extends OncePerRequestFilter {
 		throws ServletException, IOException {
 		response.setCharacterEncoding("utf-8");
 
+		String requestUri = request.getRequestURI();
+		if (requestUri.equals("/api/v1/auth/login") || requestUri.equals("/api/v1/auth/signup") || requestUri.equals(
+			"/api/v1/test") || requestUri.equals("/api/v1/auth/check-email") || requestUri.equals(
+			"/api/v1/auth/check-nickname")) {
+			filterChain.doFilter(request, response);
+			return;
+		}
+
 		String accessToken = tokenProvider.getCookieValue(request, ACCESS_TOKEN);
 
 		if (tokenProvider.validateAccessToken(accessToken)) {
