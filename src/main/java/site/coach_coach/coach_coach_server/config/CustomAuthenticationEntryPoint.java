@@ -25,7 +25,8 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 		response.setContentType("application/json");
 
-		Map<String, String> errorResponse = new HashMap<>();
+		Map<String, Object> errorResponse = new HashMap<>();
+		errorResponse.put("statusCode", HttpServletResponse.SC_UNAUTHORIZED);
 		errorResponse.put("message", ErrorMessage.NOT_FOUND_TOKEN);
 
 		String jsonResponse = objectMapper.writeValueAsString(errorResponse);
