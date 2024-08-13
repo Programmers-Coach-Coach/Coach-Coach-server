@@ -1,8 +1,5 @@
 package site.coach_coach.coach_coach_server.mainInfo.controller;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,12 +19,15 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
+
 import site.coach_coach.coach_coach_server.auth.jwt.TokenProvider;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
 import site.coach_coach.coach_coach_server.maininfo.controller.MainInfoController;
 import site.coach_coach.coach_coach_server.maininfo.dto.MainResponseDto;
-import site.coach_coach.coach_coach_server.sport.dto.SportDto;
 import site.coach_coach.coach_coach_server.coach.dto.CoachDto;
+import site.coach_coach.coach_coach_server.sport.dto.SportDto;
 import site.coach_coach.coach_coach_server.maininfo.service.MainService;
 
 @WebMvcTest(MainInfoController.class)
