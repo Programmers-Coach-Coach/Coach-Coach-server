@@ -13,29 +13,28 @@ import site.coach_coach.coach_coach_server.user.domain.User;
 public class CoachDtoBuilder {
 	public static CoachDto buildCoachDto(Coach coach, User user, UserCoachLikeRepository userCoachLikeRepository) {
 		List<CoachingSportDto> coachingSports = coach.getCoachingSports().stream()
-			.map(cs -> CoachingSportDto.builder()
-				.sportId(cs.getSport().getSportId())
-				.sportName(cs.getSport().getSportName())
-				.build())
+			.map(cs -> new CoachingSportDto(
+				cs.getSport().getSportId(),
+				cs.getSport().getSportName()
+			))
 			.collect(Collectors.toList());
 
-		int countOfLikes = getCountOfLikesSince(coach, userCoachLikeRepository);
+		int countOfLikes = getCountOfLikes(coach, userCoachLikeRepository);
 		boolean liked = user != null && isLikedByUser(user, coach, userCoachLikeRepository);
 
-		return CoachDto.builder()
-			.coachId(coach.getCoachId())
-			.coachName(coach.getUser().getNickname())
-			.profileImageUrl(coach.getUser().getProfileImageUrl())
-			.description(coach.getCoachIntroduction())
-			.countOfLikes(countOfLikes)
-			.liked(liked)
-			.coachingSports(coachingSports)
-			.build();
+		return new CoachDto(
+			coach.getCoachId(),
+			coach.getUser().getNickname(),
+			coach.getUser().getProfileImageUrl(),
+			coach.getCoachIntroduction(),
+			countOfLikes,
+			liked,
+			coachingSports
+		);
 	}
 
-	private static int getCountOfLikesSince(Coach coach, UserCoachLikeRepository userCoachLikeRepository) {
-		LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
-		return userCoachLikeRepository.countLikesByCoachAndCreatedAtAfter(coach.getCoachId(), oneWeekAgo);
+	private static int getCountOfLikes(Coach coach, UserCoachLikeRepository userCoachLikeRepository) {
+		return userCoachLikeRepository.countByCoach_CoachId(coach.getCoachId());
 	}
 
 	private static boolean isLikedByUser(User user, Coach coach, UserCoachLikeRepository userCoachLikeRepository) {
