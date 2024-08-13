@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.coach.repository.CoachRepository;
 import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
-import site.coach_coach.coach_coach_server.matching.Dto.CheckMatchingDto;
+import site.coach_coach.coach_coach_server.matching.domain.Matching;
 import site.coach_coach.coach_coach_server.matching.repository.MatchingRepository;
 import site.coach_coach.coach_coach_server.routine.domain.Routine;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineForListDto;
@@ -29,7 +29,7 @@ public class RoutineService {
 
 	public void getIsMatching(RoutineListRequest routineListRequest) {
 		matchingRepository.findByUserIdAndCoachId(routineListRequest.userId(), routineListRequest.coachId())
-			.map(CheckMatchingDto::getIsMatching)
+			.map(Matching::getIsMatching)
 			.filter(isMatching -> isMatching) // isMatching이 true일 때만 통과
 			.orElseThrow(() -> new NotMatchingException(ErrorMessage.NOT_MATCHING));
 	}
