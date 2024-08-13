@@ -25,8 +25,8 @@ public class RoutineService {
 	private final MatchingRepository matchingRepository;
 	private final CoachRepository coachRepository;
 
-	public Boolean getIsMatching(RoutineListRequest routineListRequest) {
-		return matchingRepository.findByUserIdAndCoachId(routineListRequest.userId(), routineListRequest.coachId())
+	public void getIsMatching(RoutineListRequest routineListRequest) {
+		matchingRepository.findByUserIdAndCoachId(routineListRequest.userId(), routineListRequest.coachId())
 			.map(CheckMatchingDto::getIsMatching)
 			.filter(isMatching -> isMatching) // isMatching이 true일 때만 통과
 			.orElseThrow(() -> new NotMatchingException(ErrorMessage.NOT_MATCHING));
@@ -40,6 +40,10 @@ public class RoutineService {
 			.profileImageUrl(coachInfoForRoutineList.getProfileImageUrl())
 			.build();
 		return routineListCoachInfoDto;
+	}
+
+	public Long getCoachId(Long userIdByJWT) {
+		return coachRepository.findByUserId(userIdByJWT).getCoachId();
 	}
 
 	public List<RoutineForListDto> getRoutineForList(RoutineListRequest routineListRequest) {

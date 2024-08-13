@@ -9,7 +9,6 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -25,7 +24,6 @@ import site.coach_coach.coach_coach_server.auth.jwt.TokenFilter;
 import site.coach_coach.coach_coach_server.auth.jwt.TokenProvider;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineForListDto;
-import site.coach_coach.coach_coach_server.routine.dto.RoutineListCoachInfoDto;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineListRequest;
 import site.coach_coach.coach_coach_server.routine.services.RoutineService;
 
@@ -49,32 +47,26 @@ public class RoutineControllerTest {
 
 	private RoutineListRequest routineListRequestMyself;
 	private RoutineListRequest routineListRequestCoach;
-	private RoutineListRequest routineListRequestNoMatch;
 
 	private RoutineForListDto routine;
-
-	private RoutineListCoachInfoDto routineListCoachInfo;
 
 	private List<RoutineForListDto> routineList;
 
 	@BeforeEach
 	public void setUp() {
-		MockitoAnnotations.openMocks(this);
-
 		routine = new RoutineForListDto(1L, "routineName", "sportName");
 		routineList = List.of(routine);
-		routineListCoachInfo = new RoutineListCoachInfoDto(1L, "coachName", "coachProfileUrl");
 	}
 
 	@Test
-	public void getRoutineListWithCoachIdTest() throws Exception {
+	public void getRoutineListByMyself() throws Exception {
 		// Given
-		Long userId = 1L;
-		routineListRequestCoach = new RoutineListRequest(1L, null);
+		Long userIdByJWT = 1L;
+		routineListRequestMyself = new RoutineListRequest(userIdByJWT, null);
 
 		// Mock CustomUserDetails
 		CustomUserDetails mockUserDetails = mock(CustomUserDetails.class);
-		when(mockUserDetails.getUserId()).thenReturn(userId);
+		when(mockUserDetails.getUserId()).thenReturn(userIdByJWT);
 
 		// Set the SecurityContext with mockUserDetails
 		SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
@@ -84,25 +76,24 @@ public class RoutineControllerTest {
 		SecurityContextHolder.setContext(securityContext);
 
 		when(routineService.getRoutineForList(routineListRequestCoach)).thenReturn(routineList);
-		when(routineService.getRoutineListCoachInfo(routineListRequestCoach)).thenReturn(routineListCoachInfo);
 
 		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/routines"))
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn();
 
-		assertThat(result.getResponse().getContentAsString().contains(routineListCoachInfo.coachId().toString()));
+		assertThat(result.getResponse().getContentAsString().contains(routineList.getFirst().routineName()));
 	}
 
 	@Test
-	public void getRoutineListWithoutCoachIdTest() throws Exception {
+	public void getRoutineListByCoach() throws Exception {
 		// Given
-		Long userId = 1L;
-		Long coachId = null;
-		routineListRequestMyself = new RoutineListRequest(1L, 1L);
+		Long userIdByJWT = 1L;
+		Long userIdByParam = 2L;
+		routineListRequestCoach = new RoutineListRequest(userIdByParam, userIdByJWT);
 
 		// Mock CustomUserDetails
 		CustomUserDetails mockUserDetails = mock(CustomUserDetails.class);
-		when(mockUserDetails.getUserId()).thenReturn(userId);
+		when(mockUserDetails.getUserId()).thenReturn(userIdByJWT);
 
 		// Set the SecurityContext with mockUserDetails
 		SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
@@ -111,12 +102,12 @@ public class RoutineControllerTest {
 		);
 		SecurityContextHolder.setContext(securityContext);
 
-		when(routineService.getRoutineForList(routineListRequestMyself)).thenReturn(routineList);
+		when(routineService.getRoutineForList(routineListRequestCoach)).thenReturn(routineList);
 
 		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/routines"))
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn();
 
-		assertThat(result.getResponse().getContentAsString().contains(routine.routineName()));
+		assertThat(result.getResponse().getContentAsString().contains(routineList.getFirst().routineName()));
 	}
 }

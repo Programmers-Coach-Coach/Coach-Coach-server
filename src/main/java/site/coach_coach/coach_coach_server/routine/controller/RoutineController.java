@@ -13,9 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineForListDto;
-import site.coach_coach.coach_coach_server.routine.dto.RoutineListCoachInfoDto;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineListRequest;
-import site.coach_coach.coach_coach_server.routine.dto.RoutineListResponse;
 import site.coach_coach.coach_coach_server.routine.services.RoutineService;
 
 @RestController
@@ -26,31 +24,27 @@ public class RoutineController {
 
 	@GetMapping("/v1/routines")
 	public ResponseEntity getRoutineList(@AuthenticationPrincipal CustomUserDetails userDetails,
-		@RequestParam(name = "coachId", required = false) Long coachId) {
-		Long userId = userDetails.getUserId();
-		RoutineListRequest routineListRequest = new RoutineListRequest(userId, coachId);
+		@RequestParam(name = "coachId", required = false) Long coachIdParam,
+		@RequestParam(name = "userId", required = false) Long userIdParam) {
+		Long userIdByJWT = userDetails.getUserId();
+		RoutineListRequest routineListRequest;
 
-		if (coachId == null) {
-			return getRoutineListByMyself(routineListRequest);
+		if (coachIdParam == null && userIdParam == null) {
+			routineListRequest = new RoutineListRequest(userIdByJWT, null);
+			List<RoutineForListDto> routineListByMyself = routineService.getRoutineForList(routineListRequest);
+			return ResponseEntity.ok(routineListByMyself);
+		} else if (coachIdParam == null) {
+			Long coachId = routineService.getCoachId(userIdByJWT);
+			System.out.println(coachId);
+			routineListRequest = new RoutineListRequest(userIdParam, coachId);
 		} else {
-			routineService.getIsMatching(routineListRequest);
-			return getRoutineListByCoach(routineListRequest);
+			routineListRequest = new RoutineListRequest(userIdByJWT, coachIdParam);
 		}
-	}
 
-	private ResponseEntity<RoutineListResponse> getRoutineListByMyself(RoutineListRequest routineListRequest) {
-		List<RoutineForListDto> routineListByMyself = routineService.getRoutineForList(routineListRequest);
-		RoutineListResponse routineListResponse = new RoutineListResponse(null, routineListByMyself);
-		return ResponseEntity.ok(routineListResponse);
-	}
+		routineService.getIsMatching(routineListRequest);
 
-	private ResponseEntity<RoutineListResponse> getRoutineListByCoach(RoutineListRequest routineListRequest) {
-		RoutineListCoachInfoDto routineListCoachInfoDto = routineService.getRoutineListCoachInfo(
-			routineListRequest);
 		List<RoutineForListDto> routineListByCoach = routineService.getRoutineForList(routineListRequest);
-		RoutineListResponse routineListResponse = new RoutineListResponse(routineListCoachInfoDto,
-			routineListByCoach);
-		return ResponseEntity.ok(routineListResponse);
+		return ResponseEntity.ok(routineListByCoach);
 	}
 
 	@GetMapping("/v1/test")
