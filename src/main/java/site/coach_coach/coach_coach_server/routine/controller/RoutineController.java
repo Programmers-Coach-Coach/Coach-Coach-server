@@ -13,9 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineForListDto;
-import site.coach_coach.coach_coach_server.routine.dto.RoutineListCoachInfoDto;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineListRequest;
-import site.coach_coach.coach_coach_server.routine.dto.RoutineListResponse;
 import site.coach_coach.coach_coach_server.routine.services.RoutineService;
 
 @RestController
@@ -25,36 +23,29 @@ public class RoutineController {
 	private final RoutineService routineService;
 
 	@GetMapping("/v1/routines")
-	public ResponseEntity getRoutineList(@AuthenticationPrincipal CustomUserDetails userDetails,
-		@RequestParam(name = "coachId", required = false) Long coachId) {
-		Long userId = userDetails.getUserId();
-		RoutineListRequest routineListRequest = new RoutineListRequest(userId, coachId);
+	public ResponseEntity<List<RoutineForListDto>> getRoutineList(
+		@AuthenticationPrincipal CustomUserDetails userDetails,
+		@RequestParam(name = "coachId", required = false) Long coachIdParam,
+		@RequestParam(name = "userId", required = false) Long userIdParam) {
 
-		if (coachId == null) {
-			return getRoutineListByMyself(routineListRequest);
+		Long userIdByJwt = userDetails.getUserId();
+		RoutineListRequest routineListRequest = createRoutineListRequest(userIdParam, coachIdParam, userIdByJwt);
+
+		routineService.checkIsMatching(routineListRequest);
+
+		List<RoutineForListDto> routineList = routineService.getRoutineForList(routineListRequest);
+		return ResponseEntity.ok(routineList);
+	}
+
+	public RoutineListRequest createRoutineListRequest(Long userIdParam, Long coachIdParam, Long userIdByJwt) {
+		if (coachIdParam == null && userIdParam == null) {
+			return new RoutineListRequest(userIdByJwt, null);
+		} else if (coachIdParam == null) {
+			Long coachId = routineService.getCoachId(userIdByJwt);
+			return new RoutineListRequest(userIdParam, coachId);
 		} else {
-			Boolean isMatching = routineService.getIsMatching(routineListRequest);
-			if (!isMatching) {
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body("message : 매칭되지 않은 코치입니다.");
-			} else {
-				return getRoutineListByCoach(routineListRequest);
-			}
+			return new RoutineListRequest(userIdByJwt, coachIdParam);
 		}
-	}
-
-	private ResponseEntity<RoutineListResponse> getRoutineListByMyself(RoutineListRequest routineListRequest) {
-		List<RoutineForListDto> routineListByMyself = routineService.getRoutineForList(routineListRequest);
-		RoutineListResponse routineListResponse = new RoutineListResponse(null, routineListByMyself);
-		return ResponseEntity.ok(routineListResponse);
-	}
-
-	private ResponseEntity<RoutineListResponse> getRoutineListByCoach(RoutineListRequest routineListRequest) {
-		RoutineListCoachInfoDto routineListCoachInfoDto = routineService.getRoutineListCoachInfo(
-			routineListRequest);
-		List<RoutineForListDto> routineListByCoach = routineService.getRoutineForList(routineListRequest);
-		RoutineListResponse routineListResponse = new RoutineListResponse(routineListCoachInfoDto,
-			routineListByCoach);
-		return ResponseEntity.ok(routineListResponse);
 	}
 
 	@GetMapping("/v1/test")

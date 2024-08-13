@@ -7,14 +7,16 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.coach.repository.CoachRepository;
-import site.coach_coach.coach_coach_server.matching.Dto.CheckMatchingDto;
+import site.coach_coach.coach_coach_server.common.exception.UserNotFoundException;
+import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
+import site.coach_coach.coach_coach_server.matching.domain.Matching;
 import site.coach_coach.coach_coach_server.matching.repository.MatchingRepository;
 import site.coach_coach.coach_coach_server.routine.domain.Routine;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineForListDto;
-import site.coach_coach.coach_coach_server.routine.dto.RoutineListCoachInfoDto;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineListRequest;
+import site.coach_coach.coach_coach_server.routine.exception.NotMatchingException;
 import site.coach_coach.coach_coach_server.routine.repository.RoutineRepository;
-import site.coach_coach.coach_coach_server.user.domain.User;
+import site.coach_coach.coach_coach_server.user.repository.UserRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -22,21 +24,21 @@ public class RoutineService {
 	private final RoutineRepository routineRepository;
 	private final MatchingRepository matchingRepository;
 	private final CoachRepository coachRepository;
+	private final UserRepository userRepository;
 
-	public Boolean getIsMatching(RoutineListRequest routineListRequest) {
-		return matchingRepository.findByUserIdAndCoachId(routineListRequest.userId(), routineListRequest.coachId())
-			.map(CheckMatchingDto::getIsMatching)
-			.orElseThrow(); // 반환값이 null인 경우 [404, message : No value present] 응답
+	public void checkIsMatching(RoutineListRequest routineListRequest) {
+		if (routineListRequest.coachId() != null) {
+			matchingRepository.findByUserIdAndCoachId(routineListRequest.userId(), routineListRequest.coachId())
+				.map(Matching::getIsMatching)
+				.filter(isMatching -> isMatching) // isMatching이 true일 때만 통과
+				.orElseThrow(() -> new NotMatchingException(ErrorMessage.NOT_MATCHING));
+		}
 	}
 
-	public RoutineListCoachInfoDto getRoutineListCoachInfo(RoutineListRequest routineListRequest) {
-		User coachInfoForRoutineList = coachRepository.findById(routineListRequest.coachId()).get().getUser();
-		RoutineListCoachInfoDto routineListCoachInfoDto = RoutineListCoachInfoDto.builder()
-			.coachId(routineListRequest.coachId())
-			.nickname(coachInfoForRoutineList.getNickname())
-			.profileImageUrl(coachInfoForRoutineList.getProfileImageUrl())
-			.build();
-		return routineListCoachInfoDto;
+	public Long getCoachId(Long userIdByJwt) {
+		return userRepository.findById(userIdByJwt)
+			.orElseThrow(() -> new UserNotFoundException(ErrorMessage.NOT_FOUND_COACH))
+			.getCoach().getCoachId();
 	}
 
 	public List<RoutineForListDto> getRoutineForList(RoutineListRequest routineListRequest) {

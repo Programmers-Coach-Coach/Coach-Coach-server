@@ -54,6 +54,6 @@ public class Coach extends DateEntity {
 	private Boolean isOpen;
 
 	@OneToOne
-	@JoinColumn(name = "userId")
+	@JoinColumn(name = "user_id")
 	private User user;
 }

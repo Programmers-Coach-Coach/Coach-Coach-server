@@ -20,8 +20,8 @@ import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
 import site.coach_coach.coach_coach_server.user.domain.User;
 import site.coach_coach.coach_coach_server.user.dto.LoginRequest;
 import site.coach_coach.coach_coach_server.user.dto.SignUpRequest;
+import site.coach_coach.coach_coach_server.user.exception.InvalidUserException;
 import site.coach_coach.coach_coach_server.user.exception.UserAlreadyExistException;
-import site.coach_coach.coach_coach_server.user.exception.UserNotFoundException;
 import site.coach_coach.coach_coach_server.user.repository.UserRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -114,7 +114,7 @@ public class UserServiceTest {
 	public void validateUserEmailFailTest() {
 		when(userRepository.findByEmail(loginRequest.email())).thenReturn(Optional.empty());
 
-		assertThrows(UserNotFoundException.class, () -> {
+		assertThrows(InvalidUserException.class, () -> {
 			userService.validateUser(loginRequest);
 		});
 	}
@@ -125,7 +125,7 @@ public class UserServiceTest {
 		when(userRepository.findByEmail(loginRequest.email())).thenReturn(Optional.of(user));
 		when(passwordEncoder.matches(loginRequest.password(), user.getPassword())).thenReturn(false);
 
-		assertThrows(UserNotFoundException.class, () -> {
+		assertThrows(InvalidUserException.class, () -> {
 			userService.validateUser(loginRequest);
 		});
 	}

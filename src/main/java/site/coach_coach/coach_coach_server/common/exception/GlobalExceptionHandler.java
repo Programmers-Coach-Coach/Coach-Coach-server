@@ -17,8 +17,8 @@ import org.springframework.web.method.annotation.HandlerMethodValidationExceptio
 
 import site.coach_coach.coach_coach_server.common.response.ErrorResponse;
 import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
+import site.coach_coach.coach_coach_server.user.exception.InvalidUserException;
 import site.coach_coach.coach_coach_server.user.exception.UserAlreadyExistException;
-import site.coach_coach.coach_coach_server.user.exception.UserNotFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -89,6 +89,13 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 			.body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage()));
 	}
+
+	@ExceptionHandler(InvalidUserException.class)
+	public ResponseEntity<ErrorResponse> handleInvalidUserException(InvalidUserException ex) {
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+			.body(new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), ex.getMessage()));
+	}
+
 	//
 	// @ExceptionHandler(Exception.class)
 	// public ResponseEntity<ErrorResponse> handleException(Exception ex) {
