@@ -12,9 +12,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import site.coach_coach.coach_coach_server.coach.domain.Coach;
-import site.coach_coach.coach_coach_server.common.domain.*;
+import site.coach_coach.coach_coach_server.common.domain.DateEntity;
 import site.coach_coach.coach_coach_server.user.domain.User;
 
 

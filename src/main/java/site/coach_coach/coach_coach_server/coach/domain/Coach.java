@@ -1,5 +1,7 @@
 package site.coach_coach.coach_coach_server.coach.domain;
 
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -21,7 +23,7 @@ import site.coach_coach.coach_coach_server.common.domain.DateEntity;
 import site.coach_coach.coach_coach_server.sport.domain.CoachingSport;
 import site.coach_coach.coach_coach_server.user.domain.User;
 
-import java.util.List;
+
 
 @Entity
 @Table(name = "coaches")
@@ -37,7 +39,7 @@ public class Coach extends DateEntity {
 	private Long coachId;
 
 	@OneToOne
-	@JoinColumn(name = "userId")
+	@JoinColumn(name = "user_Id")
 	private User user;
 
 	@Lob
