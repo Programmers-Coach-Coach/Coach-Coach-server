@@ -1,11 +1,15 @@
 package site.coach_coach.coach_coach_server.mainInfo.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -19,16 +23,13 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
-
 import site.coach_coach.coach_coach_server.auth.jwt.TokenProvider;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
+import site.coach_coach.coach_coach_server.coach.dto.CoachDto;
 import site.coach_coach.coach_coach_server.maininfo.controller.MainInfoController;
 import site.coach_coach.coach_coach_server.maininfo.dto.MainResponseDto;
-import site.coach_coach.coach_coach_server.coach.dto.CoachDto;
-import site.coach_coach.coach_coach_server.sport.dto.SportDto;
 import site.coach_coach.coach_coach_server.maininfo.service.MainService;
+import site.coach_coach.coach_coach_server.sport.dto.SportDto;
 
 @WebMvcTest(MainInfoController.class)
 public class MainInfoControllerTest {
