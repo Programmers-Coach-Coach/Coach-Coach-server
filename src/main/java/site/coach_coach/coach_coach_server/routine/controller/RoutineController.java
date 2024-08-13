@@ -35,7 +35,6 @@ public class RoutineController {
 			return ResponseEntity.ok(routineListByMyself);
 		} else if (coachIdParam == null) {
 			Long coachId = routineService.getCoachId(userIdByJWT);
-			System.out.println(coachId);
 			routineListRequest = new RoutineListRequest(userIdParam, coachId);
 		} else {
 			routineListRequest = new RoutineListRequest(userIdByJWT, coachIdParam);

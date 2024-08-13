@@ -17,6 +17,7 @@ import site.coach_coach.coach_coach_server.routine.dto.RoutineListRequest;
 import site.coach_coach.coach_coach_server.routine.exception.NotMatchingException;
 import site.coach_coach.coach_coach_server.routine.repository.RoutineRepository;
 import site.coach_coach.coach_coach_server.user.domain.User;
+import site.coach_coach.coach_coach_server.user.repository.UserRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +25,7 @@ public class RoutineService {
 	private final RoutineRepository routineRepository;
 	private final MatchingRepository matchingRepository;
 	private final CoachRepository coachRepository;
+	private final UserRepository userRepository;
 
 	public void getIsMatching(RoutineListRequest routineListRequest) {
 		matchingRepository.findByUserIdAndCoachId(routineListRequest.userId(), routineListRequest.coachId())
@@ -43,7 +45,7 @@ public class RoutineService {
 	}
 
 	public Long getCoachId(Long userIdByJWT) {
-		return coachRepository.findByUserId(userIdByJWT).getCoachId();
+		return userRepository.findById(userIdByJWT).get().getCoach().getCoachId();
 	}
 
 	public List<RoutineForListDto> getRoutineForList(RoutineListRequest routineListRequest) {

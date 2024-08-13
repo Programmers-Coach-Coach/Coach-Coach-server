@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -16,6 +17,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.common.domain.DateEntity;
 import site.coach_coach.coach_coach_server.common.domain.GenderEnum;
 
@@ -66,4 +68,7 @@ public class User extends DateEntity {
 	@Lob
 	@Column(name = "introduction")
 	private String introduction;
+
+	@OneToOne(mappedBy = "user")
+	private Coach coach;
 }
