@@ -42,12 +42,12 @@ public class User extends DateEntity {
 	@Size(max = 45)
 	private String email;
 
-	@Column(name = "password", nullable = false, length = 128)
+	@Column(name = "password", nullable = false, length = 200)
 	@NotBlank
 	@Size(max = 128)
 	private String password;
 
-	@Column(name = "profile_image_url", length = 400)
+	@Column(name = "profile_image_url", length = 500)
 	@Size(max = 400)
 	private String profileImageUrl;
 
@@ -55,9 +55,13 @@ public class User extends DateEntity {
 	@Enumerated(EnumType.STRING)
 	private GenderEnum gender;
 
-	@Column(name = "local_info", length = 200)
-	@Size(max = 200)
-	private String localInfo;
+	@Column(name = "local_address", length = 100)
+	@Size(max = 100)
+	private String localAddress;
+
+	@Column(name = "local_address_detail", length = 100)
+	@Size(max = 100)
+	private String localAddressDetail;
 
 	@Lob
 	@Column(name = "introduction")
