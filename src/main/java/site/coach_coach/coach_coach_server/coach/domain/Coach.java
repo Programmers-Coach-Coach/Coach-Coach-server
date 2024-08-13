@@ -17,12 +17,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;import site.coach_coach.coach_coach_server.common.domain.DateEntity;
+import site.coach_coach.coach_coach_server.common.domain.DateEntity;
 import site.coach_coach.coach_coach_server.sport.domain.CoachingSport;
 import site.coach_coach.coach_coach_server.user.domain.User;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -72,6 +70,4 @@ public class Coach extends DateEntity {
 
 	@OneToMany(mappedBy = "coach")
 	private List<CoachingSport> coachingSports;
-
-	private Integer likes;
 }

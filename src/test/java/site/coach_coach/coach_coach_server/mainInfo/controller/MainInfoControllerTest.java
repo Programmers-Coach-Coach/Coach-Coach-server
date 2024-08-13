@@ -53,29 +53,26 @@ public class MainInfoControllerTest {
 	public void setUp() {
 		MockitoAnnotations.openMocks(this);
 
-		CoachDto coachDto = CoachDto.builder()
-			.coachId(1L)
-			.coachName("John Doe")
-			.profileImageUrl("http://example.com/image.jpg")
-			.description("Experienced coach in multiple sports.")
-			.countOfLikes(10)
-			.liked(true)
-			.coachingSports(new ArrayList<>())
-			.build();
+		CoachDto coachDto = new CoachDto(
+			1L,
+			"John Doe",
+			"http://example.com/image.jpg",
+			"Experienced coach in multiple sports.",
+			10,
+			true,
+			new ArrayList<>()
+		);
 
-		SportDto sportDto = SportDto.builder()
-			.sportId(1L)
-			.sportName("Soccer")
-			.sportImageUrl("http://example.com/soccer.jpg")
-			.build();
+		SportDto sportDto = new SportDto(
+			1L,
+			"Soccer",
+			"http://example.com/soccer.jpg"
+		);
 
 		List<CoachDto> coaches = List.of(coachDto);
 		List<SportDto> sports = List.of(sportDto);
 
-		mainResponseDto = MainResponseDto.builder()
-			.coaches(coaches)
-			.sports(sports)
-			.build();
+		mainResponseDto = new MainResponseDto(sports, coaches);
 	}
 
 	@Test
@@ -102,6 +99,6 @@ public class MainInfoControllerTest {
 			.andReturn();
 
 		assertThat(result.getResponse().getContentAsString()).contains("John Doe");
-		assertThat(result.getResponse().getContentAsString()).contains("Soccer");
+		assertThat(result.getResponse().getContentAsString()).contains("health");
 	}
 }

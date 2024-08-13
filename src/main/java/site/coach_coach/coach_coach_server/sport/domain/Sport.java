@@ -18,6 +18,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import site.coach_coach.coach_coach_server.common.domain.*;
 
 @Entity
 @Table(name = "sports")

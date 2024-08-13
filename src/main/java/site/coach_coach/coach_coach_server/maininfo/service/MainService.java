@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.coach.dto.CoachDto;
-import site.coach_coach.coach_coach_server.coach.repository.CoachRepository;
+//import site.coach_coach.coach_coach_server.coach.repository.CoachRepository;
 import site.coach_coach.coach_coach_server.coach.util.CoachDtoBuilder;
 import site.coach_coach.coach_coach_server.common.exception.UserNotFoundException;
 import site.coach_coach.coach_coach_server.like.repository.UserCoachLikeRepository;
@@ -40,10 +40,7 @@ public class MainService {
 		try {
 			List<SportDto> sports = getSports();
 			List<CoachDto> coaches = getTopCoaches(user);
-			return MainResponseDto.builder()
-				.sports(sports)
-				.coaches(coaches)
-				.build();
+			return new MainResponseDto(sports, coaches);
 		} catch (UserNotFoundException e) {
 			throw e;
 		} catch (Exception e) {
@@ -53,14 +50,13 @@ public class MainService {
 
 	private List<SportDto> getSports() {
 		return sportRepository.findAll().stream()
-			.map(sport -> SportDto.builder()
-				.sportId(sport.getSportId())
-				.sportName(sport.getSportName())
-				.sportImageUrl(sport.getSportImageUrl())
-				.build())
+			.map(sport -> new SportDto(
+				sport.getSportId(),
+				sport.getSportName(),
+				sport.getSportImageUrl()
+			))
 			.collect(Collectors.toList());
 	}
-
 	private List<CoachDto> getTopCoaches(User user) {
 		LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
 		List<Coach> topCoaches = userCoachLikeRepository.findTopCoachesByLikesSince(oneWeekAgo, PageRequest.of(0, 3));

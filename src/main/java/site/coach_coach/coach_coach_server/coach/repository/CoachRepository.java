@@ -9,5 +9,4 @@ import site.coach_coach.coach_coach_server.coach.domain.Coach;
 
 @Repository
 public interface CoachRepository extends JpaRepository<Coach, Long> {
-	List<Coach> findByOrderByLikesDesc();
 }

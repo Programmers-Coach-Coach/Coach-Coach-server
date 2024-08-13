@@ -13,8 +13,8 @@ import site.coach_coach.coach_coach_server.like.domain.UserCoachLike;
 public interface UserCoachLikeRepository extends JpaRepository<UserCoachLike, Long> {
 	int countByCoach_CoachId(Long coachId);
 
-	@Query("SELECT COUNT(u) FROM UserCoachLike u WHERE u.coach.coachId = :coachId AND u.createdAt >= :startDate")
-	int countLikesByCoachAndCreatedAtAfter(@Param("coachId") Long coachId, @Param("startDate") LocalDateTime startDate);
+//	@Query("SELECT COUNT(u) FROM UserCoachLike u WHERE u.coach.coachId = :coachId AND u.createdAt >= :startDate")
+//	int countLikesByCoachAndCreatedAtAfter(@Param("coachId") Long coachId, @Param("startDate") LocalDateTime startDate);
 
 	boolean existsByUser_UserIdAndCoach_CoachId(Long userId, Long coachId);
 
