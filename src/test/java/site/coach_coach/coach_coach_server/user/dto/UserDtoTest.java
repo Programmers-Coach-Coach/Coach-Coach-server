@@ -20,7 +20,8 @@ public class UserDtoTest {
 			.password("password123!")
 			.profileImageUrl("profileImageUrl")
 			.gender(GenderEnum.valueOf("W"))
-			.localInfo("localInfo")
+			.localAddress("localAddress")
+			.localAddressDetail("localAddressDetail")
 			.introduction("introduction")
 			.build();
 
@@ -32,7 +33,8 @@ public class UserDtoTest {
 		assertEquals("test@test.com", userDto.email());
 		assertEquals("profileImageUrl", userDto.profileImageUrl());
 		assertEquals(GenderEnum.W, userDto.gender());
-		assertEquals("localInfo", userDto.localInfo());
+		assertEquals("localAddress", userDto.localAddress());
+		assertEquals("localAddressDetail", userDto.localAddressDetail());
 		assertEquals("introduction", userDto.introduction());
 	}
 }

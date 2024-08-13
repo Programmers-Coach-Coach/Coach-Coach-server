@@ -17,20 +17,27 @@ import site.coach_coach.coach_coach_server.user.repository.UserRepository;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class UserService {
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final TokenProvider tokenProvider;
 
-	@Transactional
-	public void signup(SignUpRequest signUpRequest) {
-		if (userRepository.existsByNickname(signUpRequest.nickname())) {
+	public void checkNicknameDuplicate(String nickname) {
+		if (userRepository.existsByNickname(nickname)) {
 			throw new UserAlreadyExistException(ErrorMessage.DUPLICATE_NICKNAME);
 		}
-		if (userRepository.existsByEmail(signUpRequest.email())) {
+	}
+
+	public void checkEmailDuplicate(String email) {
+		if (userRepository.existsByEmail(email)) {
 			throw new UserAlreadyExistException(ErrorMessage.DUPLICATE_EMAIL);
 		}
+	}
 
+	public void signup(SignUpRequest signUpRequest) {
+		checkNicknameDuplicate(signUpRequest.nickname());
+		checkEmailDuplicate(signUpRequest.email());
 		User user = buildUser(signUpRequest);
 		userRepository.save(user);
 	}

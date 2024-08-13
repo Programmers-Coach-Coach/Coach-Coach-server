@@ -50,7 +50,7 @@ public class TokenServiceTest {
 			3600L
 		);
 		refreshToken = RefreshToken.builder()
-			.user(user)
+			.userId(user.getUserId())
 			.refreshToken(tokenDto.refreshToken())
 			.expireDate(LocalDateTime.now().plusDays(1))
 			.build();

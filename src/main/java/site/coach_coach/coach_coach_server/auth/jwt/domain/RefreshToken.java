@@ -9,8 +9,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -19,7 +17,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import site.coach_coach.coach_coach_server.user.domain.User;
 
 @Table(name = "refresh_tokens")
 @Entity
@@ -34,9 +31,8 @@ public class RefreshToken {
 	private Long refreshTokenId;
 
 	@NotNull
-	@OneToOne
-	@JoinColumn(name = "user_id")
-	private User user;
+	@Column(name = "user_id")
+	private Long userId;
 
 	@Column(name = "expire_date")
 	private LocalDateTime expireDate;

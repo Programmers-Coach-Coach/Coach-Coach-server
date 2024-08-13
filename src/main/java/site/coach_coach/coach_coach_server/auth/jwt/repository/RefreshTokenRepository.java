@@ -9,7 +9,7 @@ import site.coach_coach.coach_coach_server.auth.jwt.domain.RefreshToken;
 
 @Repository
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {
-	Optional<RefreshToken> findByUserUserIdAndRefreshToken(Long userId, String refreshToken);
+	Optional<RefreshToken> findByUserIdAndRefreshToken(Long userId, String refreshToken);
 
 	boolean existsByRefreshToken(String token);
 }
