@@ -34,7 +34,7 @@ public class TokenService {
 		);
 
 		RefreshToken newRefreshToken = RefreshToken.builder()
-			.user(user)
+			.userId(user.getUserId())
 			.refreshToken(refreshToken)
 			.expireDate(expireDate)
 			.build();
@@ -45,13 +45,12 @@ public class TokenService {
 	public boolean existsRefreshToken(String refreshToken) {
 		if (refreshTokenRepository.existsByRefreshToken(refreshToken)) {
 			return true;
-		} else {
-			throw new JwtException(ErrorMessage.NOT_FOUND_TOKEN);
 		}
+		throw new JwtException(ErrorMessage.NOT_FOUND_TOKEN);
 	}
 
 	public void deleteRefreshToken(Long userId, String refreshToken) {
-		RefreshToken token = refreshTokenRepository.findByUserUserIdAndRefreshToken(userId, refreshToken)
+		RefreshToken token = refreshTokenRepository.findByUserIdAndRefreshToken(userId, refreshToken)
 			.orElseThrow(() -> new JwtException(ErrorMessage.NOT_FOUND_TOKEN));
 
 		refreshTokenRepository.delete(token);
