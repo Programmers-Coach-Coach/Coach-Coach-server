@@ -61,12 +61,12 @@ public class RoutineControllerTest {
 	@Test
 	public void getRoutineListByMyself() throws Exception {
 		// Given
-		Long userIdByJWT = 1L;
-		routineListRequestMyself = new RoutineListRequest(userIdByJWT, null);
+		Long userIdByJwt = 1L;
+		routineListRequestMyself = new RoutineListRequest(userIdByJwt, null);
 
 		// Mock CustomUserDetails
 		CustomUserDetails mockUserDetails = mock(CustomUserDetails.class);
-		when(mockUserDetails.getUserId()).thenReturn(userIdByJWT);
+		when(mockUserDetails.getUserId()).thenReturn(userIdByJwt);
 
 		// Set the SecurityContext with mockUserDetails
 		SecurityContext securityContext = SecurityContextHolder.createEmptyContext();

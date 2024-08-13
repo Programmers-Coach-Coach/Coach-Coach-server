@@ -26,18 +26,18 @@ public class RoutineController {
 	public ResponseEntity getRoutineList(@AuthenticationPrincipal CustomUserDetails userDetails,
 		@RequestParam(name = "coachId", required = false) Long coachIdParam,
 		@RequestParam(name = "userId", required = false) Long userIdParam) {
-		Long userIdByJWT = userDetails.getUserId();
+		Long userIdByJwt = userDetails.getUserId();
 		RoutineListRequest routineListRequest;
 
 		if (coachIdParam == null && userIdParam == null) {
-			routineListRequest = new RoutineListRequest(userIdByJWT, null);
+			routineListRequest = new RoutineListRequest(userIdByJwt, null);
 			List<RoutineForListDto> routineListByMyself = routineService.getRoutineForList(routineListRequest);
 			return ResponseEntity.ok(routineListByMyself);
 		} else if (coachIdParam == null) {
-			Long coachId = routineService.getCoachId(userIdByJWT);
+			Long coachId = routineService.getCoachId(userIdByJwt);
 			routineListRequest = new RoutineListRequest(userIdParam, coachId);
 		} else {
-			routineListRequest = new RoutineListRequest(userIdByJWT, coachIdParam);
+			routineListRequest = new RoutineListRequest(userIdByJwt, coachIdParam);
 		}
 
 		routineService.getIsMatching(routineListRequest);

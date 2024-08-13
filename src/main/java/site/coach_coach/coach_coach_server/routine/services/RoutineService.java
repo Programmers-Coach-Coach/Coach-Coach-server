@@ -44,8 +44,8 @@ public class RoutineService {
 		return routineListCoachInfoDto;
 	}
 
-	public Long getCoachId(Long userIdByJWT) {
-		return userRepository.findById(userIdByJWT).get().getCoach().getCoachId();
+	public Long getCoachId(Long userIdByJwt) {
+		return userRepository.findById(userIdByJwt).get().getCoach().getCoachId();
 	}
 
 	public List<RoutineForListDto> getRoutineForList(RoutineListRequest routineListRequest) {
