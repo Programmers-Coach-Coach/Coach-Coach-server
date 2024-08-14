@@ -88,7 +88,7 @@ public class RoutineService {
 			User userInfo = coachRepository.findById(coachIdParam)
 				.orElseThrow(() -> new UserNotFoundException(ErrorMessage.NOT_FOUND_COACH))
 				.getUser();
-			return new UserInfoForRoutineList(coachIdParam, userInfo.getNickname(),
+			return new UserInfoForRoutineList(userInfo.getUserId(), userInfo.getNickname(),
 				userInfo.getProfileImageUrl());
 		} else {
 			User userInfo = userRepository.findById(userIdParam)
