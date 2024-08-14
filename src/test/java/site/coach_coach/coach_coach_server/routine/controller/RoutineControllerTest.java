@@ -55,7 +55,7 @@ public class RoutineControllerTest {
 	public void setUp() {
 		routine = new RoutineForListDto(1L, "routineName", "sportName");
 		routineList = List.of(routine);
-		userInfoForRoutineList = new UserInfoForRoutineList(null, 1L, "nickname", "profileImageUrl");
+		userInfoForRoutineList = new UserInfoForRoutineList(1L, "nickname", "profileImageUrl");
 
 	}
 
@@ -111,7 +111,7 @@ public class RoutineControllerTest {
 		setSecurityContextWithMockUserDetails(userIdByJwt);
 
 		when(routineService.confirmIsMatching(userIdParam, coachIdParam, userIdByJwt)).thenReturn(routineListRequest);
-		when(routineService.getUserInfoForRoutineList(routineListRequest)).thenReturn(userInfoForRoutineList);
+		when(routineService.getUserInfoForRoutineList(userIdParam, coachIdParam)).thenReturn(userInfoForRoutineList);
 
 		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/routines/user"))
 			.andExpect(MockMvcResultMatchers.status().isOk())

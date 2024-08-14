@@ -8,8 +8,6 @@ import lombok.Builder;
 public record UserInfoForRoutineList(
 	Long userId,
 
-	Long coachId,
-
 	@NotBlank
 	@Size(max = 45)
 	String nickname,

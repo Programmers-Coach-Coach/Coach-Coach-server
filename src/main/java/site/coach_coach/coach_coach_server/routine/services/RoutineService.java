@@ -29,18 +29,14 @@ public class RoutineService {
 	private final UserRepository userRepository;
 
 	public void checkIsMatching(RoutineListRequest routineListRequest) {
-		if (routineListRequest.coachId() != null) {
-			matchingRepository.findByUserIdAndCoachId(routineListRequest.userId(), routineListRequest.coachId())
-				.map(Matching::getIsMatching)
-				.filter(isMatching -> isMatching) // isMatching이 true일 때만 통과
-				.orElseThrow(() -> new NotMatchingException(ErrorMessage.NOT_MATCHING));
-		}
+		matchingRepository.findByUserIdAndCoachId(routineListRequest.userId(), routineListRequest.coachId())
+			.map(Matching::getIsMatching)
+			.filter(isMatching -> isMatching) // isMatching이 true일 때만 통과
+			.orElseThrow(() -> new NotMatchingException(ErrorMessage.NOT_MATCHING));
 	}
 
 	public RoutineListRequest createRoutineListRequest(Long userIdParam, Long coachIdParam, Long userIdByJwt) {
-		if (coachIdParam == null && userIdParam == null) {
-			return new RoutineListRequest(userIdByJwt, null);
-		} else if (coachIdParam == null) {
+		if (coachIdParam == null) {
 			Long coachId = getCoachId(userIdByJwt);
 			return new RoutineListRequest(userIdParam, coachId);
 		} else {
@@ -49,9 +45,13 @@ public class RoutineService {
 	}
 
 	public RoutineListRequest confirmIsMatching(Long userIdParam, Long coachIdParam, Long userIdByJwt) {
-		RoutineListRequest request = createRoutineListRequest(userIdParam, coachIdParam, userIdByJwt);
-		checkIsMatching(request);
-		return request;
+		if (coachIdParam == null && userIdParam == null) {
+			return new RoutineListRequest(userIdByJwt, null);
+		} else {
+			RoutineListRequest request = createRoutineListRequest(userIdParam, coachIdParam, userIdByJwt);
+			checkIsMatching(request);
+			return request;
+		}
 	}
 
 	public Long getCoachId(Long userIdByJwt) {
@@ -83,17 +83,17 @@ public class RoutineService {
 		return routineForListDtos;
 	}
 
-	public UserInfoForRoutineList getUserInfoForRoutineList(RoutineListRequest request) {
-		if (request.userId() == null) {
-			User userInfo = coachRepository.findById(request.coachId())
+	public UserInfoForRoutineList getUserInfoForRoutineList(Long userIdParam, Long coachIdParam) {
+		if (userIdParam == null) {
+			User userInfo = coachRepository.findById(coachIdParam)
 				.orElseThrow(() -> new UserNotFoundException(ErrorMessage.NOT_FOUND_COACH))
 				.getUser();
-			return new UserInfoForRoutineList(null, request.coachId(), userInfo.getNickname(),
+			return new UserInfoForRoutineList(coachIdParam, userInfo.getNickname(),
 				userInfo.getProfileImageUrl());
 		} else {
-			User userInfo = userRepository.findById(request.userId())
+			User userInfo = userRepository.findById(userIdParam)
 				.orElseThrow(() -> new UserNotFoundException(ErrorMessage.NOT_FOUND_USER));
-			return new UserInfoForRoutineList(request.userId(), null, userInfo.getNickname(),
+			return new UserInfoForRoutineList(userIdParam, userInfo.getNickname(),
 				userInfo.getProfileImageUrl());
 		}
 	}

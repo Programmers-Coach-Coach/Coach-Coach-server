@@ -26,8 +26,8 @@ public class RoutineController {
 	@GetMapping("/v1/routines")
 	public ResponseEntity<List<RoutineForListDto>> getRoutineList(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
-		@RequestParam(name = "coachId", required = false) Long coachIdParam,
-		@RequestParam(name = "userId", required = false) Long userIdParam) {
+		@RequestParam(name = "userId", required = false) Long userIdParam,
+		@RequestParam(name = "coachId", required = false) Long coachIdParam) {
 
 		Long userIdByJwt = userDetails.getUserId();
 		RoutineListRequest routineListRequest = routineService.confirmIsMatching(userIdParam, coachIdParam,
@@ -40,16 +40,16 @@ public class RoutineController {
 	@GetMapping("/v1/routines/user")
 	public ResponseEntity<UserInfoForRoutineList> getUserInfoForRoutineList(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
-		@RequestParam(name = "coachId", required = false) Long coachIdParam,
-		@RequestParam(name = "userId", required = false) Long userIdParam) {
+		@RequestParam(name = "userId", required = false) Long userIdParam,
+		@RequestParam(name = "coachId", required = false) Long coachIdParam) {
 
 		Long userIdByJwt = userDetails.getUserId();
-		RoutineListRequest routineListRequest = routineService.confirmIsMatching(userIdParam, coachIdParam,
-			userIdByJwt);
+		routineService.confirmIsMatching(userIdParam, coachIdParam, userIdByJwt);
 
-		UserInfoForRoutineList userInfoForRoutineList = routineService.getUserInfoForRoutineList(routineListRequest);
+		UserInfoForRoutineList userInfoForRoutineList = routineService.getUserInfoForRoutineList(userIdParam,
+			coachIdParam);
+
 		return ResponseEntity.ok(userInfoForRoutineList);
-
 	}
 
 	@GetMapping("/v1/test")
