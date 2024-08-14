@@ -164,7 +164,7 @@ public class TokenProvider {
 			log.info("Handled exception: [{}] - {}", e.getClass().getSimpleName(), e.getMessage());
 			throw new JwtException(ErrorMessage.INVALID_TOKEN);
 		} catch (JwtException e) {
-			log.info("Handled exception: [{}] - {}", e.getClass().getSimpleName(), e.getMessage());
+			log.warn("Unhandled exception: [{}] - {}", e.getClass().getSimpleName(), e.getMessage());
 			throw new JwtException(e.getMessage());
 		}
 	}
