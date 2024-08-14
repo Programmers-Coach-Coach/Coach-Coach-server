@@ -30,8 +30,8 @@ import site.coach_coach.coach_coach_server.config.SecurityConfig;
 import site.coach_coach.coach_coach_server.user.domain.User;
 import site.coach_coach.coach_coach_server.user.dto.LoginRequest;
 import site.coach_coach.coach_coach_server.user.dto.SignUpRequest;
+import site.coach_coach.coach_coach_server.user.exception.InvalidUserException;
 import site.coach_coach.coach_coach_server.user.exception.UserAlreadyExistException;
-import site.coach_coach.coach_coach_server.user.exception.UserNotFoundException;
 import site.coach_coach.coach_coach_server.user.service.UserService;
 
 @WebMvcTest(UserController.class)
@@ -238,7 +238,7 @@ public class UserControllerTest {
 	@Test
 	@DisplayName("로그인 시 회원 정보가 다를 경우 401 상태 코드 반환 및 에러 메시지")
 	public void loginInvalidEmailTest() throws Exception {
-		when(userService.validateUser(loginRequest)).thenThrow(new UserNotFoundException());
+		when(userService.validateUser(loginRequest)).thenThrow(new InvalidUserException());
 
 		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/auth/login")
 				.contentType(MediaType.APPLICATION_JSON)
