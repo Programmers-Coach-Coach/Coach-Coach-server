@@ -43,12 +43,12 @@
     <!-- local profile -->
     <springProfile name="local">
         <logger name="site.coach_coach.coach_coach_server" level="DEBUG"/>
-        <root level="DEBUG">
+        <root level="INFO">
             <appender-ref ref="CONSOLE"/>
         </root>
     </springProfile>
     <!-- dev profile -->
-    <springProfile name="dev,prod">
+    <springProfile name="dev">
         <root level="INFO">
             <appender-ref ref="CONSOLE"/>
             <appender-ref ref="FILE"/>

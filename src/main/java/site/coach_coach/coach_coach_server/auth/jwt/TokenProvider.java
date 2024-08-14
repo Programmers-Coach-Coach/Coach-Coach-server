@@ -158,13 +158,13 @@ public class TokenProvider {
 			}
 			return !claims.getExpiration().before(new Date());
 		} catch (ExpiredJwtException e) {
-			log.debug("Expired Token.", e);
+			log.info("Handled exception: [{}] - {}", e.getClass().getSimpleName(), e.getMessage());
 			throw new JwtException(ErrorMessage.EXPIRED_TOKEN);
 		} catch (SignatureException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
-			log.debug("Invalid Token.", e);
+			log.info("Handled exception: [{}] - {}", e.getClass().getSimpleName(), e.getMessage());
 			throw new JwtException(ErrorMessage.INVALID_TOKEN);
 		} catch (JwtException e) {
-			log.debug("JwtException.", e);
+			log.info("Handled exception: [{}] - {}", e.getClass().getSimpleName(), e.getMessage());
 			throw new JwtException(e.getMessage());
 		}
 	}
