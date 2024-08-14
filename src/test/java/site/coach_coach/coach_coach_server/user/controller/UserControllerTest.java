@@ -26,6 +26,8 @@ import site.coach_coach.coach_coach_server.auth.jwt.dto.TokenDto;
 import site.coach_coach.coach_coach_server.auth.jwt.service.TokenService;
 import site.coach_coach.coach_coach_server.common.utils.AuthenticationUtil;
 import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
+import site.coach_coach.coach_coach_server.config.CustomAuthenticationEntryPoint;
+import site.coach_coach.coach_coach_server.config.ExceptionHandlerConfig;
 import site.coach_coach.coach_coach_server.config.SecurityConfig;
 import site.coach_coach.coach_coach_server.user.domain.User;
 import site.coach_coach.coach_coach_server.user.dto.LoginRequest;
@@ -35,7 +37,7 @@ import site.coach_coach.coach_coach_server.user.exception.UserAlreadyExistExcept
 import site.coach_coach.coach_coach_server.user.service.UserService;
 
 @WebMvcTest(UserController.class)
-@Import(SecurityConfig.class)
+@Import({SecurityConfig.class, ExceptionHandlerConfig.class})
 public class UserControllerTest {
 
 	@Autowired
@@ -52,6 +54,9 @@ public class UserControllerTest {
 
 	@MockBean
 	private AuthenticationUtil authenticationUtil;
+
+	@MockBean
+	private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
 	private ObjectMapper objectMapper;
 	Faker faker = new Faker();
@@ -102,7 +107,7 @@ public class UserControllerTest {
 			.andReturn();
 
 		verify(userService, times(1)).signup(signUpRequest);
-		assertThat(result.getResponse().getContentAsString()).isEmpty();
+		assertThat(result.getResponse().getContentAsString()).contains("statusCode");
 	}
 
 	@Test
