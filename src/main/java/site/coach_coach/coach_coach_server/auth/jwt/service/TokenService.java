@@ -62,7 +62,7 @@ public class TokenService {
 		}
 
 		userRepository.findByUserId(tokenProvider.getUserId(refreshToken))
-			.orElseThrow(() -> new UsernameNotFoundException(ErrorMessage.NOT_FOUND_USER));
+			.orElseThrow(() -> new UsernameNotFoundException(ErrorMessage.INVALID_USER));
 
 		return tokenProvider.regenerateAccessToken(refreshToken);
 	}

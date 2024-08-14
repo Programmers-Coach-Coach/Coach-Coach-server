@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineForListDto;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineListRequest;
+import site.coach_coach.coach_coach_server.routine.dto.UserInfoForRoutineList;
 import site.coach_coach.coach_coach_server.routine.services.RoutineService;
 
 @RestController
@@ -29,23 +30,26 @@ public class RoutineController {
 		@RequestParam(name = "userId", required = false) Long userIdParam) {
 
 		Long userIdByJwt = userDetails.getUserId();
-		RoutineListRequest routineListRequest = createRoutineListRequest(userIdParam, coachIdParam, userIdByJwt);
-
-		routineService.checkIsMatching(routineListRequest);
+		RoutineListRequest routineListRequest = routineService.confirmIsMatching(userIdParam, coachIdParam,
+			userIdByJwt);
 
 		List<RoutineForListDto> routineList = routineService.getRoutineForList(routineListRequest);
 		return ResponseEntity.ok(routineList);
 	}
 
-	public RoutineListRequest createRoutineListRequest(Long userIdParam, Long coachIdParam, Long userIdByJwt) {
-		if (coachIdParam == null && userIdParam == null) {
-			return new RoutineListRequest(userIdByJwt, null);
-		} else if (coachIdParam == null) {
-			Long coachId = routineService.getCoachId(userIdByJwt);
-			return new RoutineListRequest(userIdParam, coachId);
-		} else {
-			return new RoutineListRequest(userIdByJwt, coachIdParam);
-		}
+	@GetMapping("/v1/routines/user")
+	public ResponseEntity<UserInfoForRoutineList> getUserInfoForRoutineList(
+		@AuthenticationPrincipal CustomUserDetails userDetails,
+		@RequestParam(name = "coachId", required = false) Long coachIdParam,
+		@RequestParam(name = "userId", required = false) Long userIdParam) {
+
+		Long userIdByJwt = userDetails.getUserId();
+		RoutineListRequest routineListRequest = routineService.confirmIsMatching(userIdParam, coachIdParam,
+			userIdByJwt);
+
+		UserInfoForRoutineList userInfoForRoutineList = routineService.getUserInfoForRoutineList(routineListRequest);
+		return ResponseEntity.ok(userInfoForRoutineList);
+
 	}
 
 	@GetMapping("/v1/test")

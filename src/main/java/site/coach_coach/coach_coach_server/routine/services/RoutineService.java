@@ -14,8 +14,10 @@ import site.coach_coach.coach_coach_server.matching.repository.MatchingRepositor
 import site.coach_coach.coach_coach_server.routine.domain.Routine;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineForListDto;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineListRequest;
+import site.coach_coach.coach_coach_server.routine.dto.UserInfoForRoutineList;
 import site.coach_coach.coach_coach_server.routine.exception.NotMatchingException;
 import site.coach_coach.coach_coach_server.routine.repository.RoutineRepository;
+import site.coach_coach.coach_coach_server.user.domain.User;
 import site.coach_coach.coach_coach_server.user.repository.UserRepository;
 
 @Service
@@ -33,6 +35,23 @@ public class RoutineService {
 				.filter(isMatching -> isMatching) // isMatching이 true일 때만 통과
 				.orElseThrow(() -> new NotMatchingException(ErrorMessage.NOT_MATCHING));
 		}
+	}
+
+	public RoutineListRequest createRoutineListRequest(Long userIdParam, Long coachIdParam, Long userIdByJwt) {
+		if (coachIdParam == null && userIdParam == null) {
+			return new RoutineListRequest(userIdByJwt, null);
+		} else if (coachIdParam == null) {
+			Long coachId = getCoachId(userIdByJwt);
+			return new RoutineListRequest(userIdParam, coachId);
+		} else {
+			return new RoutineListRequest(userIdByJwt, coachIdParam);
+		}
+	}
+
+	public RoutineListRequest confirmIsMatching(Long userIdParam, Long coachIdParam, Long userIdByJwt) {
+		RoutineListRequest request = createRoutineListRequest(userIdParam, coachIdParam, userIdByJwt);
+		checkIsMatching(request);
+		return request;
 	}
 
 	public Long getCoachId(Long userIdByJwt) {
@@ -62,5 +81,20 @@ public class RoutineService {
 		});
 
 		return routineForListDtos;
+	}
+
+	public UserInfoForRoutineList getUserInfoForRoutineList(RoutineListRequest request) {
+		if (request.userId() == null) {
+			User userInfo = coachRepository.findById(request.coachId())
+				.orElseThrow(() -> new UserNotFoundException(ErrorMessage.NOT_FOUND_COACH))
+				.getUser();
+			return new UserInfoForRoutineList(null, request.coachId(), userInfo.getNickname(),
+				userInfo.getProfileImageUrl());
+		} else {
+			User userInfo = userRepository.findById(request.userId())
+				.orElseThrow(() -> new UserNotFoundException(ErrorMessage.NOT_FOUND_USER));
+			return new UserInfoForRoutineList(request.userId(), null, userInfo.getNickname(),
+				userInfo.getProfileImageUrl());
+		}
 	}
 }
