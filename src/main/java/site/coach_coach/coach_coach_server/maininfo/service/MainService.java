@@ -2,6 +2,7 @@ package site.coach_coach.coach_coach_server.maininfo.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,13 +36,11 @@ public class MainService {
 	}
 
 	public MainResponseDto getMainResponse(User user) {
-		try {
-			List<SportDto> sports = getSports();
-			List<CoachDto> coaches = getTopCoaches(user);
-			return new MainResponseDto(sports, coaches);
-		} catch (Exception e) {
-			throw new RuntimeException("Error fetching main response data", e);
-		}
+		List<SportDto> sports = getSports();
+		List<CoachDto> coaches = getTopCoaches(user);
+
+		return new MainResponseDto(sports, coaches);
+
 	}
 
 	private List<SportDto> getSports() {

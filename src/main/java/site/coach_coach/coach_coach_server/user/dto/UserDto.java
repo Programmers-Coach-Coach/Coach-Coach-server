@@ -12,7 +12,8 @@ public record UserDto(
 	String nickname,
 	String profileImageUrl,
 	GenderEnum gender,
-	String localInfo,
+	String localAddress,
+	String localAddressDetail,
 	String introduction
 ) {
 	public static UserDto from(User user) {
@@ -22,7 +23,8 @@ public record UserDto(
 			.nickname(user.getNickname())
 			.profileImageUrl(user.getProfileImageUrl())
 			.gender(user.getGender())
-			.localInfo(user.getLocalInfo())
+			.localAddress(user.getLocalAddress())
+			.localAddressDetail(user.getLocalAddressDetail())
 			.introduction(user.getIntroduction())
 			.build();
 	}

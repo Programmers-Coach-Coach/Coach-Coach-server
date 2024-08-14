@@ -15,7 +15,6 @@ import site.coach_coach.coach_coach_server.user.domain.User;
 @RestController
 @RequestMapping("/api/v1/main")
 public class MainInfoController {
-
 	private final MainService mainService;
 
 	@Autowired
