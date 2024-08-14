@@ -1,8 +1,6 @@
-package site.coach_coach.coach_coach_server.auth.jwt.domain;
+package site.coach_coach.coach_coach_server.sport.domain;
 
 import java.time.LocalDateTime;
-
-import org.hibernate.annotations.CreationTimestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,38 +9,34 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Table(name = "refresh_tokens")
+@Table(name = "sports")
 @Entity
 @Getter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RefreshToken {
+public class Sport {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "refresh_token_id")
-	private Long refreshTokenId;
-
-	@NotNull
-	@Column(name = "user_id")
-	private Long userId;
-
-	@Column(name = "expire_date")
-	private LocalDateTime expireDate;
+	@NotBlank
+	@Column(name = "sport_id")
+	private Long sportId;
 
 	@NotBlank
-	@Size(max = 200)
-	@Column(name = "refresh_token")
-	private String refreshToken;
+	@Size(max = 45)
+	@Column(name = "sport_name")
+	private String sportName;
 
-	@CreationTimestamp
+	@NotBlank
+	@Size(max = 400)
+	@Column(name = "sport_image_url")
+	private String sportImageUrl;
+
+	@NotBlank
 	@Column(name = "created_at")
 	private LocalDateTime createdAt;
 }

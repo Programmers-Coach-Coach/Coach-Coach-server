@@ -19,7 +19,7 @@ services:
   flyway:
     image: flyway/flyway:8.0.4
     container_name: coachcoach-flyway
-    command: -url=jdbc:mysql://db:3306/coachcoach -user=coachcoach -password=coach1234 -schemas=coachcoach migrate
+    command: -url=jdbc:mysql://db:3306/coachcoach -user=coachcoach -password=coach1234 -schemas=coachcoach table=flyway_schema_history migrate
     depends_on:
       - db
     volumes:

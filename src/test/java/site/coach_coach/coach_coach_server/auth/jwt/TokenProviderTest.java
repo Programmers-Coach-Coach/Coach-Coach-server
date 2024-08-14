@@ -9,9 +9,9 @@ import java.util.Date;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.core.Authentication;
 import org.springframework.test.context.TestPropertySource;
 
@@ -20,7 +20,6 @@ import net.datafaker.Faker;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.Cookie;
 import site.coach_coach.coach_coach_server.auth.jwt.dto.TokenDto;
-import site.coach_coach.coach_coach_server.auth.jwt.repository.RefreshTokenRepository;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetailsService;
 import site.coach_coach.coach_coach_server.user.domain.User;
@@ -31,11 +30,8 @@ public class TokenProviderTest {
 	@Autowired
 	private JwtProperties jwtProperties;
 
-	@Mock
+	@MockBean
 	private CustomUserDetailsService customUserDetailsService;
-
-	@Mock
-	private RefreshTokenRepository refreshTokenRepository;
 
 	@Autowired
 	private TokenProvider tokenProvider;
@@ -50,9 +46,9 @@ public class TokenProviderTest {
 			faker.name().firstName(),
 			faker.internet().emailAddress(),
 			"test1234!",
-			null, null, null, null
+			null, null, null, null, null, null
 		);
-		tokenProvider = new TokenProvider(jwtProperties, customUserDetailsService, refreshTokenRepository);
+		tokenProvider = new TokenProvider(jwtProperties, customUserDetailsService);
 	}
 
 	@Test
@@ -119,14 +115,6 @@ public class TokenProviderTest {
 		Authentication authentication = tokenProvider.getAuthentication(tokenProvider.createAccessToken(user));
 		assertThat(Collections.singletonList(authentication)).isNotNull();
 		assertThat((authentication).getPrincipal()).isEqualTo(userDetails);
-	}
-
-	@Test
-	@DisplayName("Refresh Token 존재 확인 테스트")
-	public void existsRefreshTokenTest() {
-		String refreshToken = tokenProvider.createRefreshToken(user);
-		when(refreshTokenRepository.existsByRefreshToken(refreshToken)).thenReturn(true);
-		assertThat(tokenProvider.existsRefreshToken(refreshToken)).isTrue();
 	}
 
 	@Test

@@ -5,7 +5,6 @@ import static org.mockito.Mockito.*;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -23,12 +22,12 @@ import site.coach_coach.coach_coach_server.auth.jwt.repository.RefreshTokenRepos
 import site.coach_coach.coach_coach_server.user.domain.User;
 
 @ExtendWith(MockitoExtension.class)
-public class RefreshTokenServiceTest {
+public class TokenServiceTest {
 	@Mock
 	private RefreshTokenRepository refreshTokenRepository;
 
 	@InjectMocks
-	private RefreshTokenService refreshTokenService;
+	private TokenService tokenService;
 
 	private User user;
 	private TokenDto tokenDto;
@@ -51,7 +50,7 @@ public class RefreshTokenServiceTest {
 			3600L
 		);
 		refreshToken = RefreshToken.builder()
-			.user(user)
+			.userId(user.getUserId())
 			.refreshToken(tokenDto.refreshToken())
 			.expireDate(LocalDateTime.now().plusDays(1))
 			.build();
@@ -60,7 +59,7 @@ public class RefreshTokenServiceTest {
 	@Test
 	@DisplayName("리프레시 토큰 db에 저장")
 	public void createRefreshTokenTest() {
-		refreshTokenService.createRefreshToken(user, tokenDto.refreshToken(), tokenDto);
+		tokenService.createRefreshToken(user, tokenDto.refreshToken(), tokenDto);
 
 		LocalDateTime expectedExpireDate = LocalDateTime.ofInstant(
 			Instant.ofEpochMilli(tokenDto.refreshTokenExpiresIn()),
@@ -68,25 +67,5 @@ public class RefreshTokenServiceTest {
 		);
 
 		verify(refreshTokenRepository, times(1)).save(any(RefreshToken.class));
-	}
-
-	@Test
-	@DisplayName("리프레시 토큰 db에서 삭제")
-	public void deleteRefreshTokenTest() {
-		when(refreshTokenRepository.findByRefreshToken(tokenDto.refreshToken())).thenReturn(Optional.of(refreshToken));
-
-		refreshTokenService.deleteRefreshToken(tokenDto.refreshToken());
-
-		verify(refreshTokenRepository, times(1)).delete(refreshToken);
-	}
-
-	@Test
-	@DisplayName("리프레시 토큰 삭제 실패")
-	public void deleteNotExistingRefreshTokenTest() {
-		when(refreshTokenRepository.findByRefreshToken(tokenDto.refreshToken())).thenReturn(Optional.empty());
-
-		refreshTokenService.deleteRefreshToken(tokenDto.refreshToken());
-
-		verify(refreshTokenRepository, never()).delete(any());
 	}
 }

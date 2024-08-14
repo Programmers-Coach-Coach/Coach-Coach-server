@@ -23,20 +23,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
 import site.coach_coach.coach_coach_server.auth.jwt.TokenProvider;
 import site.coach_coach.coach_coach_server.auth.jwt.dto.TokenDto;
-import site.coach_coach.coach_coach_server.auth.jwt.service.RefreshTokenService;
+import site.coach_coach.coach_coach_server.auth.jwt.service.TokenService;
 import site.coach_coach.coach_coach_server.common.utils.AuthenticationUtil;
 import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
-import site.coach_coach.coach_coach_server.config.ExceptionHandlerConfig;
 import site.coach_coach.coach_coach_server.config.SecurityConfig;
 import site.coach_coach.coach_coach_server.user.domain.User;
 import site.coach_coach.coach_coach_server.user.dto.LoginRequest;
 import site.coach_coach.coach_coach_server.user.dto.SignUpRequest;
+import site.coach_coach.coach_coach_server.user.exception.InvalidUserException;
 import site.coach_coach.coach_coach_server.user.exception.UserAlreadyExistException;
-import site.coach_coach.coach_coach_server.user.exception.UserNotFoundException;
 import site.coach_coach.coach_coach_server.user.service.UserService;
 
 @WebMvcTest(UserController.class)
-@Import({SecurityConfig.class, ExceptionHandlerConfig.class})
+@Import(SecurityConfig.class)
 public class UserControllerTest {
 
 	@Autowired
@@ -49,7 +48,7 @@ public class UserControllerTest {
 	private TokenProvider tokenProvider;
 
 	@MockBean
-	private RefreshTokenService refreshTokenService;
+	private TokenService tokenService;
 
 	@MockBean
 	private AuthenticationUtil authenticationUtil;
@@ -219,7 +218,7 @@ public class UserControllerTest {
 			new Cookie("access_token", tokenDto.accessToken()));
 		when(tokenProvider.createCookie(eq("refresh_token"), anyString())).thenReturn(
 			new Cookie("refresh_token", tokenDto.refreshToken()));
-		doNothing().when(refreshTokenService).createRefreshToken(user, tokenDto.refreshToken(), tokenDto);
+		doNothing().when(tokenService).createRefreshToken(user, tokenDto.refreshToken(), tokenDto);
 
 		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/auth/login")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -233,13 +232,13 @@ public class UserControllerTest {
 		verify(userService, times(1)).createJwt(user);
 		verify(tokenProvider, times(1)).createCookie("access_token", tokenDto.accessToken());
 		verify(tokenProvider, times(1)).createCookie("refresh_token", tokenDto.refreshToken());
-		verify(refreshTokenService, times(1)).createRefreshToken(user, tokenDto.refreshToken(), tokenDto);
+		verify(tokenService, times(1)).createRefreshToken(user, tokenDto.refreshToken(), tokenDto);
 	}
 
 	@Test
 	@DisplayName("로그인 시 회원 정보가 다를 경우 401 상태 코드 반환 및 에러 메시지")
 	public void loginInvalidEmailTest() throws Exception {
-		when(userService.validateUser(loginRequest)).thenThrow(new UserNotFoundException());
+		when(userService.validateUser(loginRequest)).thenThrow(new InvalidUserException());
 
 		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/auth/login")
 				.contentType(MediaType.APPLICATION_JSON)
