@@ -5,21 +5,34 @@ import java.util.stream.Collectors;
 
 import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.coach.dto.CoachDto;
+import site.coach_coach.coach_coach_server.coach.exception.*;
+import site.coach_coach.coach_coach_server.common.validation.*;
 import site.coach_coach.coach_coach_server.like.repository.UserCoachLikeRepository;
+import site.coach_coach.coach_coach_server.routine.exception.*;
 import site.coach_coach.coach_coach_server.sport.dto.CoachingSportDto;
 import site.coach_coach.coach_coach_server.user.domain.User;
+import site.coach_coach.coach_coach_server.user.exception.*;
 
 public class CoachDtoBuilder {
 	public static CoachDto buildCoachDto(Coach coach, User user, UserCoachLikeRepository userCoachLikeRepository) {
 		List<CoachingSportDto> coachingSports = coach.getCoachingSports().stream()
-			.map(cs -> new CoachingSportDto(
-				cs.getSport().getSportId(),
-				cs.getSport().getSportName()
-			))
+			.map(cs -> {
+				if (cs.getSport() == null) {
+					throw new NotFoundSportException(ErrorMessage.NOT_FOUND_SPORTS);
+				}
+				return new CoachingSportDto(
+					cs.getSport().getSportId(),
+					cs.getSport().getSportName()
+				);
+			})
 			.collect(Collectors.toList());
 
 		int countOfLikes = getCountOfLikes(coach, userCoachLikeRepository);
-		boolean liked = user != null && isLikedByUser(user, coach, userCoachLikeRepository);
+
+		if (user == null) {
+			throw new InvalidUserException();
+		}
+		boolean isLiked = isLikedByUser(user, coach, userCoachLikeRepository);
 
 		return new CoachDto(
 			coach.getCoachId(),
@@ -27,7 +40,7 @@ public class CoachDtoBuilder {
 			coach.getUser().getProfileImageUrl(),
 			coach.getCoachIntroduction(),
 			countOfLikes,
-			liked,
+			isLiked,
 			coachingSports
 		);
 	}

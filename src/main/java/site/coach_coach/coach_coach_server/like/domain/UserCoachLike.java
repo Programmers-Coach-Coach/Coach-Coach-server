@@ -1,12 +1,7 @@
 package site.coach_coach.coach_coach_server.like.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,7 +10,6 @@ import lombok.Setter;
 import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.common.domain.DateEntity;
 import site.coach_coach.coach_coach_server.user.domain.User;
-
 
 @Entity
 @Table(name = "user_coach_likes")
@@ -30,11 +24,13 @@ public class UserCoachLike extends DateEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long userCoachLikeId;
 
-	@ManyToOne
+	@NotNull
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	private User user;
 
-	@ManyToOne
+	@NotNull
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "coach_id")
 	private Coach coach;
 }

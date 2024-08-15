@@ -6,7 +6,7 @@ import site.coach_coach.coach_coach_server.coach.dto.CoachDto;
 import site.coach_coach.coach_coach_server.sport.dto.SportDto;
 
 public record MainResponseDto(
-	List<SportDto> sports,
-	List<CoachDto> coaches
+	List<SportDto> sportList,
+	List<CoachDto> coacheList
 ) {
 }

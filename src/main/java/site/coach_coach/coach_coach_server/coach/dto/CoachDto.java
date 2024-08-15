@@ -2,15 +2,23 @@ package site.coach_coach.coach_coach_server.coach.dto;
 
 import java.util.List;
 
+import jakarta.validation.constraints.*;
+import site.coach_coach.coach_coach_server.common.validation.*;
 import site.coach_coach.coach_coach_server.sport.dto.CoachingSportDto;
 
 public record CoachDto(
+	@NotBlank
 	Long coachId,
+	@NotBlank
 	String coachName,
+	@Size(max = 500)
 	String profileImageUrl,
+	@NotBlank
 	String description,
+	@NotBlank
 	int countOfLikes,
-	boolean liked,
+	@NotBlank
+	boolean isLiked,
 	List<CoachingSportDto> coachingSports
 ) {
 }

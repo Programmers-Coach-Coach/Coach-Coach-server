@@ -28,7 +28,6 @@ import site.coach_coach.coach_coach_server.user.domain.User;
 @Entity
 @Table(name = "coaches")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Coach extends DateEntity {
@@ -43,7 +42,7 @@ public class Coach extends DateEntity {
 	private User user;
 
 	@Lob
-	@NotBlank
+	@NotNull
 	@Column(name = "coach_introduction")
 	private String coachIntroduction;
 

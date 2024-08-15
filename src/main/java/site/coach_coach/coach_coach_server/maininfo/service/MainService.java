@@ -36,11 +36,10 @@ public class MainService {
 	}
 
 	public MainResponseDto getMainResponse(User user) {
-		List<SportDto> sports = getSports();
-		List<CoachDto> coaches = getTopCoaches(user);
+		List<SportDto> sportList = getSports();
+		List<CoachDto> coachList = getTopCoaches(user);
 
-		return new MainResponseDto(sports, coaches);
-
+		return new MainResponseDto(sportList, coachList);
 	}
 
 	private List<SportDto> getSports() {

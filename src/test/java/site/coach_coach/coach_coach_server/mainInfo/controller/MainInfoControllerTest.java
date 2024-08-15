@@ -63,7 +63,7 @@ public class MainInfoControllerTest {
 
 		SportDto sportDto = new SportDto(
 			1L,
-			"Soccer",
+			"health",
 			"http://example.com/soccer.jpg"
 		);
 
