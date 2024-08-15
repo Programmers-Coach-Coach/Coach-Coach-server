@@ -251,6 +251,6 @@ public class UserControllerTest {
 			.andExpect(MockMvcResultMatchers.status().isUnauthorized())
 			.andReturn();
 
-		assertThat(result.getResponse().getContentAsString()).contains(ErrorMessage.NOT_FOUND_USER);
+		assertThat(result.getResponse().getContentAsString()).contains(ErrorMessage.INVALID_USER);
 	}
 }
