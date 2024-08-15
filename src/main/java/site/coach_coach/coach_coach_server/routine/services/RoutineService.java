@@ -3,6 +3,8 @@ package site.coach_coach.coach_coach_server.routine.services;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,7 @@ import site.coach_coach.coach_coach_server.user.repository.UserRepository;
 @Service
 @RequiredArgsConstructor
 public class RoutineService {
+	private static final Logger log = LoggerFactory.getLogger(RoutineService.class);
 	private final RoutineRepository routineRepository;
 	private final MatchingRepository matchingRepository;
 	private final CoachRepository coachRepository;
@@ -55,9 +58,8 @@ public class RoutineService {
 	}
 
 	public Long getCoachId(Long userIdByJwt) {
-		return userRepository.findById(userIdByJwt)
-			.orElseThrow(() -> new UserNotFoundException(ErrorMessage.NOT_FOUND_COACH))
-			.getCoach().getCoachId();
+		return coachRepository.findCoachIdByUserId(userIdByJwt)
+			.orElseThrow(() -> new UserNotFoundException(ErrorMessage.NOT_FOUND_COACH));
 	}
 
 	public List<RoutineForListDto> getRoutineForList(RoutineListRequest routineListRequest) {
