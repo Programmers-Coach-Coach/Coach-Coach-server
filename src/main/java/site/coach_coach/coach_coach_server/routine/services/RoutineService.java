@@ -3,6 +3,8 @@ package site.coach_coach.coach_coach_server.routine.services;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -14,31 +16,50 @@ import site.coach_coach.coach_coach_server.matching.repository.MatchingRepositor
 import site.coach_coach.coach_coach_server.routine.domain.Routine;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineForListDto;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineListRequest;
+import site.coach_coach.coach_coach_server.routine.dto.UserInfoForRoutineList;
 import site.coach_coach.coach_coach_server.routine.exception.NotMatchingException;
 import site.coach_coach.coach_coach_server.routine.repository.RoutineRepository;
+import site.coach_coach.coach_coach_server.user.domain.User;
 import site.coach_coach.coach_coach_server.user.repository.UserRepository;
 
 @Service
 @RequiredArgsConstructor
 public class RoutineService {
+	private static final Logger log = LoggerFactory.getLogger(RoutineService.class);
 	private final RoutineRepository routineRepository;
 	private final MatchingRepository matchingRepository;
 	private final CoachRepository coachRepository;
 	private final UserRepository userRepository;
 
 	public void checkIsMatching(RoutineListRequest routineListRequest) {
-		if (routineListRequest.coachId() != null) {
-			matchingRepository.findByUserIdAndCoachId(routineListRequest.userId(), routineListRequest.coachId())
-				.map(Matching::getIsMatching)
-				.filter(isMatching -> isMatching) // isMatching이 true일 때만 통과
-				.orElseThrow(() -> new NotMatchingException(ErrorMessage.NOT_MATCHING));
+		matchingRepository.findByUserIdAndCoachId(routineListRequest.userId(), routineListRequest.coachId())
+			.map(Matching::getIsMatching)
+			.filter(isMatching -> isMatching) // isMatching이 true일 때만 통과
+			.orElseThrow(() -> new NotMatchingException(ErrorMessage.NOT_MATCHING));
+	}
+
+	public RoutineListRequest createRoutineListRequest(Long userIdParam, Long coachIdParam, Long userIdByJwt) {
+		if (coachIdParam == null) {
+			Long coachId = getCoachId(userIdByJwt);
+			return new RoutineListRequest(userIdParam, coachId);
+		} else {
+			return new RoutineListRequest(userIdByJwt, coachIdParam);
+		}
+	}
+
+	public RoutineListRequest confirmIsMatching(Long userIdParam, Long coachIdParam, Long userIdByJwt) {
+		if (coachIdParam == null && userIdParam == null) {
+			return new RoutineListRequest(userIdByJwt, null);
+		} else {
+			RoutineListRequest request = createRoutineListRequest(userIdParam, coachIdParam, userIdByJwt);
+			checkIsMatching(request);
+			return request;
 		}
 	}
 
 	public Long getCoachId(Long userIdByJwt) {
-		return userRepository.findById(userIdByJwt)
-			.orElseThrow(() -> new UserNotFoundException(ErrorMessage.NOT_FOUND_COACH))
-			.getCoach().getCoachId();
+		return coachRepository.findCoachIdByUserId(userIdByJwt)
+			.orElseThrow(() -> new UserNotFoundException(ErrorMessage.NOT_FOUND_COACH));
 	}
 
 	public List<RoutineForListDto> getRoutineForList(RoutineListRequest routineListRequest) {
@@ -62,5 +83,20 @@ public class RoutineService {
 		});
 
 		return routineForListDtos;
+	}
+
+	public UserInfoForRoutineList getUserInfoForRoutineList(Long userIdParam, Long coachIdParam) {
+		if (userIdParam == null) {
+			User userInfo = coachRepository.findById(coachIdParam)
+				.orElseThrow(() -> new UserNotFoundException(ErrorMessage.NOT_FOUND_COACH))
+				.getUser();
+			return new UserInfoForRoutineList(userInfo.getUserId(), userInfo.getNickname(),
+				userInfo.getProfileImageUrl());
+		} else {
+			User userInfo = userRepository.findById(userIdParam)
+				.orElseThrow(() -> new UserNotFoundException(ErrorMessage.NOT_FOUND_USER));
+			return new UserInfoForRoutineList(userIdParam, userInfo.getNickname(),
+				userInfo.getProfileImageUrl());
+		}
 	}
 }

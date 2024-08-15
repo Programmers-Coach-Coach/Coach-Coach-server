@@ -5,15 +5,15 @@ import jakarta.validation.constraints.Size;
 import lombok.Builder;
 
 @Builder
-public record RoutineListCoachInfoDto(
-	@NotBlank
-	Long coachId,
+public record UserInfoForRoutineList(
+	Long userId,
 
 	@NotBlank
 	@Size(max = 45)
 	String nickname,
 
 	@Size(max = 500)
-	String profileImageUrl) {
+	String profileImageUrl
+) {
 
 }
