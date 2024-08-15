@@ -11,6 +11,7 @@ import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
 import site.coach_coach.coach_coach_server.user.domain.User;
 import site.coach_coach.coach_coach_server.user.dto.LoginRequest;
 import site.coach_coach.coach_coach_server.user.dto.SignUpRequest;
+import site.coach_coach.coach_coach_server.user.exception.IncorrectPasswordException;
 import site.coach_coach.coach_coach_server.user.exception.InvalidUserException;
 import site.coach_coach.coach_coach_server.user.exception.UserAlreadyExistException;
 import site.coach_coach.coach_coach_server.user.repository.UserRepository;
@@ -56,6 +57,12 @@ public class UserService {
 
 	public TokenDto createJwt(User user) {
 		return tokenProvider.generateJwt(user);
+	}
+
+	public void validatePassword(User user, String password) {
+		if (!passwordEncoder.matches(password, user.getPassword())) {
+			throw new IncorrectPasswordException();
+		}
 	}
 
 	private User buildUser(SignUpRequest signUpRequest) {

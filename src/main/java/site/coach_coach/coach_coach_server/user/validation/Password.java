@@ -12,7 +12,7 @@ import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
 
 @Documented
 @Constraint(validatedBy = PasswordValidator.class)
-@Target({ElementType.FIELD})
+@Target({ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Password {
 	String REGEX =

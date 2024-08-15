@@ -29,6 +29,7 @@ import site.coach_coach.coach_coach_server.user.dto.LoginRequest;
 import site.coach_coach.coach_coach_server.user.dto.SignUpRequest;
 import site.coach_coach.coach_coach_server.user.service.UserService;
 import site.coach_coach.coach_coach_server.user.validation.Nickname;
+import site.coach_coach.coach_coach_server.user.validation.Password;
 
 @RestController
 @RequestMapping("/api")
@@ -84,6 +85,14 @@ public class UserController {
 	public ResponseEntity<SuccessResponse> checkEmail(@RequestParam("email") @Email String email) {
 		userService.checkEmailDuplicate(email);
 		return ResponseEntity.ok(new SuccessResponse(HttpStatus.OK.value(), "사용 가능한 이메일입니다"));
+	}
+
+	@PostMapping("/v1/auth/confirm-password")
+	public ResponseEntity<SuccessResponse> confirmPassword(@AuthenticationPrincipal CustomUserDetails userDetails,
+		@RequestBody @Password String password) {
+		User user = userDetails.getUser();
+		userService.validatePassword(user, password);
+		return ResponseEntity.ok(new SuccessResponse(HttpStatus.OK.value(), "비밀번호 확인"));
 	}
 
 	@GetMapping("/v1/auth/reissue")

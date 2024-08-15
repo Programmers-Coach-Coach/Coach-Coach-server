@@ -18,6 +18,7 @@ public final class ErrorMessage {
 
 	public static final String EMPTY_PASSWORD = "비밀번호를 입력해주세요.";
 	public static final String INVALID_PASSWORD = "비밀번호 형식이 올바르지 않습니다.";
+	public static final String INCORRECT_PASSWORD = "비밀번호가 일치하지 않습니다.";
 
 	public static final String DUPLICATE_EMAIL = "이미 사용중인 이메일입니다.";
 	public static final String DUPLICATE_NICKNAME = "이미 사용중인 닉네임입니다.";
