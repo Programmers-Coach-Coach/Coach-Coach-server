@@ -54,9 +54,9 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(UserNotFoundException.class)
 	public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException ex) {
-		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), ex.getMessage());
+		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage());
 		log.info("Handled exception: [{}] - {}", ex.getClass().getSimpleName(), ex.getMessage());
-		return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+		return ResponseEntity.status(HttpStatus.NOT_FOUND)
 			.body(errorResponse);
 	}
 
