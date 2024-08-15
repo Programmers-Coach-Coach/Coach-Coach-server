@@ -5,13 +5,12 @@ import java.util.stream.Collectors;
 
 import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.coach.dto.CoachDto;
-import site.coach_coach.coach_coach_server.coach.exception.*;
-import site.coach_coach.coach_coach_server.common.validation.*;
+import site.coach_coach.coach_coach_server.coach.exception.NotFoundSportException;
+import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
 import site.coach_coach.coach_coach_server.like.repository.UserCoachLikeRepository;
-import site.coach_coach.coach_coach_server.routine.exception.*;
 import site.coach_coach.coach_coach_server.sport.dto.CoachingSportDto;
 import site.coach_coach.coach_coach_server.user.domain.User;
-import site.coach_coach.coach_coach_server.user.exception.*;
+import site.coach_coach.coach_coach_server.user.exception.InvalidUserException;
 
 public class CoachDtoBuilder {
 	public static CoachDto buildCoachDto(Coach coach, User user, UserCoachLikeRepository userCoachLikeRepository) {

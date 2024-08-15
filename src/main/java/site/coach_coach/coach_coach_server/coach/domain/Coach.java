@@ -18,13 +18,9 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import site.coach_coach.coach_coach_server.common.domain.DateEntity;
 import site.coach_coach.coach_coach_server.sport.domain.CoachingSport;
 import site.coach_coach.coach_coach_server.user.domain.User;
-
-
-
 @Entity
 @Table(name = "coaches")
 @Getter

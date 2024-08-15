@@ -64,7 +64,7 @@ public class MainInfoControllerTest {
 		SportDto sportDto = new SportDto(
 			1L,
 			"health",
-			"http://example.com/soccer.jpg"
+			"http://example.com/health.jpg"
 		);
 
 		List<CoachDto> coaches = List.of(coachDto);
