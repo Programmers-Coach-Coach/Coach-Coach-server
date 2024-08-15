@@ -25,7 +25,6 @@ public class MainService {
 	private final SportRepository sportRepository;
 	private final UserCoachLikeRepository userCoachLikeRepository;
 
-	@Autowired
 	public MainService(
 		SportRepository sportRepository,
 		UserCoachLikeRepository userCoachLikeRepository
