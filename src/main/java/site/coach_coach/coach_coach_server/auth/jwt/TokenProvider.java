@@ -114,6 +114,9 @@ public class TokenProvider {
 		cookie.setHttpOnly(true);
 		cookie.setPath("/");
 		cookie.setMaxAge((int)(maxAge / 1000));
+		cookie.setSecure(true);
+		cookie.setDomain("coach-coach.site");
+		cookie.setDomain("localhost");
 		return cookie;
 	}
 
