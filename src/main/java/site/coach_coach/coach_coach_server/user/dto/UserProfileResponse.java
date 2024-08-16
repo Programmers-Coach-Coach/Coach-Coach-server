@@ -7,7 +7,7 @@ import site.coach_coach.coach_coach_server.common.domain.GenderEnum;
 import site.coach_coach.coach_coach_server.sport.domain.InterestedSport;
 
 @Builder
-public record UserInfoResponse(
+public record UserProfileResponse(
 	String nickname,
 	String email,
 	String profileImageUrl,
