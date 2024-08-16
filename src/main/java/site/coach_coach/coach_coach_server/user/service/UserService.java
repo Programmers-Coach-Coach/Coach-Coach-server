@@ -12,6 +12,7 @@ import site.coach_coach.coach_coach_server.user.domain.User;
 import site.coach_coach.coach_coach_server.user.dto.LoginRequest;
 import site.coach_coach.coach_coach_server.user.dto.PasswordRequest;
 import site.coach_coach.coach_coach_server.user.dto.SignUpRequest;
+import site.coach_coach.coach_coach_server.user.dto.UserProfileResponse;
 import site.coach_coach.coach_coach_server.user.exception.IncorrectPasswordException;
 import site.coach_coach.coach_coach_server.user.exception.InvalidUserException;
 import site.coach_coach.coach_coach_server.user.exception.UserAlreadyExistException;
@@ -65,6 +66,11 @@ public class UserService {
 		if (!passwordEncoder.matches(passwordRequest.password(), user.getPassword())) {
 			throw new IncorrectPasswordException();
 		}
+	}
+
+	public UserProfileResponse getUserProfile(Long userId) {
+		User user = userRepository.findById(userId).orElseThrow(InvalidUserException::new);
+		return UserProfileResponse.from(user);
 	}
 
 	private User buildUser(SignUpRequest signUpRequest) {

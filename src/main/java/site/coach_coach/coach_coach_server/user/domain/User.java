@@ -1,13 +1,17 @@
 package site.coach_coach.coach_coach_server.user.domain;
 
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
@@ -20,6 +24,7 @@ import lombok.NoArgsConstructor;
 import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.common.domain.DateEntity;
 import site.coach_coach.coach_coach_server.common.domain.GenderEnum;
+import site.coach_coach.coach_coach_server.sport.domain.InterestedSport;
 
 @Table(name = "users")
 @Entity
@@ -71,4 +76,7 @@ public class User extends DateEntity {
 
 	@OneToOne(mappedBy = "user")
 	private Coach coach;
+
+	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+	private List<InterestedSport> interestedSports;
 }
