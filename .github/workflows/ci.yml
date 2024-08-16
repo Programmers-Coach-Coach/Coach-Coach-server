@@ -28,39 +28,18 @@ jobs:
           echo "${{ secrets.CI_APPLICATION }}" > ./src/main/resources/application.properties
           cat ./src/main/resources/application.properties
 
-      # (3) Set up Docker Compose
-      - name: Set up Docker Compose
-        run: sudo apt-get update && sudo apt-get install docker-compose
-
-      # (4) Build and start services
-      - name: Build and start services
-        run: docker-compose up -d
-
-      # (5) Wait for MySQL to be ready
-      - name: Wait for MySQL to be ready
-        run: |
-          until docker exec coachcoach-db mysql -h127.0.0.1 -P3306 -u coachcoach -p coach1234 -e "SHOW DATABASES;"; do
-            echo "Waiting for MySQL to be ready..."
-            sleep 5
-          done
-
-      # (6) Run Flyway migrations
-      - name: Run Flyway migrations
-        run: |
-          docker-compose exec -T flyway migrate
-
-      # (7) gradlew 권한 추가
+      # (3) gradlew 권한 추가
       - name: Run chmod to make gradlew executable
         run: chmod +x ./gradlew
 
-      # (8) JDK 21 세팅
+      # (4) JDK 21 세팅
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
 
-      # (9) Gradle test and build
+      # (5) Gradle test and build
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
@@ -74,7 +53,7 @@ jobs:
       - name: Build with Gradle Wrapper
         run: ./gradlew build
 
-      # (10) checkStyle 검사
+      # (6) checkStyle 검사
       - name: Run java checkstyle
         uses: dbelyaev/action-checkstyle@master
         with:
