@@ -56,7 +56,6 @@ public class RoutineControllerTest {
 		routine = new RoutineForListDto(1L, "routineName", "sportName");
 		routineList = List.of(routine);
 		userInfoForRoutineList = new UserInfoForRoutineList(1L, "nickname", "profileImageUrl");
-
 	}
 
 	@Test
@@ -99,6 +98,26 @@ public class RoutineControllerTest {
 			.andReturn();
 
 		assertThat(result.getResponse().getContentAsString().contains(routineList.getFirst().routineName()));
+	}
+
+	@Test
+	public void getRoutineListIsEmptyTest() throws Exception {
+		// Given
+		Long userIdParam = null;
+		Long coachIdParam = null;
+		Long userIdByJwt = 1L;
+
+		// Set the SecurityContext with mockUserDetails
+		setSecurityContextWithMockUserDetails(userIdByJwt);
+
+		when(routineService.confirmIsMatching(userIdParam, coachIdParam, userIdByJwt)).thenReturn(routineListRequest);
+		when(routineService.getRoutineForList(routineListRequest)).thenReturn(new ArrayList<>()); // Empty list
+
+		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/routines"))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andReturn();
+
+		assertThat(result.getResponse().getContentAsString()).isEmpty();
 	}
 
 	@Test
