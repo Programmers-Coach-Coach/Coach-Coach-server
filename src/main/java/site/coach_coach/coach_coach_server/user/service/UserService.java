@@ -10,6 +10,7 @@ import site.coach_coach.coach_coach_server.auth.jwt.dto.TokenDto;
 import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
 import site.coach_coach.coach_coach_server.user.domain.User;
 import site.coach_coach.coach_coach_server.user.dto.LoginRequest;
+import site.coach_coach.coach_coach_server.user.dto.PasswordRequest;
 import site.coach_coach.coach_coach_server.user.dto.SignUpRequest;
 import site.coach_coach.coach_coach_server.user.exception.IncorrectPasswordException;
 import site.coach_coach.coach_coach_server.user.exception.InvalidUserException;
@@ -59,8 +60,9 @@ public class UserService {
 		return tokenProvider.generateJwt(user);
 	}
 
-	public void validatePassword(User user, String password) {
-		if (!passwordEncoder.matches(password, user.getPassword())) {
+	public void validatePassword(Long userId, PasswordRequest passwordRequest) {
+		User user = userRepository.findByUserId(userId).orElseThrow(InvalidUserException::new);
+		if (!passwordEncoder.matches(passwordRequest.password(), user.getPassword())) {
 			throw new IncorrectPasswordException();
 		}
 	}

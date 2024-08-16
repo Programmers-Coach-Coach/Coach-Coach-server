@@ -18,6 +18,7 @@ import org.springframework.web.method.annotation.HandlerMethodValidationExceptio
 import lombok.extern.slf4j.Slf4j;
 import site.coach_coach.coach_coach_server.common.response.ErrorResponse;
 import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
+import site.coach_coach.coach_coach_server.user.exception.IncorrectPasswordException;
 import site.coach_coach.coach_coach_server.user.exception.InvalidUserException;
 import site.coach_coach.coach_coach_server.user.exception.UserAlreadyExistException;
 
@@ -99,6 +100,13 @@ public class GlobalExceptionHandler {
 		log.info("Handled exception: [{}] - {}", ex.getClass().getSimpleName(), ex.getMessage());
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
 			.body(new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), ex.getMessage()));
+	}
+
+	@ExceptionHandler(IncorrectPasswordException.class)
+	public ResponseEntity<ErrorResponse> handleIncorrectPasswordException(IncorrectPasswordException ex) {
+		log.info("Handled exception: [{}] - {}", ex.getClass().getSimpleName(), ex.getMessage());
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+			.body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage()));
 	}
 
 	@ExceptionHandler(Exception.class)

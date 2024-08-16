@@ -23,13 +23,12 @@ import site.coach_coach.coach_coach_server.auth.jwt.dto.TokenDto;
 import site.coach_coach.coach_coach_server.auth.jwt.service.TokenService;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
 import site.coach_coach.coach_coach_server.common.response.SuccessResponse;
-import site.coach_coach.coach_coach_server.common.utils.AuthenticationUtil;
 import site.coach_coach.coach_coach_server.user.domain.User;
 import site.coach_coach.coach_coach_server.user.dto.LoginRequest;
+import site.coach_coach.coach_coach_server.user.dto.PasswordRequest;
 import site.coach_coach.coach_coach_server.user.dto.SignUpRequest;
 import site.coach_coach.coach_coach_server.user.service.UserService;
 import site.coach_coach.coach_coach_server.user.validation.Nickname;
-import site.coach_coach.coach_coach_server.user.validation.Password;
 
 @RestController
 @RequestMapping("/api")
@@ -38,7 +37,6 @@ public class UserController {
 	private final UserService userService;
 	private final TokenService tokenService;
 	private final TokenProvider tokenProvider;
-	private final AuthenticationUtil authenticationUtil;
 
 	@PostMapping("/v1/auth/signup")
 	public ResponseEntity<SuccessResponse> signup(@RequestBody @Valid SignUpRequest signUpRequest) {
@@ -89,10 +87,10 @@ public class UserController {
 
 	@PostMapping("/v1/auth/confirm-password")
 	public ResponseEntity<SuccessResponse> confirmPassword(@AuthenticationPrincipal CustomUserDetails userDetails,
-		@RequestBody @Password String password) {
-		User user = userDetails.getUser();
-		userService.validatePassword(user, password);
-		return ResponseEntity.ok(new SuccessResponse(HttpStatus.OK.value(), "비밀번호 확인"));
+		@RequestBody @Valid PasswordRequest passwordRequest) {
+		Long userId = userDetails.getUserId();
+		userService.validatePassword(userId, passwordRequest);
+		return ResponseEntity.ok(new SuccessResponse(HttpStatus.OK.value(), "비밀번호 확인 성공"));
 	}
 
 	@GetMapping("/v1/auth/reissue")
