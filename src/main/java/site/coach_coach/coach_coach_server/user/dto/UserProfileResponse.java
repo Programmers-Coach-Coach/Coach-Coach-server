@@ -9,8 +9,8 @@ import site.coach_coach.coach_coach_server.user.domain.User;
 
 @Builder
 public record UserProfileResponse(
-	String nickname,
 	String email,
+	String nickname,
 	String profileImageUrl,
 	GenderEnum gender,
 	String localAddress,
@@ -20,8 +20,8 @@ public record UserProfileResponse(
 ) {
 	public static UserProfileResponse from(User user) {
 		return UserProfileResponse.builder()
-			.nickname(user.getNickname())
 			.email(user.getEmail())
+			.nickname(user.getNickname())
 			.profileImageUrl(user.getProfileImageUrl())
 			.gender(user.getGender())
 			.localAddress(user.getLocalAddress())
