@@ -194,7 +194,7 @@ public class TokenProvider {
 			.sameSite("None")
 			.httpOnly(true)
 			.secure(true)
-			.maxAge(0) // 쿠키를 삭제하기 위해 만료 시간을 0으로 설정
+			.maxAge(0)
 			.build();
 	}
 }
