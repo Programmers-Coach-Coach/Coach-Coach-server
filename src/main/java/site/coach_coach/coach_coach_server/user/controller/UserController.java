@@ -68,10 +68,8 @@ public class UserController {
 		String refreshToken = tokenProvider.getCookieValue(request, "refresh_token");
 		tokenService.deleteRefreshToken(userId, refreshToken);
 
-		response.addHeader("Set-Cookie",
-			tokenProvider.clearCookie(response, "access_token").toString());
-		response.addHeader("Set-Cookie",
-			tokenProvider.clearCookie(response, "refresh_token").toString());
+		response.addHeader("Set-Cookie", tokenProvider.clearCookie("access_token").toString());
+		response.addHeader("Set-Cookie", tokenProvider.clearCookie("refresh_token").toString());
 
 		SecurityContextHolder.clearContext();
 
@@ -117,11 +115,9 @@ public class UserController {
 		String refreshToken = tokenProvider.getCookieValue(request, "refresh_token");
 
 		String newAccessToken = tokenService.reissueAccessToken(refreshToken);
-		response.addHeader("Set-Cookie",
-			tokenProvider.clearCookie(response, "access_token").toString());
+		response.addHeader("Set-Cookie", tokenProvider.clearCookie("access_token").toString());
 
-		response.addHeader("Set-Cookie",
-			tokenProvider.createCookie("access_token", newAccessToken).toString());
+		response.addHeader("Set-Cookie", tokenProvider.createCookie("access_token", newAccessToken).toString());
 
 		return ResponseEntity.noContent().build();
 	}

@@ -24,7 +24,6 @@ import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import site.coach_coach.coach_coach_server.auth.jwt.dto.TokenDto;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
@@ -188,7 +187,7 @@ public class TokenProvider {
 		return createAccessToken(user);
 	}
 
-	public ResponseCookie clearCookie(HttpServletResponse response, String type) {
+	public ResponseCookie clearCookie(String type) {
 		return ResponseCookie.from(type, "")
 			.path("/")
 			.sameSite("None")
