@@ -13,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,15 +22,20 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import site.coach_coach.coach_coach_server.auth.jwt.TokenFilter;
 import site.coach_coach.coach_coach_server.auth.jwt.TokenProvider;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
+import site.coach_coach.coach_coach_server.config.CustomAuthenticationEntryPoint;
+import site.coach_coach.coach_coach_server.config.SecurityConfig;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineForListDto;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineListRequest;
 import site.coach_coach.coach_coach_server.routine.dto.UserInfoForRoutineList;
 import site.coach_coach.coach_coach_server.routine.service.RoutineService;
 
 @WebMvcTest(RoutineController.class)
+@Import({SecurityConfig.class, CustomAuthenticationEntryPoint.class})
 public class RoutineControllerTest {
 
 	@Autowired
@@ -51,9 +57,12 @@ public class RoutineControllerTest {
 	private RoutineForListDto routine;
 	private List<RoutineForListDto> routineList;
 	private UserInfoForRoutineList userInfoForRoutineList;
+	private ObjectMapper objectMapper;
 
 	@BeforeEach
 	public void setUp() {
+		objectMapper = new ObjectMapper();
+
 		routine = new RoutineForListDto(1L, "routineName", "sportName");
 		routineList = List.of(routine);
 		userInfoForRoutineList = new UserInfoForRoutineList(1L, "nickname", "profileImageUrl");

@@ -7,7 +7,6 @@ import jakarta.validation.constraints.Size;
 import site.coach_coach.coach_coach_server.sport.dto.CoachingSportDto;
 
 public record CoachDto(
-	@NotBlank
 	Long coachId,
 	@NotBlank
 	String coachName,

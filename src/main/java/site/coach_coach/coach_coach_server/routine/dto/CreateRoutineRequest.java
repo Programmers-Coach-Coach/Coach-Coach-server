@@ -2,19 +2,16 @@ package site.coach_coach.coach_coach_server.routine.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.Builder;
+import site.coach_coach.coach_coach_server.routine.validation.RoutineName;
 
-@Builder
-public record RoutineForListDto(
-	Long routineId,
+public record CreateRoutineRequest(
+	Long userId,
 
-	@NotBlank
-	@Size(max = 45)
-	String routineName,
+	Long sportId,
 
 	@NotBlank
 	@Size(max = 45)
-	String sportName
+	@RoutineName
+	String routineName
 ) {
-
 }

@@ -14,11 +14,14 @@ import site.coach_coach.coach_coach_server.common.exception.UserNotFoundExceptio
 import site.coach_coach.coach_coach_server.matching.domain.Matching;
 import site.coach_coach.coach_coach_server.matching.repository.MatchingRepository;
 import site.coach_coach.coach_coach_server.routine.domain.Routine;
+import site.coach_coach.coach_coach_server.routine.dto.CreateRoutineRequest;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineForListDto;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineListRequest;
 import site.coach_coach.coach_coach_server.routine.dto.UserInfoForRoutineList;
 import site.coach_coach.coach_coach_server.routine.exception.NotMatchingException;
 import site.coach_coach.coach_coach_server.routine.repository.RoutineRepository;
+import site.coach_coach.coach_coach_server.sport.domain.Sport;
+import site.coach_coach.coach_coach_server.sport.repository.SportRepository;
 import site.coach_coach.coach_coach_server.user.domain.User;
 import site.coach_coach.coach_coach_server.user.repository.UserRepository;
 
@@ -30,6 +33,7 @@ public class RoutineService {
 	private final MatchingRepository matchingRepository;
 	private final CoachRepository coachRepository;
 	private final UserRepository userRepository;
+	private final SportRepository sportRepository;
 
 	public void checkIsMatching(RoutineListRequest routineListRequest) {
 		matchingRepository.findByUserIdAndCoachId(routineListRequest.userId(), routineListRequest.coachId())
@@ -97,6 +101,29 @@ public class RoutineService {
 				.orElseThrow(() -> new UserNotFoundException(ErrorMessage.NOT_FOUND_USER));
 			return new UserInfoForRoutineList(userIdParam, userInfo.getNickname(),
 				userInfo.getProfileImageUrl());
+		}
+	}
+
+	public void createRoutine(CreateRoutineRequest createRoutineRequest, Long userIdByJwt) {
+		Sport sportInfo = Sport.builder()
+			.sportId(createRoutineRequest.sportId())
+			.build();
+
+		if (createRoutineRequest.userId() == null) {
+			Routine newRoutine = Routine.builder()
+				.userId(userIdByJwt)
+				.routineName(createRoutineRequest.routineName())
+				.sport(sportInfo)
+				.build();
+			routineRepository.save(newRoutine);
+		} else {
+			Routine newRoutine = Routine.builder()
+				.userId(createRoutineRequest.userId())
+				.coachId(userIdByJwt)
+				.routineName(createRoutineRequest.routineName())
+				.sport(sportInfo)
+				.build();
+			routineRepository.save(newRoutine);
 		}
 	}
 }
