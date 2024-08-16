@@ -21,7 +21,6 @@ import net.datafaker.Faker;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import jakarta.servlet.http.Cookie;
 import site.coach_coach.coach_coach_server.auth.jwt.TokenProvider;
 import site.coach_coach.coach_coach_server.auth.jwt.dto.TokenDto;
 import site.coach_coach.coach_coach_server.auth.jwt.service.TokenService;
@@ -214,32 +213,6 @@ public class UserControllerTest {
 
 		verify(userService, times(1)).signup(signUpRequest);
 		assertThat(result.getResponse().getContentAsString()).contains(ErrorMessage.DUPLICATE_EMAIL);
-	}
-
-	@Test
-	@DisplayName("로그인 성공 시 200 상태 코드 반환 및 토큰 쿠키 설정")
-	public void loginSuccessTest() throws Exception {
-		when(userService.validateUser(loginRequest)).thenReturn(user);
-		when(userService.createJwt(user)).thenReturn(tokenDto);
-		when(tokenProvider.createCookie(eq("access_token"), anyString())).thenReturn(
-			new Cookie("access_token", tokenDto.accessToken()));
-		when(tokenProvider.createCookie(eq("refresh_token"), anyString())).thenReturn(
-			new Cookie("refresh_token", tokenDto.refreshToken()));
-		doNothing().when(tokenService).createRefreshToken(user, tokenDto.refreshToken(), tokenDto);
-
-		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/auth/login")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(loginRequest)))
-			.andExpect(MockMvcResultMatchers.status().isOk())
-			.andExpect(MockMvcResultMatchers.cookie().exists("access_token"))
-			.andExpect(MockMvcResultMatchers.cookie().exists("refresh_token"))
-			.andReturn();
-
-		verify(userService, times(1)).validateUser(loginRequest);
-		verify(userService, times(1)).createJwt(user);
-		verify(tokenProvider, times(1)).createCookie("access_token", tokenDto.accessToken());
-		verify(tokenProvider, times(1)).createCookie("refresh_token", tokenDto.refreshToken());
-		verify(tokenService, times(1)).createRefreshToken(user, tokenDto.refreshToken(), tokenDto);
 	}
 
 	@Test

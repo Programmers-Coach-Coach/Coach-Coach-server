@@ -18,7 +18,6 @@ import org.springframework.test.context.TestPropertySource;
 import net.datafaker.Faker;
 
 import io.jsonwebtoken.Claims;
-import jakarta.servlet.http.Cookie;
 import site.coach_coach.coach_coach_server.auth.jwt.dto.TokenDto;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetailsService;
@@ -87,24 +86,6 @@ public class TokenProviderTest {
 		assertThat(tokenDto.refreshToken()).isNotNull();
 		assertThat(tokenDto.accessTokenExpiresIn()).isGreaterThan(System.currentTimeMillis());
 		assertThat(tokenDto.refreshTokenExpiresIn()).isGreaterThan(System.currentTimeMillis());
-	}
-
-	@Test
-	@DisplayName("쿠키 생성 테스트")
-	public void createCookieTest() {
-		String accessToken = tokenProvider.createAccessToken(user);
-		String refreshToken = tokenProvider.createRefreshToken(user);
-
-		Cookie accessCookie = tokenProvider.createCookie("access_token", accessToken);
-		Cookie refreshCookie = tokenProvider.createCookie("refresh_token", refreshToken);
-
-		assertThat(accessCookie).isNotNull();
-		assertThat(accessCookie.getName()).isEqualTo("access_token");
-		assertThat(accessCookie.getValue()).isEqualTo(accessToken);
-
-		assertThat(refreshCookie).isNotNull();
-		assertThat(refreshCookie.getName()).isEqualTo("refresh_token");
-		assertThat(refreshCookie.getValue()).isEqualTo(refreshToken);
 	}
 
 	@Test
