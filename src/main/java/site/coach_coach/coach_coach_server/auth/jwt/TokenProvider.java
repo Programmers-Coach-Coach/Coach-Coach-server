@@ -153,15 +153,15 @@ public class TokenProvider {
 			Claims claims = extractClaims(token);
 			Object tokenType = claims.get("token_type");
 			if (tokenType == null || !tokenType.equals(type) || token == null) {
-				log.debug("Not Found Token.");
+				log.error("Not Found Token.");
 				throw new JwtException(ErrorMessage.NOT_FOUND_TOKEN);
 			}
 			return !claims.getExpiration().before(new Date());
 		} catch (ExpiredJwtException e) {
-			log.info("Handled exception: [{}] - {}", e.getClass().getSimpleName(), e.getMessage());
+			log.error("Handled exception: [{}] - {}", e.getClass().getSimpleName(), e.getMessage());
 			throw new JwtException(ErrorMessage.EXPIRED_TOKEN);
 		} catch (SignatureException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
-			log.info("Handled exception: [{}] - {}", e.getClass().getSimpleName(), e.getMessage());
+			log.error("Handled exception: [{}] - {}", e.getClass().getSimpleName(), e.getMessage());
 			throw new JwtException(ErrorMessage.INVALID_TOKEN);
 		} catch (JwtException e) {
 			log.warn("Unhandled exception: [{}] - {}", e.getClass().getSimpleName(), e.getMessage());

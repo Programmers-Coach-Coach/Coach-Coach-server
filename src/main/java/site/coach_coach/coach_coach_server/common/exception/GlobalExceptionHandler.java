@@ -56,7 +56,7 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(UserNotFoundException.class)
 	public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException ex) {
 		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage());
-		log.info("Handled exception: [{}] - {}", ex.getClass().getSimpleName(), ex.getMessage());
+		log.error("Handled exception: [{}] - {}", ex.getClass().getSimpleName(), ex.getMessage());
 		return ResponseEntity.status(HttpStatus.NOT_FOUND)
 			.body(errorResponse);
 	}
@@ -83,28 +83,28 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(UserAlreadyExistException.class)
 	public ResponseEntity<ErrorResponse> handleUserAlreadyExistException(UserAlreadyExistException ex) {
-		log.info("Handled exception: [{}] - {}", ex.getClass().getSimpleName(), ex.getMessage());
+		log.error("Handled exception: [{}] - {}", ex.getClass().getSimpleName(), ex.getMessage());
 		return ResponseEntity.status(HttpStatus.CONFLICT)
 			.body(new ErrorResponse(HttpStatus.CONFLICT.value(), ex.getMessage()));
 	}
 
 	@ExceptionHandler(InvalidInputException.class)
 	public ResponseEntity<ErrorResponse> handleInvalidInputException(InvalidInputException ex) {
-		log.info("Handled exception: [{}] - {}", ex.getClass().getSimpleName(), ex.getMessage());
+		log.error("Handled exception: [{}] - {}", ex.getClass().getSimpleName(), ex.getMessage());
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 			.body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage()));
 	}
 
 	@ExceptionHandler(InvalidUserException.class)
 	public ResponseEntity<ErrorResponse> handleInvalidUserException(InvalidUserException ex) {
-		log.info("Handled exception: [{}] - {}", ex.getClass().getSimpleName(), ex.getMessage());
+		log.error("Handled exception: [{}] - {}", ex.getClass().getSimpleName(), ex.getMessage());
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
 			.body(new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), ex.getMessage()));
 	}
 
 	@ExceptionHandler(IncorrectPasswordException.class)
 	public ResponseEntity<ErrorResponse> handleIncorrectPasswordException(IncorrectPasswordException ex) {
-		log.info("Handled exception: [{}] - {}", ex.getClass().getSimpleName(), ex.getMessage());
+		log.error("Handled exception: [{}] - {}", ex.getClass().getSimpleName(), ex.getMessage());
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 			.body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage()));
 	}
