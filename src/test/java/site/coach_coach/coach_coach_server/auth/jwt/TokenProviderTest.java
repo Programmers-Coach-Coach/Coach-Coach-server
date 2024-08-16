@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.core.Authentication;
-import org.springframework.test.context.TestPropertySource;
 
 import net.datafaker.Faker;
 
@@ -24,7 +23,7 @@ import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetailsService;
 import site.coach_coach.coach_coach_server.user.domain.User;
 
-@TestPropertySource(locations = "/application.properties")
+// @TestPropertySource(locations = "/application.properties")
 @SpringBootTest
 public class TokenProviderTest {
 	@Autowired

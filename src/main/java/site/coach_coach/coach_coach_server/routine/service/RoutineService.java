@@ -1,4 +1,4 @@
-package site.coach_coach.coach_coach_server.routine.services;
+package site.coach_coach.coach_coach_server.routine.service;
 
 import java.util.ArrayList;
 import java.util.List;

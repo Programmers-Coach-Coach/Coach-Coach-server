@@ -98,7 +98,7 @@ jacocoTestCoverageVerification {
                     '*.dto.*',
                     '*.*Dto*',
                     '*.domain.*',
-                    '*.services.*',
+                    '*.service.*',
                     '*.repository.*',
                     '*.validation.*',
                     '*.auth.*',
