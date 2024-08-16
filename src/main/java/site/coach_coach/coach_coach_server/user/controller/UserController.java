@@ -28,6 +28,7 @@ import site.coach_coach.coach_coach_server.user.domain.User;
 import site.coach_coach.coach_coach_server.user.dto.LoginRequest;
 import site.coach_coach.coach_coach_server.user.dto.PasswordRequest;
 import site.coach_coach.coach_coach_server.user.dto.SignUpRequest;
+import site.coach_coach.coach_coach_server.user.dto.UserProfileResponse;
 import site.coach_coach.coach_coach_server.user.service.UserService;
 import site.coach_coach.coach_coach_server.user.validation.Nickname;
 
@@ -100,6 +101,12 @@ public class UserController {
 		return ResponseEntity.ok(
 			new SuccessResponse(HttpStatus.OK.value(), SuccessMessage.PASSWORD_CONFIRM_SUCCESS.getMessage())
 		);
+	}
+
+	@GetMapping("/v1/user/me")
+	public ResponseEntity<UserProfileResponse> getMyProfile(@AuthenticationPrincipal CustomUserDetails userDetails) {
+		Long userId = userDetails.getUserId();
+		return ResponseEntity.ok(userService.getUserProfile(userId));
 	}
 
 	@GetMapping("/v1/auth/reissue")
