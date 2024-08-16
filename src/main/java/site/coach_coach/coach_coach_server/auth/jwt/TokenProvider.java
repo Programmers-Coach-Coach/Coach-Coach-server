@@ -116,6 +116,7 @@ public class TokenProvider {
 			.path("/")
 			.httpOnly(true)
 			.secure(true)
+			.sameSite("None")
 			.maxAge((maxAge / MILLIS))
 			.build();
 	}
@@ -195,6 +196,7 @@ public class TokenProvider {
 			.path("/")
 			.httpOnly(true)
 			.secure(true)
+			.sameSite("None")
 			.maxAge(0)
 			.build();
 	}
