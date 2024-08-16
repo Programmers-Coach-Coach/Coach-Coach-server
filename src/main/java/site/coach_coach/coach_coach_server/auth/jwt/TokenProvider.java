@@ -6,6 +6,7 @@ import java.util.Date;
 
 import javax.crypto.SecretKey;
 
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -100,7 +101,7 @@ public class TokenProvider {
 			.build();
 	}
 
-	public Cookie createCookie(String name, String value) {
+	public ResponseCookie createCookie(String name, String value) {
 		long maxAge;
 		if (name.equals("access_token")) {
 			maxAge = accessTokenExpireTime;
@@ -110,14 +111,13 @@ public class TokenProvider {
 			return null;
 		}
 
-		Cookie cookie = new Cookie(name, value);
-		cookie.setHttpOnly(true);
-		cookie.setPath("/");
-		cookie.setMaxAge((int)(maxAge / 1000));
-		cookie.setSecure(true);
-		cookie.setDomain("coach-coach.site");
-		cookie.setDomain("localhost");
-		return cookie;
+		return ResponseCookie.from(name, value)
+			.path("/")
+			.sameSite("None")
+			.httpOnly(true)
+			.secure(true)
+			.maxAge((maxAge / MILLIS))
+			.build();
 	}
 
 	public String getCookieValue(HttpServletRequest request, String type) {
@@ -188,11 +188,13 @@ public class TokenProvider {
 		return createAccessToken(user);
 	}
 
-	public void clearCookie(HttpServletResponse response, String type) {
-		Cookie oldCookie = new Cookie(type, null);
-		oldCookie.setHttpOnly(true);
-		oldCookie.setPath("/");
-		oldCookie.setMaxAge(0);
-		response.addCookie(oldCookie);
+	public ResponseCookie clearCookie(HttpServletResponse response, String type) {
+		return ResponseCookie.from(type, "")
+			.path("/")
+			.sameSite("None")
+			.httpOnly(true)
+			.secure(true)
+			.maxAge(0) // 쿠키를 삭제하기 위해 만료 시간을 0으로 설정
+			.build();
 	}
 }
