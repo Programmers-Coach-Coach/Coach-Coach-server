@@ -3,6 +3,7 @@ plugins {
     id 'org.springframework.boot' version '3.3.2'
     id 'io.spring.dependency-management' version '1.1.6'
     id 'checkstyle'
+    id 'jacoco'
 }
 compileJava.options.encoding = 'UTF-8'
 compileTestJava.options.encoding = 'UTF-8'
@@ -47,6 +48,7 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'com.h2database:h2'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     implementation 'org.flywaydb:flyway-mysql'
     implementation 'net.datafaker:datafaker:2.3.1'
@@ -57,7 +59,45 @@ dependencies {
 }
 
 
-
 jar {
     enabled = false
+}
+
+test {
+    useJUnitPlatform()
+    finalizedBy 'jacocoTestReport'
+}
+
+jacocoTestReport {
+    finalizedBy 'jacocoTestCoverageVerification'
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            enabled = true
+            element = 'CLASS'
+
+            limit {
+                counter = 'CLASS'
+                value = 'COVEREDRATIO'
+                minimum = 0.10
+            }
+
+            excludes = [
+                    '*.*Application',
+                    '*.*Exception*',
+                    '*.dto.*',
+                    '*.*Dto*',
+                    '*.domain.*',
+                    '*.service.*',
+                    '*.repository.*',
+                    '*.validation.*',
+                    '*.auth.*',
+                    '*.common.*',
+                    '*..*'
+            ]
+        }
+
+    }
 }

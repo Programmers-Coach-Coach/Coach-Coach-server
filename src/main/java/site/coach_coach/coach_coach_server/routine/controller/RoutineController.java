@@ -15,7 +15,7 @@ import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineForListDto;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineListRequest;
 import site.coach_coach.coach_coach_server.routine.dto.UserInfoForRoutineList;
-import site.coach_coach.coach_coach_server.routine.services.RoutineService;
+import site.coach_coach.coach_coach_server.routine.service.RoutineService;
 
 @RestController
 @RequiredArgsConstructor

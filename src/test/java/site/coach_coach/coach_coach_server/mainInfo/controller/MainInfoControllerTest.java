@@ -29,6 +29,7 @@ import site.coach_coach.coach_coach_server.maininfo.controller.MainInfoControlle
 import site.coach_coach.coach_coach_server.maininfo.dto.MainResponseDto;
 import site.coach_coach.coach_coach_server.maininfo.service.MainService;
 import site.coach_coach.coach_coach_server.sport.dto.SportDto;
+import site.coach_coach.coach_coach_server.user.domain.User;
 
 @WebMvcTest(MainInfoController.class)
 public class MainInfoControllerTest {
@@ -77,10 +78,14 @@ public class MainInfoControllerTest {
 	public void getMainInfoTest() throws Exception {
 		// Given
 		Long userId = 1L;
+		User testUser = User.builder()
+			.userId(userId)
+			.nickname("John Doe")
+			.build();
 
 		// Mock CustomUserDetails
 		CustomUserDetails mockUserDetails = mock(CustomUserDetails.class);
-		when(mockUserDetails.getUserId()).thenReturn(userId);
+		when(mockUserDetails.getUser()).thenReturn(testUser);
 
 		// Set the SecurityContext with mockUserDetails
 		SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
