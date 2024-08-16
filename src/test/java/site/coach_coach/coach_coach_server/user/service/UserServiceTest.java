@@ -16,7 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import net.datafaker.Faker;
 
-import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
+import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.user.domain.User;
 import site.coach_coach.coach_coach_server.user.dto.LoginRequest;
 import site.coach_coach.coach_coach_server.user.dto.SignUpRequest;

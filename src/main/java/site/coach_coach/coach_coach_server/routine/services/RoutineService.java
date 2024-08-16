@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.coach.repository.CoachRepository;
+import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.common.exception.UserNotFoundException;
-import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
 import site.coach_coach.coach_coach_server.matching.domain.Matching;
 import site.coach_coach.coach_coach_server.matching.repository.MatchingRepository;
 import site.coach_coach.coach_coach_server.routine.domain.Routine;

@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.coach.dto.CoachDto;
 import site.coach_coach.coach_coach_server.coach.exception.NotFoundSportException;
-import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
+import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.like.repository.UserCoachLikeRepository;
 import site.coach_coach.coach_coach_server.sport.dto.CoachingSportDto;
 import site.coach_coach.coach_coach_server.user.domain.User;

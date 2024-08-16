@@ -22,6 +22,7 @@ import site.coach_coach.coach_coach_server.auth.jwt.TokenProvider;
 import site.coach_coach.coach_coach_server.auth.jwt.dto.TokenDto;
 import site.coach_coach.coach_coach_server.auth.jwt.service.TokenService;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
+import site.coach_coach.coach_coach_server.common.constants.SuccessMessage;
 import site.coach_coach.coach_coach_server.common.response.SuccessResponse;
 import site.coach_coach.coach_coach_server.user.domain.User;
 import site.coach_coach.coach_coach_server.user.dto.LoginRequest;
@@ -42,7 +43,7 @@ public class UserController {
 	public ResponseEntity<SuccessResponse> signup(@RequestBody @Valid SignUpRequest signUpRequest) {
 		userService.signup(signUpRequest);
 		return ResponseEntity.status(HttpStatus.CREATED)
-			.body(new SuccessResponse(HttpStatus.CREATED.value(), "회원가입 성공"));
+			.body(new SuccessResponse(HttpStatus.CREATED.value(), SuccessMessage.SIGNUP_SUCCESS.getMessage()));
 	}
 
 	@PostMapping("/v1/auth/login")
@@ -54,7 +55,7 @@ public class UserController {
 		response.addCookie(tokenProvider.createCookie("access_token", tokenDto.accessToken()));
 		response.addCookie(tokenProvider.createCookie("refresh_token", tokenDto.refreshToken()));
 		tokenService.createRefreshToken(user, tokenDto.refreshToken(), tokenDto);
-		return ResponseEntity.ok(new SuccessResponse(HttpStatus.OK.value(), "로그인 성공"));
+		return ResponseEntity.ok(new SuccessResponse(HttpStatus.OK.value(), SuccessMessage.LOGIN_SUCCESS.getMessage()));
 	}
 
 	@DeleteMapping("/v1/auth/logout")
@@ -70,19 +71,25 @@ public class UserController {
 
 		SecurityContextHolder.clearContext();
 
-		return ResponseEntity.ok(new SuccessResponse(HttpStatus.OK.value(), "로그아웃 성공"));
+		return ResponseEntity.ok(
+			new SuccessResponse(HttpStatus.OK.value(), SuccessMessage.LOGOUT_SUCCESS.getMessage())
+		);
 	}
 
 	@GetMapping("/v1/auth/check-nickname")
 	public ResponseEntity<SuccessResponse> checkNickname(@RequestParam("nickname") @Nickname String nickname) {
 		userService.checkNicknameDuplicate(nickname);
-		return ResponseEntity.ok(new SuccessResponse(HttpStatus.OK.value(), "사용 가능한 닉네임입니다"));
+		return ResponseEntity.ok(
+			new SuccessResponse(HttpStatus.OK.value(), SuccessMessage.NICKNAME_AVAILABLE.getMessage())
+		);
 	}
 
 	@GetMapping("/v1/auth/check-email")
 	public ResponseEntity<SuccessResponse> checkEmail(@RequestParam("email") @Email String email) {
 		userService.checkEmailDuplicate(email);
-		return ResponseEntity.ok(new SuccessResponse(HttpStatus.OK.value(), "사용 가능한 이메일입니다"));
+		return ResponseEntity.ok(
+			new SuccessResponse(HttpStatus.OK.value(), SuccessMessage.NICKNAME_AVAILABLE.getMessage())
+		);
 	}
 
 	@PostMapping("/v1/auth/confirm-password")
@@ -90,7 +97,9 @@ public class UserController {
 		@RequestBody @Valid PasswordRequest passwordRequest) {
 		Long userId = userDetails.getUserId();
 		userService.validatePassword(userId, passwordRequest);
-		return ResponseEntity.ok(new SuccessResponse(HttpStatus.OK.value(), "비밀번호 확인 성공"));
+		return ResponseEntity.ok(
+			new SuccessResponse(HttpStatus.OK.value(), SuccessMessage.PASSWORD_CONFIRM_SUCCESS.getMessage())
+		);
 	}
 
 	@GetMapping("/v1/auth/reissue")

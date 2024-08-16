@@ -17,8 +17,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.common.response.ErrorResponse;
-import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
 
 @Component
 @RequiredArgsConstructor

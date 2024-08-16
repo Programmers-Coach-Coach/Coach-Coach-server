@@ -2,7 +2,7 @@ package site.coach_coach.coach_coach_server.user.exception;
 
 import org.springframework.security.core.AuthenticationException;
 
-import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
+import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 
 public class IncorrectPasswordException extends AuthenticationException {
 	public IncorrectPasswordException() {

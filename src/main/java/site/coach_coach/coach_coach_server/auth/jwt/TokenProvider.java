@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import site.coach_coach.coach_coach_server.auth.jwt.dto.TokenDto;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetailsService;
-import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
+import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.user.domain.User;
 
 @Slf4j
