@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import site.coach_coach.coach_coach_server.auth.jwt.dto.TokenDto;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetailsService;
-import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
+import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.user.domain.User;
 
 @Slf4j
@@ -153,15 +153,15 @@ public class TokenProvider {
 			Claims claims = extractClaims(token);
 			Object tokenType = claims.get("token_type");
 			if (tokenType == null || !tokenType.equals(type) || token == null) {
-				log.debug("Not Found Token.");
+				log.error("Not Found Token.");
 				throw new JwtException(ErrorMessage.NOT_FOUND_TOKEN);
 			}
 			return !claims.getExpiration().before(new Date());
 		} catch (ExpiredJwtException e) {
-			log.info("Handled exception: [{}] - {}", e.getClass().getSimpleName(), e.getMessage());
+			log.error("Handled exception: [{}] - {}", e.getClass().getSimpleName(), e.getMessage());
 			throw new JwtException(ErrorMessage.EXPIRED_TOKEN);
 		} catch (SignatureException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
-			log.info("Handled exception: [{}] - {}", e.getClass().getSimpleName(), e.getMessage());
+			log.error("Handled exception: [{}] - {}", e.getClass().getSimpleName(), e.getMessage());
 			throw new JwtException(ErrorMessage.INVALID_TOKEN);
 		} catch (JwtException e) {
 			log.warn("Unhandled exception: [{}] - {}", e.getClass().getSimpleName(), e.getMessage());

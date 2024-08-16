@@ -1,5 +1,7 @@
 package site.coach_coach.coach_coach_server.coach.domain;
 
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -7,30 +9,37 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import site.coach_coach.coach_coach_server.common.domain.DateEntity;
+import site.coach_coach.coach_coach_server.sport.domain.CoachingSport;
 import site.coach_coach.coach_coach_server.user.domain.User;
-
-@Table(name = "coaches")
 @Entity
+@Table(name = "coaches")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Coach extends DateEntity {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@NotBlank
 	@Column(name = "coach_id")
 	private Long coachId;
 
+	@OneToOne
+	@JoinColumn(name = "user_Id")
+	private User user;
+
 	@Lob
-	@Column(name = "coach_introduction", nullable = false)
+	@NotNull
+	@Column(name = "coach_introduction")
 	private String coachIntroduction;
 
 	@Size(max = 100)
@@ -43,17 +52,19 @@ public class Coach extends DateEntity {
 
 	@NotBlank
 	@Size(max = 100)
-	@Column(name = "active_hours", nullable = false, length = 100)
+	@NotBlank
+	@Column(name = "active_hours")
 	private String activeHours;
 
 	@Size(max = 400)
-	@Column(name = "chatting_url", nullable = false, length = 400)
+	@NotBlank
+	@Column(name = "chatting_url")
 	private String chattingUrl;
 
+	@NotNull
 	@Column(name = "is_open")
 	private Boolean isOpen;
 
-	@OneToOne
-	@JoinColumn(name = "user_id")
-	private User user;
+	@OneToMany(mappedBy = "coach")
+	private List<CoachingSport> coachingSports;
 }

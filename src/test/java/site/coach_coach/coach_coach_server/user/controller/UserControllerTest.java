@@ -25,9 +25,10 @@ import jakarta.servlet.http.Cookie;
 import site.coach_coach.coach_coach_server.auth.jwt.TokenProvider;
 import site.coach_coach.coach_coach_server.auth.jwt.dto.TokenDto;
 import site.coach_coach.coach_coach_server.auth.jwt.service.TokenService;
+import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
+import site.coach_coach.coach_coach_server.common.constants.SuccessMessage;
 import site.coach_coach.coach_coach_server.common.response.SuccessResponse;
 import site.coach_coach.coach_coach_server.common.utils.AuthenticationUtil;
-import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
 import site.coach_coach.coach_coach_server.config.CustomAuthenticationEntryPoint;
 import site.coach_coach.coach_coach_server.config.SecurityConfig;
 import site.coach_coach.coach_coach_server.user.domain.User;
@@ -106,7 +107,8 @@ public class UserControllerTest {
 
 		verify(userService, times(1)).signup(signUpRequest);
 		String responseContent = result.getResponse().getContentAsString();
-		SuccessResponse expectedResponse = new SuccessResponse(HttpStatus.CREATED.value(), "회원가입 성공");
+		SuccessResponse expectedResponse = new SuccessResponse(HttpStatus.CREATED.value(),
+			SuccessMessage.SIGNUP_SUCCESS.getMessage());
 		assertThat(responseContent).isEqualTo(objectMapper.writeValueAsString(expectedResponse));
 	}
 

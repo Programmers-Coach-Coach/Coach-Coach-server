@@ -4,8 +4,8 @@ import org.springframework.security.core.AuthenticationException;
 
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 
-public class InvalidUserException extends AuthenticationException {
-	public InvalidUserException() {
-		super(ErrorMessage.INVALID_USER);
+public class IncorrectPasswordException extends AuthenticationException {
+	public IncorrectPasswordException() {
+		super(ErrorMessage.INCORRECT_PASSWORD);
 	}
 }
