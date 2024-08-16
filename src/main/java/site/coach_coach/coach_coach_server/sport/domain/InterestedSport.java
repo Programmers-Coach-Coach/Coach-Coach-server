@@ -2,40 +2,40 @@ package site.coach_coach.coach_coach_server.sport.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import site.coach_coach.coach_coach_server.common.domain.DateEntity;
+import site.coach_coach.coach_coach_server.user.domain.User;
 
 @Entity
-@Table(name = "sports")
+@Table(name = "interested_sports")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Sport extends DateEntity {
+public class InterestedSport extends DateEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "sport_id")
-	private Long sportId;
+	@Column(name = "interested_sport_id")
+	private Long interestedSportId;
 
-	@NotBlank
-	@Size(max = 45)
-	@Column(name = "sport_name")
-	private String sportName;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id", nullable = false)
+	private User user;
 
-	@NotBlank
-	@Size(max = 400)
-	@Column(name = "sport_image_url")
-	private String sportImageUrl;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "sport_id", nullable = false)
+	private Sport sport;
 }

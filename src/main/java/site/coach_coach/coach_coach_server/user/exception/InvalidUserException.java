@@ -6,6 +6,6 @@ import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
 
 public class InvalidUserException extends AuthenticationException {
 	public InvalidUserException() {
-		super(ErrorMessage.NOT_FOUND_USER);
+		super(ErrorMessage.INVALID_USER);
 	}
 }
