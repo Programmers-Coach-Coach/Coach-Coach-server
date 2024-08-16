@@ -7,6 +7,7 @@ import java.lang.annotation.Target;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
+import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 
 @Target(value = {ElementType.FIELD, ElementType.ANNOTATION_TYPE})
 @Retention(value = RetentionPolicy.RUNTIME)

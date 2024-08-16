@@ -10,8 +10,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.common.response.ErrorResponse;
-import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
 
 @Component
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {

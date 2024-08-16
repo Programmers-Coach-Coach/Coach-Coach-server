@@ -3,7 +3,7 @@ package site.coach_coach.coach_coach_server.user.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
+import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.user.validation.Nickname;
 import site.coach_coach.coach_coach_server.user.validation.Password;
 

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -24,8 +25,11 @@ import jakarta.servlet.http.Cookie;
 import site.coach_coach.coach_coach_server.auth.jwt.TokenProvider;
 import site.coach_coach.coach_coach_server.auth.jwt.dto.TokenDto;
 import site.coach_coach.coach_coach_server.auth.jwt.service.TokenService;
+import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
+import site.coach_coach.coach_coach_server.common.constants.SuccessMessage;
+import site.coach_coach.coach_coach_server.common.response.SuccessResponse;
 import site.coach_coach.coach_coach_server.common.utils.AuthenticationUtil;
-import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
+import site.coach_coach.coach_coach_server.config.CustomAuthenticationEntryPoint;
 import site.coach_coach.coach_coach_server.config.SecurityConfig;
 import site.coach_coach.coach_coach_server.user.domain.User;
 import site.coach_coach.coach_coach_server.user.dto.LoginRequest;
@@ -35,7 +39,7 @@ import site.coach_coach.coach_coach_server.user.exception.UserAlreadyExistExcept
 import site.coach_coach.coach_coach_server.user.service.UserService;
 
 @WebMvcTest(UserController.class)
-@Import(SecurityConfig.class)
+@Import({SecurityConfig.class, CustomAuthenticationEntryPoint.class})
 public class UserControllerTest {
 
 	@Autowired
@@ -102,7 +106,10 @@ public class UserControllerTest {
 			.andReturn();
 
 		verify(userService, times(1)).signup(signUpRequest);
-		assertThat(result.getResponse().getContentAsString()).isEmpty();
+		String responseContent = result.getResponse().getContentAsString();
+		SuccessResponse expectedResponse = new SuccessResponse(HttpStatus.CREATED.value(),
+			SuccessMessage.SIGNUP_SUCCESS.getMessage());
+		assertThat(responseContent).isEqualTo(objectMapper.writeValueAsString(expectedResponse));
 	}
 
 	@Test

@@ -7,10 +7,12 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.auth.jwt.TokenProvider;
 import site.coach_coach.coach_coach_server.auth.jwt.dto.TokenDto;
-import site.coach_coach.coach_coach_server.common.validation.ErrorMessage;
+import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.user.domain.User;
 import site.coach_coach.coach_coach_server.user.dto.LoginRequest;
+import site.coach_coach.coach_coach_server.user.dto.PasswordRequest;
 import site.coach_coach.coach_coach_server.user.dto.SignUpRequest;
+import site.coach_coach.coach_coach_server.user.exception.IncorrectPasswordException;
 import site.coach_coach.coach_coach_server.user.exception.InvalidUserException;
 import site.coach_coach.coach_coach_server.user.exception.UserAlreadyExistException;
 import site.coach_coach.coach_coach_server.user.repository.UserRepository;
@@ -56,6 +58,13 @@ public class UserService {
 
 	public TokenDto createJwt(User user) {
 		return tokenProvider.generateJwt(user);
+	}
+
+	public void validatePassword(Long userId, PasswordRequest passwordRequest) {
+		User user = userRepository.findByUserId(userId).orElseThrow(InvalidUserException::new);
+		if (!passwordEncoder.matches(passwordRequest.password(), user.getPassword())) {
+			throw new IncorrectPasswordException();
+		}
 	}
 
 	private User buildUser(SignUpRequest signUpRequest) {

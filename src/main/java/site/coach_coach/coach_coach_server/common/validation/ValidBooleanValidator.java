@@ -2,6 +2,7 @@ package site.coach_coach.coach_coach_server.common.validation;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 
 public class ValidBooleanValidator implements ConstraintValidator<ValidBoolean, Boolean> {
 	@Override
