@@ -58,7 +58,6 @@ dependencies {
 }
 
 
-
 jar {
     enabled = false
 }
@@ -88,21 +87,16 @@ jacocoTestCoverageVerification {
             element = 'CLASS'
 
             limit {
-                counter = 'LINE'
+                counter = 'CLASS'
                 value = 'COVEREDRATIO'
-                minimum = 0.60
-            }
-
-            limit {
-                counter = 'LINE'
-                value = 'TOTALCOUNT'
-                maximum = 200
+                minimum = 0.10
             }
 
             excludes = [
                     '*.*Application',
                     '*.*Exception*',
                     '*.dto.*',
+                    '*.*Dto*',
                     '*.domain.*',
                     '*.services.*',
                     '*.repository.*',

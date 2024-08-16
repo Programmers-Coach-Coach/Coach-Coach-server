@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +60,21 @@ public class RoutineControllerTest {
 	}
 
 	@Test
+	@DisplayName("비로그인 시, 루틴 목록 조회 테스트")
+	public void getRoutineListNotLogin() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/routines"))
+			.andExpect(MockMvcResultMatchers.status().isUnauthorized());
+	}
+
+	@Test
+	@DisplayName("비로그인 시, 루틴 목록 사용자 정보 조회 테스트")
+	public void getUserInfoNotLogin() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/routines/user"))
+			.andExpect(MockMvcResultMatchers.status().isUnauthorized());
+	}
+
+	@Test
+	@DisplayName("자신이 만든 루틴 목록 조회 테스트")
 	public void getRoutineListByMyselfTest() throws Exception {
 		// Given
 		Long userIdParam = null;
@@ -79,6 +95,7 @@ public class RoutineControllerTest {
 	}
 
 	@Test
+	@DisplayName("코치가 만들어준 루틴 목록 조회 테스트")
 	public void getRoutineListByCoachTest() throws Exception {
 		// Given
 		Long userIdParam = 2L;
@@ -101,6 +118,7 @@ public class RoutineControllerTest {
 	}
 
 	@Test
+	@DisplayName("자신이 만든 루틴 목록이 비어있는 경우 테스트")
 	public void getRoutineListIsEmptyTest() throws Exception {
 		// Given
 		Long userIdParam = null;
@@ -121,6 +139,7 @@ public class RoutineControllerTest {
 	}
 
 	@Test
+	@DisplayName("루틴 목록 사용자 정보 조회 테스트")
 	public void getUserInfoForRoutineListTest() throws Exception {
 		// Given
 		Long userIdByJwt = 1L;
