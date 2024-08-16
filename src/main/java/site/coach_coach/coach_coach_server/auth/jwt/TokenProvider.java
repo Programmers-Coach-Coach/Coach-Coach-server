@@ -111,6 +111,8 @@ public class TokenProvider {
 		}
 
 		return ResponseCookie.from(name, value)
+			.domain(".coach-coach.site")
+			.domain("localhost")
 			.path("/")
 			.sameSite("None")
 			.httpOnly(true)
@@ -189,6 +191,8 @@ public class TokenProvider {
 
 	public ResponseCookie clearCookie(String type) {
 		return ResponseCookie.from(type, "")
+			.domain(".coach-coach.site")
+			.domain("localhost")
 			.path("/")
 			.sameSite("None")
 			.httpOnly(true)
