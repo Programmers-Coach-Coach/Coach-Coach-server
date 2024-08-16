@@ -45,10 +45,6 @@ jobs:
 
       - name: Test with Gradle Wrapper
         run: ./gradlew test
-        env:
-          SPRING_DATASOURCE_URL: ${{secrets.DB_URL}}
-          SPRING_DATASOURCE_USERNAME: ${{secrets.DB_URL}}
-          SPRING_DATASOURCE_PASSWORD: ${{secrets.DB_PASSWORD}}
 
       - name: Build with Gradle Wrapper
         run: ./gradlew build
