@@ -21,6 +21,7 @@ import lombok.NoArgsConstructor;
 import site.coach_coach.coach_coach_server.common.domain.DateEntity;
 import site.coach_coach.coach_coach_server.sport.domain.CoachingSport;
 import site.coach_coach.coach_coach_server.user.domain.User;
+
 @Entity
 @Table(name = "coaches")
 @Getter
@@ -33,6 +34,7 @@ public class Coach extends DateEntity {
 	@Column(name = "coach_id")
 	private Long coachId;
 
+	@NotNull
 	@OneToOne
 	@JoinColumn(name = "user_Id")
 	private User user;

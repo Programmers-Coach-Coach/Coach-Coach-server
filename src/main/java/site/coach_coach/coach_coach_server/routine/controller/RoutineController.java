@@ -6,12 +6,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
+import site.coach_coach.coach_coach_server.routine.dto.CreateRoutineRequest;
+import site.coach_coach.coach_coach_server.routine.dto.CreateRoutineResponse;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineForListDto;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineListRequest;
 import site.coach_coach.coach_coach_server.routine.dto.UserInfoForRoutineList;
@@ -33,8 +38,8 @@ public class RoutineController {
 		RoutineListRequest routineListRequest = routineService.confirmIsMatching(userIdParam, coachIdParam,
 			userIdByJwt);
 
-		List<RoutineForListDto> routineList = routineService.getRoutineForList(routineListRequest);
-		return ResponseEntity.ok(routineList);
+		List<RoutineForListDto> routineListResponse = routineService.getRoutineForList(routineListRequest);
+		return ResponseEntity.ok(routineListResponse);
 	}
 
 	@GetMapping("/v1/routines/user")
@@ -50,6 +55,17 @@ public class RoutineController {
 			coachIdParam);
 
 		return ResponseEntity.ok(userInfoForRoutineList);
+	}
+
+	@PostMapping("/v1/routines")
+	public ResponseEntity<CreateRoutineResponse> createRoutine(
+		@AuthenticationPrincipal CustomUserDetails userDetails,
+		@RequestBody @Valid CreateRoutineRequest createRoutineRequest
+	) {
+		Long userIdByJwt = userDetails.getUserId();
+		Long newRoutineId = routineService.createRoutine(createRoutineRequest, userIdByJwt);
+		return ResponseEntity.status(HttpStatus.CREATED)
+			.body(new CreateRoutineResponse(HttpStatus.CREATED.value(), newRoutineId));
 	}
 
 	@GetMapping("/v1/test")
