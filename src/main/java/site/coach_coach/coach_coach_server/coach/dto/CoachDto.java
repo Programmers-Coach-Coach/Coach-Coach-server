@@ -3,10 +3,12 @@ package site.coach_coach.coach_coach_server.coach.dto;
 import java.util.List;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import site.coach_coach.coach_coach_server.sport.dto.CoachingSportDto;
 
 public record CoachDto(
+	@NotNull
 	Long coachId,
 	@NotBlank
 	String coachName,
@@ -14,9 +16,9 @@ public record CoachDto(
 	String profileImageUrl,
 	@NotBlank
 	String description,
-	@NotBlank
+	@NotNull
 	int countOfLikes,
-	@NotBlank
+	@NotNull
 	boolean isLiked,
 	List<CoachingSportDto> coachingSports
 ) {
