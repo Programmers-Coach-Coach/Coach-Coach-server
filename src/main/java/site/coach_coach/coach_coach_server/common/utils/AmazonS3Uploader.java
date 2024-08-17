@@ -16,18 +16,25 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
+import site.coach_coach.coach_coach_server.common.validation.FileValidator;
 
+@Slf4j
 @RequiredArgsConstructor
 @Component
 public class AmazonS3Uploader {
 	private final AmazonS3 amazonS3;
+	private static final String USER_DIR = System.getProperty("user.dir");
+	private final FileValidator fileValidator;
 
 	@Value("${cloud.aws.s3.bucket}")
 	private String bucket;
 
 	private String uploadMultipartFile(MultipartFile multipartFile, String dirName) throws IOException {
-		File uploadFile = convert(multipartFile)
-			.orElseThrow(() -> new IllegalArgumentException("error"));
+		fileValidator.validate(multipartFile);
+		File uploadFile = convertToFile(multipartFile)
+			.orElseThrow(() -> new IllegalArgumentException(ErrorMessage.CONVERT_FAIL));
 		return uploadFileToS3(uploadFile, dirName);
 	}
 
@@ -38,11 +45,11 @@ public class AmazonS3Uploader {
 		return uploadImageUrl;
 	}
 
-	private Optional<File> convert(MultipartFile file) throws IOException {
+	private Optional<File> convertToFile(MultipartFile file) throws IOException {
 		String originalFileName =
 			Objects.requireNonNull(file.getOriginalFilename()).isBlank() ? UUID.randomUUID().toString() :
 				file.getOriginalFilename();
-		File convertFile = new File(System.getProperty("user.dir") + "/" + originalFileName);
+		File convertFile = new File(USER_DIR + "/" + originalFileName);
 		if (convertFile.createNewFile()) {
 			try (FileOutputStream fos = new FileOutputStream(convertFile)) {
 				fos.write(file.getBytes());
@@ -60,6 +67,10 @@ public class AmazonS3Uploader {
 	}
 
 	private void removeNewFile(File targetFile) {
-		targetFile.delete();
+		if (targetFile.delete()) {
+			log.info("파일 삭제 성공");
+		} else {
+			log.error("파일 삭제 실패: {}", targetFile.getAbsolutePath());
+		}
 	}
 }
