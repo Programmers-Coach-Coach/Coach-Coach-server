@@ -6,6 +6,7 @@ import java.util.Date;
 
 import javax.crypto.SecretKey;
 
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -23,7 +24,6 @@ import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import site.coach_coach.coach_coach_server.auth.jwt.dto.TokenDto;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
@@ -100,7 +100,7 @@ public class TokenProvider {
 			.build();
 	}
 
-	public Cookie createCookie(String name, String value) {
+	public ResponseCookie createCookie(String name, String value, String domain) {
 		long maxAge;
 		if (name.equals("access_token")) {
 			maxAge = accessTokenExpireTime;
@@ -110,14 +110,14 @@ public class TokenProvider {
 			return null;
 		}
 
-		Cookie cookie = new Cookie(name, value);
-		cookie.setHttpOnly(true);
-		cookie.setPath("/");
-		cookie.setMaxAge((int)(maxAge / 1000));
-		cookie.setSecure(true);
-		cookie.setDomain("coach-coach.site");
-		cookie.setDomain("localhost");
-		return cookie;
+		return ResponseCookie.from(name, value)
+			.domain(domain)
+			.path("/")
+			.httpOnly(true)
+			.secure(true)
+			.sameSite("None")
+			.maxAge((maxAge / MILLIS))
+			.build();
 	}
 
 	public String getCookieValue(HttpServletRequest request, String type) {
@@ -188,11 +188,14 @@ public class TokenProvider {
 		return createAccessToken(user);
 	}
 
-	public void clearCookie(HttpServletResponse response, String type) {
-		Cookie oldCookie = new Cookie(type, null);
-		oldCookie.setHttpOnly(true);
-		oldCookie.setPath("/");
-		oldCookie.setMaxAge(0);
-		response.addCookie(oldCookie);
+	public ResponseCookie clearCookie(String type, String domain) {
+		return ResponseCookie.from(type, "")
+			.domain(domain)
+			.path("/")
+			.httpOnly(true)
+			.secure(true)
+			.sameSite("None")
+			.maxAge(0)
+			.build();
 	}
 }

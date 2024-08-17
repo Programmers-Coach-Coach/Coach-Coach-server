@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -53,8 +52,17 @@ public class UserController {
 		User user = userService.validateUser(loginRequest);
 		TokenDto tokenDto = userService.createJwt(user);
 
-		response.addCookie(tokenProvider.createCookie("access_token", tokenDto.accessToken()));
-		response.addCookie(tokenProvider.createCookie("refresh_token", tokenDto.refreshToken()));
+		//TODO : 서비스 배포 후 localhost 쿠키 삭제
+		response.addHeader("Set-Cookie",
+			tokenProvider.createCookie("access_token", tokenDto.accessToken(), "localhost").toString());
+		response.addHeader("Set-Cookie",
+			tokenProvider.createCookie("refresh_token", tokenDto.refreshToken(), "localhost").toString());
+
+		response.addHeader("Set-Cookie",
+			tokenProvider.createCookie("access_token", tokenDto.accessToken(), ".coach-coach.site").toString());
+		response.addHeader("Set-Cookie",
+			tokenProvider.createCookie("refresh_token", tokenDto.refreshToken(), ".coach-coach.site").toString());
+
 		tokenService.createRefreshToken(user, tokenDto.refreshToken(), tokenDto);
 		return ResponseEntity.ok(new SuccessResponse(HttpStatus.OK.value(), SuccessMessage.LOGIN_SUCCESS.getMessage()));
 	}
@@ -67,8 +75,11 @@ public class UserController {
 		String refreshToken = tokenProvider.getCookieValue(request, "refresh_token");
 		tokenService.deleteRefreshToken(userId, refreshToken);
 
-		tokenProvider.clearCookie(response, "access_token");
-		tokenProvider.clearCookie(response, "refresh_token");
+		//TODO : 서비스 배포 후 localhost 쿠키 삭제
+		response.addHeader("Set-Cookie", tokenProvider.clearCookie("access_token", "localhost").toString());
+		response.addHeader("Set-Cookie", tokenProvider.clearCookie("refresh_token", "localhost").toString());
+		response.addHeader("Set-Cookie", tokenProvider.clearCookie("access_token", ".coach-coach.site").toString());
+		response.addHeader("Set-Cookie", tokenProvider.clearCookie("refresh_token", ".coach-coach.site").toString());
 
 		SecurityContextHolder.clearContext();
 
@@ -114,10 +125,13 @@ public class UserController {
 		String refreshToken = tokenProvider.getCookieValue(request, "refresh_token");
 
 		String newAccessToken = tokenService.reissueAccessToken(refreshToken);
-		tokenProvider.clearCookie(response, "access_token");
+		response.addHeader("Set-Cookie", tokenProvider.clearCookie("access_token", "localhost").toString());
+		response.addHeader("Set-Cookie", tokenProvider.clearCookie("access_token", ".coach-coach.site").toString());
 
-		Cookie newAccessTokenCookie = tokenProvider.createCookie("access_token", newAccessToken);
-		response.addCookie(newAccessTokenCookie);
+		response.addHeader("Set-Cookie",
+			tokenProvider.createCookie("access_token", newAccessToken, "localhost").toString());
+		response.addHeader("Set-Cookie",
+			tokenProvider.createCookie("access_token", newAccessToken, ".coach-coach.site").toString());
 
 		return ResponseEntity.noContent().build();
 	}
