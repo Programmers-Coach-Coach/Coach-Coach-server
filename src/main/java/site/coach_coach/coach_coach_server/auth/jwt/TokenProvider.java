@@ -100,7 +100,7 @@ public class TokenProvider {
 			.build();
 	}
 
-	public ResponseCookie createCookie(String name, String value) {
+	public ResponseCookie createCookie(String name, String value, String domain) {
 		long maxAge;
 		if (name.equals("access_token")) {
 			maxAge = accessTokenExpireTime;
@@ -111,8 +111,7 @@ public class TokenProvider {
 		}
 
 		return ResponseCookie.from(name, value)
-			.domain(".coach-coach.site")
-			.domain("localhost")
+			.domain(domain)
 			.path("/")
 			.httpOnly(true)
 			.secure(true)
@@ -189,10 +188,9 @@ public class TokenProvider {
 		return createAccessToken(user);
 	}
 
-	public ResponseCookie clearCookie(String type) {
+	public ResponseCookie clearCookie(String type, String domain) {
 		return ResponseCookie.from(type, "")
-			.domain(".coach-coach.site")
-			.domain("localhost")
+			.domain(domain)
 			.path("/")
 			.httpOnly(true)
 			.secure(true)
