@@ -12,6 +12,7 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.SignatureException;
+import io.sentry.Sentry;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,10 +34,13 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
 		try {
 			filterChain.doFilter(request, response);
 		} catch (ExpiredJwtException e) {
+			Sentry.captureException(e);
 			setErrorResponse(response, ErrorMessage.EXPIRED_TOKEN);
 		} catch (SignatureException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
+			Sentry.captureException(e);
 			setErrorResponse(response, ErrorMessage.INVALID_TOKEN);
 		} catch (JwtException e) {
+			Sentry.captureException(e);
 			setErrorResponse(response, ErrorMessage.NOT_FOUND_TOKEN);
 		}
 	}
