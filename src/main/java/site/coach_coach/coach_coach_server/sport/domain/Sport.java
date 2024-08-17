@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,10 +29,12 @@ public class Sport extends DateEntity {
 	@Column(name = "sport_id")
 	private Long sportId;
 
+	@NotBlank
 	@Size(max = 45)
 	@Column(name = "sport_name")
 	private String sportName;
 
+	@NotBlank
 	@Size(max = 400)
 	@Column(name = "sport_image_url")
 	private String sportImageUrl;

@@ -8,7 +8,7 @@ public class RoutineNameValidator implements ConstraintValidator<RoutineName, St
 	@Override
 	public boolean isValid(String routineName, ConstraintValidatorContext context) {
 		if (routineName.isBlank()) {
-			return addErrorMessage(context, ErrorMessage.BLANK_INPUT);
+			return addErrorMessage(context, ErrorMessage.INVALID_VALUE);
 		}
 		return true;
 	}

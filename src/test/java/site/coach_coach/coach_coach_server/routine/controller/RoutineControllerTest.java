@@ -2,6 +2,7 @@ package site.coach_coach.coach_coach_server.routine.controller;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,8 +29,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import site.coach_coach.coach_coach_server.auth.jwt.TokenFilter;
 import site.coach_coach.coach_coach_server.auth.jwt.TokenProvider;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
+import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
+import site.coach_coach.coach_coach_server.common.constants.SuccessMessage;
 import site.coach_coach.coach_coach_server.config.CustomAuthenticationEntryPoint;
 import site.coach_coach.coach_coach_server.config.SecurityConfig;
+import site.coach_coach.coach_coach_server.routine.dto.CreateRoutineRequest;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineForListDto;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineListRequest;
 import site.coach_coach.coach_coach_server.routine.dto.UserInfoForRoutineList;
@@ -166,6 +171,49 @@ public class RoutineControllerTest {
 
 		assertThat(result.getResponse().getContentAsString().contains(userInfoForRoutineList.nickname()));
 
+	}
+
+	@Test
+	@DisplayName("루틴 추가 성공 테스트")
+	public void createRoutineSuccessTest() throws Exception {
+		// Given
+		Long userIdByJwt = 1L;
+		CreateRoutineRequest createRoutineRequest =
+			new CreateRoutineRequest(2L, 1L, "나의 헬스 루틴");
+
+		setSecurityContextWithMockUserDetails(userIdByJwt);
+
+		doNothing().when(routineService).createRoutine(createRoutineRequest, userIdByJwt);
+
+		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/routines").with(csrf())
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(createRoutineRequest)))
+			.andExpect(MockMvcResultMatchers.status().isCreated())
+			.andReturn();
+
+		assertThat(result.getResponse().getContentAsString()).contains(
+			SuccessMessage.CREATE_ROUTINE_SUCCESS.getMessage());
+	}
+
+	@Test
+	@DisplayName("루틴 이름 공란 작성 시 400 상태 코드 반환 및 에러 메세지")
+	public void createdRoutineFailTest() throws Exception {
+		// Given
+		Long userIdByJwt = 1L;
+		CreateRoutineRequest createRoutineRequest =
+			new CreateRoutineRequest(null, 1L, "  ");
+
+		setSecurityContextWithMockUserDetails(userIdByJwt);
+
+		doNothing().when(routineService).createRoutine(createRoutineRequest, userIdByJwt);
+
+		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/routines")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(createRoutineRequest)))
+			.andExpect(MockMvcResultMatchers.status().isBadRequest())
+			.andReturn();
+
+		assertThat(result.getResponse().getContentAsString()).contains(ErrorMessage.INVALID_VALUE);
 	}
 
 	public void setSecurityContextWithMockUserDetails(Long userIdByJwt) {

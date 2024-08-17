@@ -12,10 +12,10 @@ import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 
 @Documented
 @Constraint(validatedBy = RoutineNameValidator.class)
-@Target({ElementType.FIELD, ElementType.PARAMETER})
+@Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RoutineName {
-	String message() default ErrorMessage.INVALID_PASSWORD;
+	String message() default ErrorMessage.INVALID_VALUE;
 
 	Class<?>[] groups() default {};
 

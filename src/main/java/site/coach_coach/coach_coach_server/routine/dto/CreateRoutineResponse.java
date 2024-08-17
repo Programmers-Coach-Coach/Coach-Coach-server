@@ -2,11 +2,11 @@ package site.coach_coach.coach_coach_server.routine.dto;
 
 import jakarta.validation.constraints.NotNull;
 
-public record RoutineListRequest(
+public record CreateRoutineResponse(
 	@NotNull
-	Long userId,
+	int statusCode,
 
-	Long coachId
+	@NotNull
+	Long routineId
 ) {
-
 }
