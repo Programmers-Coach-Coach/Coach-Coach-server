@@ -119,19 +119,21 @@ public class RoutineService {
 		return routineRepository.save(routineBuilder.build()).getRoutineId();
 	}
 
-	public void checkIsExistRoutine(Long routineId) {
-		if (!routineRepository.existsById(routineId)) {
-			throw new NoExistRoutineException(ErrorMessage.NOT_FOUND_ROUTINE);
-		}
-	}
-
 	public void deleteRoutineWithValidation(Long routineId, Long userIdByJwt) {
-		if (!routineRepository.existsByRoutineIdAndUserId(routineId, userIdByJwt)) {
+		Routine routine = routineRepository.findById(routineId)
+			.orElseThrow(() -> new NoExistRoutineException(ErrorMessage.NOT_FOUND_ROUTINE));
+
+		if (routine.getCoachId() == null) {
+			if (!routine.getUserId().equals(userIdByJwt)) {
+				throw new NoExistRoutineException(ErrorMessage.NOT_MY_ROUTINE);
+			}
+		} else {
 			Long coachId = getCoachId(userIdByJwt);
-			if (!routineRepository.existsByRoutineIdAndCoachId(routineId, coachId)) {
-				throw new NoExistRoutineException(ErrorMessage.NOT_FOUND_ROUTINE);
+			if (!routine.getCoachId().equals(coachId)) {
+				throw new NoExistRoutineException(ErrorMessage.NOT_MY_ROUTINE);
 			}
 		}
+
 		routineRepository.deleteById(routineId);
 	}
 }

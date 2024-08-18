@@ -12,8 +12,4 @@ public interface RoutineRepository extends JpaRepository<Routine, Long> {
 	List<Routine> findByUserIdAndCoachIdIsNull(Long userId);
 
 	List<Routine> findByUserIdAndCoachId(Long userId, Long coachId);
-
-	Boolean existsByRoutineIdAndUserId(Long routineId, Long userIdByJwt);
-
-	Boolean existsByRoutineIdAndCoachId(Long routineId, Long coachId);
 }
