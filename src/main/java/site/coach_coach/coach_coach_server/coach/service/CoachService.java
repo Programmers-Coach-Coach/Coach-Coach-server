@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.coach.dto.CoachListDto;
 import site.coach_coach.coach_coach_server.coach.dto.CoachListResponse;
+import site.coach_coach.coach_coach_server.coach.exception.InvalidQueryParameterException;
 import site.coach_coach.coach_coach_server.coach.exception.NotFoundPageException;
 import site.coach_coach.coach_coach_server.coach.exception.NotFoundSportException;
 import site.coach_coach.coach_coach_server.coach.repository.CoachRepository;
@@ -64,7 +65,7 @@ public class CoachService {
 		} else if (my != null && my) {
 			coachesPage = coachRepository.findMyCoaches(user.getUserId(), pageable);
 		} else {
-			throw new IllegalArgumentException(ErrorMessage.INVALID_REQUEST);
+			throw new InvalidQueryParameterException(ErrorMessage.INVALID_REQUEST);
 		}
 
 		if (page > coachesPage.getTotalPages()) {
