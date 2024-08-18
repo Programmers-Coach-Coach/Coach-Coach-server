@@ -31,7 +31,7 @@ public class AmazonS3Uploader {
 	@Value("${cloud.aws.s3.bucket}")
 	private String bucket;
 
-	private String uploadMultipartFile(MultipartFile multipartFile, String dirName) throws IOException {
+	public String uploadMultipartFile(MultipartFile multipartFile, String dirName) throws IOException {
 		fileValidator.validate(multipartFile);
 		File uploadFile = convertToFile(multipartFile)
 			.orElseThrow(() -> new IllegalArgumentException(ErrorMessage.CONVERT_FAIL));
