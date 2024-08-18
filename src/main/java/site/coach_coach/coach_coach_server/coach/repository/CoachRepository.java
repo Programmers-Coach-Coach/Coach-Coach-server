@@ -18,40 +18,40 @@ public interface CoachRepository extends JpaRepository<Coach, Long> {
 	@Query("SELECT c.coachId FROM Coach c WHERE c.user.userId = :userId")
 	Optional<Long> findCoachIdByUserId(@Param("userId") Long userId);
 
-	@Query("SELECT c FROM Coach c " +
-		"LEFT JOIN c.coachingSports cs " +
-		"LEFT JOIN c.reviews r " +
-		"WHERE (:sports IS NULL OR cs.sport.sportId IN :sports) " +
-		"AND (:search IS NULL OR c.user.nickname LIKE %:search%) " +
-		"GROUP BY c.coachId")
+	@Query("SELECT c FROM Coach c "
+		+ "LEFT JOIN c.coachingSports cs "
+		+ "LEFT JOIN c.reviews r "
+		+ "WHERE (:sports IS NULL OR cs.sport.sportId IN :sports) "
+		+ "AND (:search IS NULL OR c.user.nickname LIKE %:search%) "
+		+ "GROUP BY c.coachId")
 	Page<Coach> findAllWithFilters(@Param("sports") List<Long> sports,
 		@Param("search") String search,
 		Pageable pageable);
 
-	@Query("SELECT c FROM Coach c " +
-		"LEFT JOIN c.coachingSports cs " +
-		"LEFT JOIN c.reviews r " +
-		"WHERE (:sports IS NULL OR cs.sport.sportId IN :sports) " +
-		"AND (:search IS NULL OR c.user.nickname LIKE %:search%) " +
-		"GROUP BY c.coachId " +
-		"ORDER BY COUNT(r.reviewId) DESC")
+	@Query("SELECT c FROM Coach c "
+		+ "LEFT JOIN c.coachingSports cs "
+		+ "LEFT JOIN c.reviews r "
+		+ "WHERE (:sports IS NULL OR cs.sport.sportId IN :sports) "
+		+ "AND (:search IS NULL OR c.user.nickname LIKE %:search%) "
+		+ "GROUP BY c.coachId "
+		+ "ORDER BY COUNT(r.reviewId) DESC")
 	Page<Coach> findAllWithReviewsSorted(@Param("sports") List<Long> sports,
 		@Param("search") String search,
 		Pageable pageable);
 
-	@Query("SELECT c FROM Coach c " +
-		"LEFT JOIN c.coachingSports cs " +
-		"LEFT JOIN c.reviews r " +
-		"WHERE (:sports IS NULL OR cs.sport.sportId IN :sports) " +
-		"AND (:search IS NULL OR c.user.nickname LIKE %:search%) " +
-		"GROUP BY c.coachId " +
-		"ORDER BY (SELECT COUNT(ucl) FROM UserCoachLike ucl WHERE ucl.coach.coachId = c.coachId) DESC")
+	@Query("SELECT c FROM Coach c "
+		+ "LEFT JOIN c.coachingSports cs "
+		+ "LEFT JOIN c.reviews r "
+		+ "WHERE (:sports IS NULL OR cs.sport.sportId IN :sports) "
+		+ "AND (:search IS NULL OR c.user.nickname LIKE %:search%) "
+		+ "GROUP BY c.coachId "
+		+ "ORDER BY (SELECT COUNT(ucl) FROM UserCoachLike ucl WHERE ucl.coach.coachId = c.coachId) DESC")
 	Page<Coach> findAllWithLikesSorted(@Param("sports") List<Long> sports,
 		@Param("search") String search,
 		Pageable pageable);
 
-	@Query("SELECT c FROM Coach c " +
-		"JOIN UserCoachLike ucl ON ucl.coach = c " +
-		"WHERE ucl.user.userId = :userId")
+	@Query("SELECT c FROM Coach c "
+		+ "JOIN UserCoachLike ucl ON ucl.coach = c "
+		+ "WHERE ucl.user.userId = :userId")
 	Page<Coach> findMyCoaches(@Param("userId") Long userId, Pageable pageable);
 }
