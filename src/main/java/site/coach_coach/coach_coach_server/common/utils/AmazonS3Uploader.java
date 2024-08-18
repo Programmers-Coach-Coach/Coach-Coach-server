@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 
 import lombok.RequiredArgsConstructor;
@@ -25,7 +24,6 @@ import site.coach_coach.coach_coach_server.common.validation.FileValidator;
 @Component
 public class AmazonS3Uploader {
 	private final AmazonS3 amazonS3;
-	private static final String USER_DIR = System.getProperty("user.dir");
 	private final FileValidator fileValidator;
 
 	@Value("${cloud.aws.s3.bucket}")
@@ -49,7 +47,7 @@ public class AmazonS3Uploader {
 		String originalFileName =
 			Objects.requireNonNull(file.getOriginalFilename()).isBlank() ? UUID.randomUUID().toString() :
 				file.getOriginalFilename();
-		File convertFile = new File(USER_DIR + "/" + originalFileName);
+		File convertFile = new File(System.getProperty("java.io.tmpdir") + "/" + originalFileName);
 		if (convertFile.createNewFile()) {
 			try (FileOutputStream fos = new FileOutputStream(convertFile)) {
 				fos.write(file.getBytes());
@@ -60,9 +58,7 @@ public class AmazonS3Uploader {
 	}
 
 	private String putS3(File uploadFile, String fileName) {
-		amazonS3.putObject(new PutObjectRequest(bucket, fileName, uploadFile).withCannedAcl(
-			CannedAccessControlList.PublicRead
-		));
+		amazonS3.putObject(new PutObjectRequest(bucket, fileName, uploadFile));
 		return amazonS3.getUrl(bucket, fileName).toString();
 	}
 

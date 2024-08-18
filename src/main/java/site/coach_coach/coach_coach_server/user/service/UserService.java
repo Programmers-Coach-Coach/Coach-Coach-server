@@ -7,11 +7,13 @@ import java.util.stream.Collectors;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.auth.jwt.TokenProvider;
 import site.coach_coach.coach_coach_server.auth.jwt.dto.TokenDto;
+import site.coach_coach.coach_coach_server.coach.exception.NotFoundSportException;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.common.utils.AmazonS3Uploader;
 import site.coach_coach.coach_coach_server.sport.domain.InterestedSport;
@@ -87,41 +89,51 @@ public class UserService {
 		return UserProfileResponse.from(user);
 	}
 
-	public void updateUserProfile(Long userId, UserProfileRequest userProfileRequest) throws IOException {
-		User existingUser = userRepository.findById(userId).orElseThrow(InvalidUserException::new);
-		if (!Objects.equals(existingUser.getNickname(), userProfileRequest.nickname())) {
+	@Transactional
+	public void updateUserProfile(Long userId, MultipartFile profileImage, UserProfileRequest userProfileRequest) throws
+		IOException {
+		User user = userRepository.findById(userId).orElseThrow(InvalidUserException::new);
+		String nickname = user.getNickname();
+		if (!Objects.equals(nickname, userProfileRequest.nickname())) {
 			if (userRepository.existsByNickname(userProfileRequest.nickname())) {
 				throw new UserAlreadyExistException(ErrorMessage.DUPLICATE_NICKNAME);
 			}
+			nickname = userProfileRequest.nickname();
 		}
 
-		String profileImageUrl = amazonS3Uploader.uploadMultipartFile(userProfileRequest.profileImage(), "users/");
+		String profileImageUrl = user.getProfileImageUrl();
 
-		interestedSportRepository.deleteByUser(existingUser);
+		if (profileImage != null) {
+			profileImageUrl = amazonS3Uploader.uploadMultipartFile(profileImage, "users/" + userId);
+		}
 
-		List<InterestedSport> interestedSports = userProfileRequest.interestedSports().stream().map(interestedSport -> {
-			Sport sport = sportRepository.findBySportName(interestedSport.getSport().getSportName())
-				.orElseThrow(() -> new InvalidUserException());
+		List<InterestedSport> interestedSports = user.getInterestedSports();
+		if (userProfileRequest.interestedSports() != null) {
+			interestedSportRepository.deleteByUser(user);
 
-			return InterestedSport.builder()
-				.user(existingUser)
-				.sport(sport)
-				.build();
-		}).collect(Collectors.toList());
-		interestedSportRepository.saveAll(interestedSports);
+			interestedSports = userProfileRequest.interestedSports().stream().map(
+				interestedSport -> {
+					Sport sport = sportRepository.findBySportName(interestedSport.sportName())
+						.orElseThrow(() -> new NotFoundSportException(ErrorMessage.NOT_FOUND_SPORTS));
+					return InterestedSport.builder()
+						.user(user)
+						.sport(sport)
+						.build();
+				}).collect(Collectors.toList());
+			interestedSportRepository.saveAll(interestedSports);
+		}
 
-		User user = User.builder()
-			.userId(userId)
-			.nickname(userProfileRequest.nickname())
-			.email(existingUser.getEmail())
-			.password(existingUser.getPassword())
-			.profileImageUrl(profileImageUrl)
-			.gender(userProfileRequest.gender())
-			.localAddress(userProfileRequest.localAddress())
-			.localAddressDetail(userProfileRequest.localAddressDetail())
-			.introduction(userProfileRequest.introduction())
-			.interestedSports(interestedSports)
-			.build();
+		user.updateProfile(
+			nickname,
+			profileImageUrl,
+			userProfileRequest.gender() != null ? userProfileRequest.gender() : user.getGender(),
+			userProfileRequest.localAddress() != null ? userProfileRequest.localAddress() : user.getLocalAddress(),
+			userProfileRequest.localAddressDetail() != null ? userProfileRequest.localAddressDetail() :
+				user.getLocalAddressDetail(),
+			userProfileRequest.introduction() != null ? userProfileRequest.introduction() : user.getIntroduction(),
+			interestedSports
+		);
+
 		userRepository.save(user);
 	}
 

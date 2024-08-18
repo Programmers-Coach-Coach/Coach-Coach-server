@@ -13,7 +13,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,6 +30,7 @@ import site.coach_coach.coach_coach_server.auth.jwt.service.TokenService;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
 import site.coach_coach.coach_coach_server.common.constants.SuccessMessage;
 import site.coach_coach.coach_coach_server.common.response.SuccessResponse;
+import site.coach_coach.coach_coach_server.common.utils.AmazonS3Uploader;
 import site.coach_coach.coach_coach_server.user.domain.User;
 import site.coach_coach.coach_coach_server.user.dto.LoginRequest;
 import site.coach_coach.coach_coach_server.user.dto.PasswordRequest;
@@ -42,6 +47,7 @@ public class UserController {
 	private final UserService userService;
 	private final TokenService tokenService;
 	private final TokenProvider tokenProvider;
+	private final AmazonS3Uploader amazonS3Uploader;
 
 	@PostMapping("/v1/auth/signup")
 	public ResponseEntity<SuccessResponse> signup(@RequestBody @Valid SignUpRequest signUpRequest) {
@@ -126,9 +132,16 @@ public class UserController {
 
 	@PutMapping("/v1/user/me")
 	public ResponseEntity<SuccessResponse> updateMyProfile(@AuthenticationPrincipal CustomUserDetails userDetails,
-		@RequestBody @Valid UserProfileRequest userProfileRequest) throws IOException {
+		@RequestPart(value = "profileImage", required = false) MultipartFile profileImage,
+		@RequestPart("userProfileRequest") String userProfileRequestJson
+	) throws IOException {
 		Long userId = userDetails.getUserId();
-		userService.updateUserProfile(userId, userProfileRequest);
+
+		ObjectMapper objectMapper = new ObjectMapper();
+		UserProfileRequest userProfileRequest = objectMapper.readValue(userProfileRequestJson,
+			UserProfileRequest.class);
+
+		userService.updateUserProfile(userId, profileImage, userProfileRequest);
 		return ResponseEntity.ok(
 			new SuccessResponse(HttpStatus.OK.value(), SuccessMessage.UPDATE_PROFILE_SUCCESS.getMessage())
 		);
