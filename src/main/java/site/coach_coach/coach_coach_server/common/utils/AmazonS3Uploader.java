@@ -3,7 +3,6 @@ package site.coach_coach.coach_coach_server.common.utils;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -33,28 +32,52 @@ public class AmazonS3Uploader {
 		fileValidator.validate(multipartFile);
 		File uploadFile = convertToFile(multipartFile)
 			.orElseThrow(() -> new IllegalArgumentException(ErrorMessage.CONVERT_FAIL));
-		return uploadFileToS3(uploadFile, dirName);
+		try {
+			return uploadFileToS3(uploadFile, dirName);
+		} finally {
+			removeNewFile(uploadFile);
+		}
 	}
 
 	private String uploadFileToS3(File uploadFile, String dirName) {
 		String fileName = dirName + "/" + UUID.randomUUID() + uploadFile.getName();
-		String uploadImageUrl = putS3(uploadFile, fileName);
-		removeNewFile(uploadFile);
-		return uploadImageUrl;
+		return putS3(uploadFile, fileName);
 	}
 
 	private Optional<File> convertToFile(MultipartFile file) throws IOException {
-		String originalFileName =
-			Objects.requireNonNull(file.getOriginalFilename()).isBlank() ? UUID.randomUUID().toString() :
-				file.getOriginalFilename();
-		File convertFile = new File(System.getProperty("java.io.tmpdir") + "/" + originalFileName);
-		if (convertFile.createNewFile()) {
-			try (FileOutputStream fos = new FileOutputStream(convertFile)) {
-				fos.write(file.getBytes());
+		String originalFileName = getOriginalFileName(file);
+		File convertFile = new File(System.getProperty("java.io.tmpdir"), originalFileName);
+
+		try {
+			if (convertFile.createNewFile()) {
+				writeFile(file, convertFile);
+				return Optional.of(convertFile);
+			} else {
+				log.error("File already exists: {}", convertFile.getAbsolutePath());
+				return Optional.empty();
 			}
-			return Optional.of(convertFile);
+		} catch (IOException e) {
+			log.error("Failed to create or write to file: {}", convertFile.getAbsolutePath(), e);
+			return Optional.empty();
 		}
-		return Optional.empty();
+	}
+
+	private String getOriginalFileName(MultipartFile file) {
+		return Optional.ofNullable(file.getOriginalFilename())
+			.filter(name -> !name.isBlank())
+			.orElse(UUID.randomUUID().toString());
+	}
+
+	private void writeFile(MultipartFile file, File convertFile) throws IOException {
+		try (FileOutputStream fos = new FileOutputStream(convertFile)) {
+			fos.write(file.getBytes());
+		} catch (IOException e) {
+			log.error("Failed to write bytes to file: {}", convertFile.getAbsolutePath(), e);
+			if (convertFile.exists()) {
+				convertFile.delete();
+			}
+			throw e; // Rethrow to handle it in the main method
+		}
 	}
 
 	private String putS3(File uploadFile, String fileName) {

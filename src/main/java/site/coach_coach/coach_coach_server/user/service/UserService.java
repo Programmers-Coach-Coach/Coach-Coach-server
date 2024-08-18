@@ -103,7 +103,7 @@ public class UserService {
 
 		String profileImageUrl = user.getProfileImageUrl();
 
-		if (profileImage != null) {
+		if (profileImage != null && !profileImage.isEmpty()) {
 			profileImageUrl = amazonS3Uploader.uploadMultipartFile(profileImage, "users/" + userId);
 		}
 

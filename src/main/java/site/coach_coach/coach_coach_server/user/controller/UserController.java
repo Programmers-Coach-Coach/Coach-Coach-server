@@ -133,7 +133,7 @@ public class UserController {
 	@PutMapping("/v1/user/me")
 	public ResponseEntity<SuccessResponse> updateMyProfile(@AuthenticationPrincipal CustomUserDetails userDetails,
 		@RequestPart(value = "profileImage", required = false) MultipartFile profileImage,
-		@RequestPart("userProfileRequest") String userProfileRequestJson
+		@RequestPart(value = "userProfileRequest") String userProfileRequestJson
 	) throws IOException {
 		Long userId = userDetails.getUserId();
 
