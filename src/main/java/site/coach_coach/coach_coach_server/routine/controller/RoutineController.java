@@ -68,6 +68,16 @@ public class RoutineController {
 			.body(new CreateRoutineResponse(HttpStatus.CREATED.value(), newRoutineId));
 	}
 
+	// @GetMapping("/v1/routines/{routineId}")
+	// public ResponseEntity<RoutineResponse> getRoutine(
+	// 	@AuthenticationPrincipal CustomUserDetails userDetails,
+	// 	@PathVariable(name = "routineId") @Valid Long routineId
+	// ) {
+	// 	Long userIdByJwt = userDetails.getUserId();
+	// 	// 조회하려는 루틴에 접근 가능한지 확인
+	// 	// 개별 루틴 - 카테고리 - 운동 정보 조회하여 반환
+	// }
+
 	@GetMapping("/v1/test")
 	public ResponseEntity test() {
 		return ResponseEntity.status(HttpStatus.OK).body("테스트 성공!");
