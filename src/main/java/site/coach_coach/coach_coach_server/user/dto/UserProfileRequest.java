@@ -14,9 +14,6 @@ public record UserProfileRequest(
 	@Nickname
 	String nickname,
 
-	@Size(max = 500)
-	String profileImageUrl,
-
 	GenderEnum gender,
 
 	@Size(max = 100)

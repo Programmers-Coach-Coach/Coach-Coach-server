@@ -93,35 +93,9 @@ public class UserService {
 	public void updateUserProfile(Long userId, MultipartFile profileImage, UserProfileRequest userProfileRequest) throws
 		IOException {
 		User user = userRepository.findById(userId).orElseThrow(InvalidUserException::new);
-		String nickname = user.getNickname();
-		if (!Objects.equals(nickname, userProfileRequest.nickname())) {
-			if (userRepository.existsByNickname(userProfileRequest.nickname())) {
-				throw new UserAlreadyExistException(ErrorMessage.DUPLICATE_NICKNAME);
-			}
-			nickname = userProfileRequest.nickname();
-		}
-
-		String profileImageUrl = user.getProfileImageUrl();
-
-		if (profileImage != null && !profileImage.isEmpty()) {
-			profileImageUrl = amazonS3Uploader.uploadMultipartFile(profileImage, "users/" + userId);
-		}
-
-		List<InterestedSport> interestedSports = user.getInterestedSports();
-		if (userProfileRequest.interestedSports() != null) {
-			interestedSportRepository.deleteByUser(user);
-
-			interestedSports = userProfileRequest.interestedSports().stream().map(
-				interestedSport -> {
-					Sport sport = sportRepository.findBySportName(interestedSport.sportName())
-						.orElseThrow(() -> new NotFoundSportException(ErrorMessage.NOT_FOUND_SPORTS));
-					return InterestedSport.builder()
-						.user(user)
-						.sport(sport)
-						.build();
-				}).collect(Collectors.toList());
-			interestedSportRepository.saveAll(interestedSports);
-		}
+		String nickname = getUpdatedNickname(user, userProfileRequest);
+		String profileImageUrl = getProfileImageToUrl(user, profileImage);
+		List<InterestedSport> interestedSports = getInterestedSports(user, userProfileRequest);
 
 		user.updateProfile(
 			nickname,
@@ -135,6 +109,44 @@ public class UserService {
 		);
 
 		userRepository.save(user);
+	}
+
+	private String getUpdatedNickname(User user, UserProfileRequest userProfileRequest) {
+		String currentNickname = user.getNickname();
+		String newNickname = userProfileRequest.nickname();
+
+		if (!Objects.equals(currentNickname, newNickname)) {
+			if (userRepository.existsByNickname(newNickname)) {
+				throw new UserAlreadyExistException(ErrorMessage.DUPLICATE_NICKNAME);
+			}
+			return newNickname;
+		}
+		return currentNickname;
+	}
+
+	private String getProfileImageToUrl(User user, MultipartFile profileImage) throws IOException {
+		if (profileImage != null && !profileImage.isEmpty()) {
+			return amazonS3Uploader.uploadMultipartFile(profileImage, "users/" + user.getUserId());
+		}
+		return user.getProfileImageUrl();
+	}
+
+	private List<InterestedSport> getInterestedSports(User user, UserProfileRequest userProfileRequest) {
+		if (userProfileRequest.interestedSports() != null) {
+			interestedSportRepository.deleteByUser(user);
+
+			List<InterestedSport> interestedSports = userProfileRequest.interestedSports().stream().map(
+				interestedSport -> {
+					Sport sport = sportRepository.findBySportName(interestedSport.sportName())
+						.orElseThrow(() -> new NotFoundSportException(ErrorMessage.NOT_FOUND_SPORTS));
+					return InterestedSport.builder()
+						.user(user)
+						.sport(sport)
+						.build();
+				}).collect(Collectors.toList());
+			interestedSportRepository.saveAll(interestedSports);
+		}
+		return user.getInterestedSports();
 	}
 
 	private User buildUserForSignUp(SignUpRequest signUpRequest) {
