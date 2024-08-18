@@ -52,7 +52,7 @@ public class MainInfoControllerTest {
 	public void setUp() {
 		MockitoAnnotations.openMocks(this);
 
-		MainInfoCoachDto coachDto = new MainInfoCoachDto(
+		MainInfoCoachDto mainInfoCoachDto = new MainInfoCoachDto(
 			1L,
 			"John Doe",
 			"http://example.com/image.jpg",
@@ -68,7 +68,7 @@ public class MainInfoControllerTest {
 			"http://example.com/health.jpg"
 		);
 
-		List<MainInfoCoachDto> coaches = List.of(coachDto);
+		List<MainInfoCoachDto> coaches = List.of(mainInfoCoachDto);
 		List<SportDto> sports = List.of(sportDto);
 
 		mainInfoResponseDto = new MainInfoResponseDto(sports, coaches);
