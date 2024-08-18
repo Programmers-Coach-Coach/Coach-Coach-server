@@ -189,7 +189,7 @@ public class RoutineControllerTest {
 	@DisplayName("루틴 삭제 성공 테스트")
 	public void deleteRoutineSuccessTest() throws Exception {
 
-		doNothing().when(routineService).deleteRoutineWithValidation(1L, userIdByJwt);
+		doNothing().when(routineService).validateRoutineAccess(1L, userIdByJwt);
 
 		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/routines/1").with(csrf()))
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -205,7 +205,7 @@ public class RoutineControllerTest {
 		// Given
 		Long routineId = 0L;
 		doThrow(new NoExistRoutineException(ErrorMessage.NOT_FOUND_ROUTINE)).when(routineService)
-			.deleteRoutineWithValidation(anyLong(), anyLong());
+			.validateRoutineAccess(anyLong(), anyLong());
 
 		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/routines/" + routineId).with(csrf()))
 			.andExpect(MockMvcResultMatchers.status().isNotFound())
@@ -222,7 +222,7 @@ public class RoutineControllerTest {
 		Long routineId = 0L;
 
 		doThrow(new NoExistRoutineException(ErrorMessage.NOT_MY_ROUTINE)).when(routineService)
-			.deleteRoutineWithValidation(routineId, userIdByJwt);
+			.validateRoutineAccess(routineId, userIdByJwt);
 
 		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/routines/" + routineId).with(csrf()))
 			.andExpect(MockMvcResultMatchers.status().isNotFound())
