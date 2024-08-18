@@ -52,7 +52,6 @@ public class Coach extends DateEntity {
 	@Column(name = "active_center_detail")
 	private String activeCenterDetail;
 
-	@NotBlank
 	@Size(max = 100)
 	@NotBlank
 	@Column(name = "active_hours")

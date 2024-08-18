@@ -24,10 +24,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import site.coach_coach.coach_coach_server.auth.jwt.TokenProvider;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
-import site.coach_coach.coach_coach_server.coach.dto.CoachDto;
 import site.coach_coach.coach_coach_server.maininfo.controller.MainInfoController;
-import site.coach_coach.coach_coach_server.maininfo.dto.MainResponseDto;
-import site.coach_coach.coach_coach_server.maininfo.service.MainService;
+import site.coach_coach.coach_coach_server.maininfo.dto.MainInfoCoachDto;
+import site.coach_coach.coach_coach_server.maininfo.dto.MainInfoResponseDto;
+import site.coach_coach.coach_coach_server.maininfo.service.MainInfoService;
 import site.coach_coach.coach_coach_server.sport.dto.SportDto;
 import site.coach_coach.coach_coach_server.user.domain.User;
 
@@ -38,7 +38,7 @@ public class MainInfoControllerTest {
 	private MockMvc mockMvc;
 
 	@MockBean
-	private MainService mainService;
+	private MainInfoService mainInfoService;
 
 	@MockBean
 	private TokenProvider tokenProvider;
@@ -46,13 +46,13 @@ public class MainInfoControllerTest {
 	@InjectMocks
 	private MainInfoController mainInfoController;
 
-	private MainResponseDto mainResponseDto;
+	private MainInfoResponseDto mainInfoResponseDto;
 
 	@BeforeEach
 	public void setUp() {
 		MockitoAnnotations.openMocks(this);
 
-		CoachDto coachDto = new CoachDto(
+		MainInfoCoachDto coachDto = new MainInfoCoachDto(
 			1L,
 			"John Doe",
 			"http://example.com/image.jpg",
@@ -68,10 +68,10 @@ public class MainInfoControllerTest {
 			"http://example.com/health.jpg"
 		);
 
-		List<CoachDto> coaches = List.of(coachDto);
+		List<MainInfoCoachDto> coaches = List.of(coachDto);
 		List<SportDto> sports = List.of(sportDto);
 
-		mainResponseDto = new MainResponseDto(sports, coaches);
+		mainInfoResponseDto = new MainInfoResponseDto(sports, coaches);
 	}
 
 	@Test
@@ -94,9 +94,9 @@ public class MainInfoControllerTest {
 		);
 		SecurityContextHolder.setContext(securityContext);
 
-		when(mainService.getMainResponse(mockUserDetails.getUser())).thenReturn(mainResponseDto);
+		when(mainInfoService.getMainInfoResponse(mockUserDetails.getUser())).thenReturn(mainInfoResponseDto);
 
-		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/main")
+		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/main-info")
 				.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn();
