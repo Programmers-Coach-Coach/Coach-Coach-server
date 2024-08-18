@@ -73,10 +73,7 @@ public class AmazonS3Uploader {
 			fos.write(file.getBytes());
 		} catch (IOException e) {
 			log.error("Failed to write bytes to file: {}", convertFile.getAbsolutePath(), e);
-			if (convertFile.exists()) {
-				convertFile.delete();
-			}
-			throw e; // Rethrow to handle it in the main method
+			throw e;
 		}
 	}
 
