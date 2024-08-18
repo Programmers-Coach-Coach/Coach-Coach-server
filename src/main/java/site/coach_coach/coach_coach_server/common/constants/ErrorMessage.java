@@ -28,6 +28,7 @@ public final class ErrorMessage {
 	public static final String NOT_FOUND_USER = "존재하지 않는 회원입니다.";
 	public static final String NOT_FOUND_COACH = "존재하지 않는 코치입니다.";
 	public static final String NOT_FOUND_TOKEN = "토큰이 존재하지 않습니다.";
+	public static final String NOT_FOUND_ROUTINE = "존재하지 않는 루틴입니다.";
 
 	public static final String EXPIRED_TOKEN = "만료된 토큰입니다.";
 	public static final String INVALID_TOKEN = "유효하지 않은 토큰입니다.";

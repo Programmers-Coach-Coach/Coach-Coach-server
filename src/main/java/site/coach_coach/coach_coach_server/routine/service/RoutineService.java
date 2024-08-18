@@ -16,6 +16,7 @@ import site.coach_coach.coach_coach_server.routine.dto.CreateRoutineRequest;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineForListDto;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineListRequest;
 import site.coach_coach.coach_coach_server.routine.dto.UserInfoForRoutineList;
+import site.coach_coach.coach_coach_server.routine.exception.NoExistRoutineException;
 import site.coach_coach.coach_coach_server.routine.exception.NotMatchingException;
 import site.coach_coach.coach_coach_server.routine.repository.RoutineRepository;
 import site.coach_coach.coach_coach_server.sport.domain.Sport;
@@ -116,5 +117,21 @@ public class RoutineService {
 		}
 
 		return routineRepository.save(routineBuilder.build()).getRoutineId();
+	}
+
+	public void checkIsExistRoutine(Long routineId) {
+		if (!routineRepository.existsById(routineId)) {
+			throw new NoExistRoutineException(ErrorMessage.NOT_FOUND_ROUTINE);
+		}
+	}
+
+	public void deleteRoutineWithValidation(Long routineId, Long userIdByJwt) {
+		if (!routineRepository.existsByRoutineIdAndUserId(routineId, userIdByJwt)) {
+			Long coachId = getCoachId(userIdByJwt);
+			if (!routineRepository.existsByRoutineIdAndCoachId(routineId, coachId)) {
+				throw new NoExistRoutineException(ErrorMessage.NOT_FOUND_ROUTINE);
+			}
+		}
+		routineRepository.deleteById(routineId);
 	}
 }

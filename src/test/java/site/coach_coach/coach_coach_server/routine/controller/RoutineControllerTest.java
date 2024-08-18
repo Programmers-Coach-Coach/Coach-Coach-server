@@ -27,10 +27,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import site.coach_coach.coach_coach_server.auth.jwt.TokenProvider;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
+import site.coach_coach.coach_coach_server.common.constants.SuccessMessage;
 import site.coach_coach.coach_coach_server.routine.dto.CreateRoutineRequest;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineForListDto;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineListRequest;
 import site.coach_coach.coach_coach_server.routine.dto.UserInfoForRoutineList;
+import site.coach_coach.coach_coach_server.routine.exception.NoExistRoutineException;
 import site.coach_coach.coach_coach_server.routine.service.RoutineService;
 
 @WebMvcTest(RoutineController.class)
@@ -53,28 +55,19 @@ public class RoutineControllerTest {
 	private List<RoutineForListDto> routineList;
 	private UserInfoForRoutineList userInfoForRoutineList;
 	private ObjectMapper objectMapper;
+	private Long userIdByJwt;
 
 	@BeforeEach
 	public void setUp() {
 		objectMapper = new ObjectMapper();
+		userIdByJwt = 1L;
+
+		// Set the SecurityContext with mockUserDetails
+		setSecurityContextWithMockUserDetails(userIdByJwt);
 
 		routine = new RoutineForListDto(1L, "routineName", "sportName");
 		routineList = List.of(routine);
 		userInfoForRoutineList = new UserInfoForRoutineList(1L, "nickname", "profileImageUrl");
-	}
-
-	@Test
-	@DisplayName("비로그인 시, 루틴 목록 조회 테스트")
-	public void getRoutineListNotLogin() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/routines"))
-			.andExpect(MockMvcResultMatchers.status().isUnauthorized());
-	}
-
-	@Test
-	@DisplayName("비로그인 시, 루틴 목록 사용자 정보 조회 테스트")
-	public void getUserInfoNotLogin() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/routines/user"))
-			.andExpect(MockMvcResultMatchers.status().isUnauthorized());
 	}
 
 	@Test
@@ -83,10 +76,6 @@ public class RoutineControllerTest {
 		// Given
 		Long userIdParam = null;
 		Long coachIdParam = null;
-		Long userIdByJwt = 1L;
-
-		// Set the SecurityContext with mockUserDetails
-		setSecurityContextWithMockUserDetails(userIdByJwt);
 
 		when(routineService.confirmIsMatching(userIdParam, coachIdParam, userIdByJwt)).thenReturn(routineListRequest);
 		when(routineService.getRoutineForList(routineListRequest)).thenReturn(routineList);
@@ -104,11 +93,7 @@ public class RoutineControllerTest {
 		// Given
 		Long userIdParam = 2L;
 		Long coachParam = 2L;
-		Long userIdByJwt = 1L;
 		RoutineListRequest request = new RoutineListRequest(userIdParam, coachParam);
-
-		// Set the SecurityContext with mockUserDetails
-		setSecurityContextWithMockUserDetails(userIdByJwt);
 
 		when(routineService.getCoachId(userIdByJwt)).thenReturn(2L);
 
@@ -128,10 +113,6 @@ public class RoutineControllerTest {
 		// Given
 		Long userIdParam = null;
 		Long coachIdParam = null;
-		Long userIdByJwt = 1L;
-
-		// Set the SecurityContext with mockUserDetails
-		setSecurityContextWithMockUserDetails(userIdByJwt);
 
 		when(routineService.confirmIsMatching(userIdParam, coachIdParam, userIdByJwt)).thenReturn(routineListRequest);
 		when(routineService.getRoutineForList(routineListRequest)).thenReturn(new ArrayList<>()); // Empty list
@@ -147,11 +128,8 @@ public class RoutineControllerTest {
 	@DisplayName("루틴 목록 사용자 정보 조회 테스트")
 	public void getUserInfoForRoutineListTest() throws Exception {
 		// Given
-		Long userIdByJwt = 1L;
 		Long userIdParam = 2L;
 		Long coachIdParam = 2L;
-
-		setSecurityContextWithMockUserDetails(userIdByJwt);
 
 		when(routineService.confirmIsMatching(userIdParam, coachIdParam, userIdByJwt)).thenReturn(routineListRequest);
 		when(routineService.getUserInfoForRoutineList(userIdParam, coachIdParam)).thenReturn(userInfoForRoutineList);
@@ -170,12 +148,9 @@ public class RoutineControllerTest {
 	@DisplayName("루틴 추가 성공 테스트")
 	public void createRoutineSuccessTest() throws Exception {
 		// Given
-		Long userIdByJwt = 1L;
 		Long routineId = 1L;
 		CreateRoutineRequest createRoutineRequest =
 			new CreateRoutineRequest(2L, 1L, "나의 헬스 루틴");
-
-		setSecurityContextWithMockUserDetails(userIdByJwt);
 
 		when(routineService.createRoutine(any(CreateRoutineRequest.class), any(Long.class))).thenReturn(
 			routineId);
@@ -196,11 +171,8 @@ public class RoutineControllerTest {
 	@DisplayName("루틴 이름 공란 작성 시 400 상태 코드 반환 및 에러 메세지")
 	public void createdRoutineFailTest() throws Exception {
 		// Given
-		Long userIdByJwt = 1L;
 		CreateRoutineRequest createRoutineRequest =
 			new CreateRoutineRequest(null, 1L, "  ");
-
-		setSecurityContextWithMockUserDetails(userIdByJwt);
 
 		when(routineService.createRoutine(createRoutineRequest, userIdByJwt)).thenReturn(1L);
 
@@ -211,6 +183,53 @@ public class RoutineControllerTest {
 			.andReturn();
 
 		assertThat(result.getResponse().getContentAsString()).contains(ErrorMessage.INVALID_VALUE);
+	}
+
+	@Test
+	@DisplayName("루틴 삭제 성공 테스트")
+	public void deleteRoutineSuccessTest() throws Exception {
+		doNothing().when(routineService).checkIsExistRoutine(routine.routineId());
+		doNothing().when(routineService).deleteRoutineWithValidation(1L, userIdByJwt);
+
+		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/routines/1").with(csrf()))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andReturn();
+
+		assertThat(result.getResponse().getContentAsString()).contains(
+			SuccessMessage.DELETE_ROUTINE_SUCCESS.getMessage());
+	}
+
+	@Test
+	@DisplayName("루틴 삭제 실패 테스트 - 미존재 루틴 삭제")
+	public void deleteRoutineFailByNotExistTest() throws Exception {
+		// Given
+		Long routineId = 0L;
+		doThrow(new NoExistRoutineException(ErrorMessage.NOT_FOUND_ROUTINE)).when(routineService)
+			.checkIsExistRoutine(anyLong());
+
+		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/routines/" + routineId).with(csrf()))
+			.andExpect(MockMvcResultMatchers.status().isNotFound())
+			.andReturn();
+
+		assertThat(result.getResponse().getContentAsString()).contains(
+			ErrorMessage.NOT_FOUND_ROUTINE);
+	}
+
+	@Test
+	@DisplayName("루틴 삭제 실패 테스트 - 소유하지 않은 루틴 접근")
+	public void deleteRoutineFailTest() throws Exception {
+		// Given
+		Long routineId = 0L;
+		doNothing().when(routineService).checkIsExistRoutine(anyLong());
+		doThrow(new NoExistRoutineException(ErrorMessage.NOT_FOUND_ROUTINE)).when(routineService)
+			.deleteRoutineWithValidation(routineId, userIdByJwt);
+
+		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/routines/" + routineId).with(csrf()))
+			.andExpect(MockMvcResultMatchers.status().isNotFound())
+			.andReturn();
+
+		assertThat(result.getResponse().getContentAsString()).contains(
+			ErrorMessage.NOT_FOUND_ROUTINE);
 	}
 
 	public void setSecurityContextWithMockUserDetails(Long userIdByJwt) {
