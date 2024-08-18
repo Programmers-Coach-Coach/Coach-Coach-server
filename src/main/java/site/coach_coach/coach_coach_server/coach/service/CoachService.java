@@ -45,7 +45,7 @@ public class CoachService {
 		sort = sort.and(Sort.by("updatedAt").descending());
 
 		Pageable pageable = PageRequest.of(page - 1, 20, sort);
-		List<Long> sportsList = parseSports(sports);
+		List<Long> sportsList = (sports != null && !sports.isEmpty()) ? parseSports(sports) : null;
 
 		if (sportsList != null && !sportsList.isEmpty()) {
 			List<Sport> existingSports = sportRepository.findAllById(sportsList);
@@ -53,6 +53,7 @@ public class CoachService {
 				throw new NotFoundSportException(ErrorMessage.NOT_FOUND_SPORTS);
 			}
 		}
+
 		Page<Coach> coachesPage;
 		if (review != null && review) {
 			coachesPage = coachRepository.findAllWithReviewsSorted(sportsList, search, pageable);
@@ -85,7 +86,6 @@ public class CoachService {
 						cs.getSport().getSportName()
 					))
 					.collect(Collectors.toList());
-
 				return CoachListDto.builder()
 					.coachId(coach.getCoachId())
 					.coachName(coach.getUser().getNickname())
