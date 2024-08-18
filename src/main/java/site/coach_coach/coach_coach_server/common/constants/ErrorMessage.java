@@ -35,7 +35,10 @@ public final class ErrorMessage {
 
 	public static final String NOT_MATCHING = "매칭되지 않은 대상입니다.";
 
-	public static final String NOT_FOUND_SPORTS = "종목 정보가 없습니다.";
+	public static final String NOT_FOUND_SPORTS = "종목 정보를 찾을 수 없습니다.";
 	public static final String SERVER_SHUTDOWN = "서버가 종료되었습니다.";
+	public static final String NOT_FOUND_PAGE = "페이지 정보를 찾을 수 없습니다.";
+	public static final String INVALID_QUERY_PARAMETER = "잘못된 쿼리 파라미터입니다.";
+
 }
 

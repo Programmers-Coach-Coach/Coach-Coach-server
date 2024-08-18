@@ -17,6 +17,9 @@ import org.springframework.web.method.annotation.HandlerMethodValidationExceptio
 
 import io.sentry.Sentry;
 import lombok.extern.slf4j.Slf4j;
+import site.coach_coach.coach_coach_server.coach.exception.InvalidQueryParameterException;
+import site.coach_coach.coach_coach_server.coach.exception.NotFoundPageException;
+import site.coach_coach.coach_coach_server.coach.exception.NotFoundSportException;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.common.response.ErrorResponse;
 import site.coach_coach.coach_coach_server.user.exception.IncorrectPasswordException;
@@ -115,6 +118,25 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(IncorrectPasswordException.class)
 	public ResponseEntity<ErrorResponse> handleIncorrectPasswordException(IncorrectPasswordException ex) {
 		Sentry.captureException(ex);
+		log.error("Handled exception: [{}] - {}", ex.getClass().getSimpleName(), ex.getMessage());
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+			.body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage()));
+	}
+
+	@ExceptionHandler(NotFoundSportException.class)
+	public ResponseEntity<Object> handleNotFoundSportException(NotFoundSportException ex) {
+		return ResponseEntity.status(HttpStatus.NOT_FOUND)
+			.body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage()));
+	}
+
+	@ExceptionHandler(NotFoundPageException.class)
+	public ResponseEntity<Object> handleNotFoundPageException(NotFoundPageException ex) {
+		return ResponseEntity.status(HttpStatus.NOT_FOUND)
+			.body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage()));
+	}
+
+	@ExceptionHandler(InvalidQueryParameterException.class)
+	public ResponseEntity<ErrorResponse> handleInvalidQueryParameterException(InvalidQueryParameterException ex) {
 		log.error("Handled exception: [{}] - {}", ex.getClass().getSimpleName(), ex.getMessage());
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 			.body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage()));
