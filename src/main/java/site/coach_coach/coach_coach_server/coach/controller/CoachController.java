@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
+import site.coach_coach.coach_coach_server.coach.dto.CoachDetailDto;
 import site.coach_coach.coach_coach_server.coach.dto.CoachListResponse;
 import site.coach_coach.coach_coach_server.coach.service.CoachService;
 import site.coach_coach.coach_coach_server.user.domain.User;
@@ -21,6 +22,19 @@ public class CoachController {
 
 	public CoachController(CoachService coachService) {
 		this.coachService = coachService;
+	}
+
+	@GetMapping("/v1/coaches")
+	public ResponseEntity<CoachDetailDto> getCoachDetail(
+		@AuthenticationPrincipal CustomUserDetails userDetails,
+		@RequestParam(name = "coachId") Long coachId
+	) {
+		if (userDetails == null || userDetails.getUser() == null) {
+			throw new InvalidUserException();
+		}
+		User user = userDetails.getUser();
+		CoachDetailDto response = coachService.getCoachDetail(user, coachId);
+		return ResponseEntity.ok(response);
 	}
 
 	@GetMapping("/v1/coaches-all")
@@ -42,5 +56,5 @@ public class CoachController {
 		CoachListResponse response = coachService.getAllCoaches(user, page, sports, search, latest, review, liked, my);
 		return ResponseEntity.ok(response);
 	}
-	
+
 }

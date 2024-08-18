@@ -13,15 +13,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.coach.domain.Coach;
+import site.coach_coach.coach_coach_server.coach.dto.CoachDetailDto;
 import site.coach_coach.coach_coach_server.coach.dto.CoachListDto;
 import site.coach_coach.coach_coach_server.coach.dto.CoachListResponse;
 import site.coach_coach.coach_coach_server.coach.exception.InvalidQueryParameterException;
+import site.coach_coach.coach_coach_server.coach.exception.NotFoundCoachException;
 import site.coach_coach.coach_coach_server.coach.exception.NotFoundPageException;
 import site.coach_coach.coach_coach_server.coach.exception.NotFoundSportException;
 import site.coach_coach.coach_coach_server.coach.repository.CoachRepository;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.like.repository.UserCoachLikeRepository;
 import site.coach_coach.coach_coach_server.review.domain.Review;
+import site.coach_coach.coach_coach_server.review.dto.ReviewDto;
 import site.coach_coach.coach_coach_server.review.repository.ReviewRepository;
 import site.coach_coach.coach_coach_server.sport.domain.Sport;
 import site.coach_coach.coach_coach_server.sport.dto.CoachingSportDto;
@@ -36,6 +39,54 @@ public class CoachService {
 	private final ReviewRepository reviewRepository;
 	private final UserCoachLikeRepository userCoachLikeRepository;
 	private final SportRepository sportRepository;
+
+	@Transactional(readOnly = true)
+	public CoachDetailDto getCoachDetail(User user, Long coachId) {
+		Coach coach = coachRepository.findById(coachId)
+			.orElseThrow(() -> new NotFoundCoachException(ErrorMessage.NOT_FOUND_COACH));
+
+		List<ReviewDto> reviews = reviewRepository.findByCoach_CoachId(coach.getCoachId()).stream()
+			.map(review -> new ReviewDto(
+				review.getUser().getUserId(),
+				review.getUser().getNickname(),
+				review.getContents(),
+				review.getStars(),
+				review.getCreatedAt().toString()
+			))
+			.collect(Collectors.toList());
+
+		double averageRating = reviews.stream().mapToInt(ReviewDto::stars).average().orElse(0.0);
+
+		boolean isLiked = isLikedByUser(user, coach);
+		int countOfLikes = getCountOfLikes(coach);
+
+		List<CoachingSportDto> coachingSports = coach.getCoachingSports().stream()
+			.map(cs -> new CoachingSportDto(
+				cs.getSport().getSportId(),
+				cs.getSport().getSportName()
+			))
+			.collect(Collectors.toList());
+
+		return CoachDetailDto.builder()
+			.coachName(coach.getUser().getNickname())
+			.coachGender(coach.getUser().getGender())
+			.localAddress(coach.getUser().getLocalAddress())
+			.profileImageUrl(coach.getUser().getProfileImageUrl())
+			.createdAt(coach.getCreatedAt().toString())
+			.coachIntroduction(coach.getCoachIntroduction())
+			.coachingSports(coachingSports)
+			.activeCenter(coach.getActiveCenter())
+			.activeCenterDetail(coach.getActiveCenterDetail())
+			.activeHours(coach.getActiveHours())
+			.chattingUrl(coach.getChattingUrl())
+			.reviews(reviews)
+			.isOpen(coach.getIsOpen())
+			.countOfReviews(reviews.size())
+			.reviewRating(averageRating)
+			.isLiked(isLiked)
+			.countOfLikes(countOfLikes)
+			.build();
+	}
 
 	@Transactional(readOnly = true)
 	public CoachListResponse getAllCoaches(User user, int page, String sports, String search, Boolean latest,
