@@ -40,5 +40,10 @@ public final class ErrorMessage {
 	public static final String NOT_MATCHING = "매칭되지 않은 대상입니다.";
 
 	public static final String SERVER_SHUTDOWN = "서버가 종료되었습니다.";
+
+	public static final String CONVERT_FAIL = "파일 변환에 실패했습니다.";
+	public static final String INVALID_FILE_EXTENSION = "허용된 파일 확장자가 아닙니다.";
+	public static final String INVALID_FILE_NAME = "유효하지 않은 파일 이름입니다.";
+	public static final String INVALID_FILE_SIZE = "파일 크기는 5MB 미만이어야 합니다.";
 }
 
