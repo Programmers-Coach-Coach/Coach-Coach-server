@@ -1,9 +1,5 @@
 package site.coach_coach.coach_coach_server.notification.domain;
 
-import java.time.LocalDateTime;
-
-import org.hibernate.annotations.CreationTimestamp;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -22,6 +18,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import site.coach_coach.coach_coach_server.common.domain.DateEntity;
 import site.coach_coach.coach_coach_server.common.domain.RelationFunctionEnum;
 import site.coach_coach.coach_coach_server.user.domain.User;
 
@@ -31,7 +28,7 @@ import site.coach_coach.coach_coach_server.user.domain.User;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Notification {
+public class Notification extends DateEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "notification_id")
@@ -51,8 +48,4 @@ public class Notification {
 	@Column(name = "relation_function")
 	@Enumerated(EnumType.STRING)
 	private RelationFunctionEnum relationFunction;
-
-	@CreationTimestamp
-	@Column(name = "created_at")
-	private LocalDateTime createdAt;
 }
