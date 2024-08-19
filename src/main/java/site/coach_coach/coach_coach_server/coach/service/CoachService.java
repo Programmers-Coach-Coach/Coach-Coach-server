@@ -13,9 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.coach.domain.Coach;
-import site.coach_coach.coach_coach_server.coach.dto.CoachListDto;
-import site.coach_coach.coach_coach_server.coach.dto.CoachListResponse;
-import site.coach_coach.coach_coach_server.coach.exception.InvalidQueryParameterException;
 import site.coach_coach.coach_coach_server.coach.dto.CoachDetailDto;
 import site.coach_coach.coach_coach_server.coach.dto.CoachListDto;
 import site.coach_coach.coach_coach_server.coach.dto.CoachListResponse;
