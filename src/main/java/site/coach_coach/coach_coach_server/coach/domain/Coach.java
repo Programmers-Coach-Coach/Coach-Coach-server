@@ -19,6 +19,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import site.coach_coach.coach_coach_server.common.domain.DateEntity;
+import site.coach_coach.coach_coach_server.review.domain.Review;
 import site.coach_coach.coach_coach_server.sport.domain.CoachingSport;
 import site.coach_coach.coach_coach_server.user.domain.User;
 
@@ -52,7 +53,6 @@ public class Coach extends DateEntity {
 	@Column(name = "active_center_detail")
 	private String activeCenterDetail;
 
-	@NotBlank
 	@Size(max = 100)
 	@NotBlank
 	@Column(name = "active_hours")
@@ -69,4 +69,7 @@ public class Coach extends DateEntity {
 
 	@OneToMany(mappedBy = "coach")
 	private List<CoachingSport> coachingSports;
+
+	@OneToMany(mappedBy = "coach")
+	private List<Review> reviews;
 }

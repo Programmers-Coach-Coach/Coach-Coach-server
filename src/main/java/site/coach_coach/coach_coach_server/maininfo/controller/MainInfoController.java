@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
-import site.coach_coach.coach_coach_server.maininfo.dto.MainResponseDto;
-import site.coach_coach.coach_coach_server.maininfo.service.MainService;
+import site.coach_coach.coach_coach_server.maininfo.dto.MainInfoResponseDto;
+import site.coach_coach.coach_coach_server.maininfo.service.MainInfoService;
 import site.coach_coach.coach_coach_server.user.domain.User;
 import site.coach_coach.coach_coach_server.user.exception.InvalidUserException;
 
@@ -17,17 +17,17 @@ import site.coach_coach.coach_coach_server.user.exception.InvalidUserException;
 @RequiredArgsConstructor
 @RequestMapping("/api")
 public class MainInfoController {
-	private final MainService mainService;
+	private final MainInfoService mainInfoService;
 
-	@GetMapping("/v1/main")
-	public ResponseEntity<MainResponseDto> getMainInfo(@AuthenticationPrincipal CustomUserDetails userDetails) {
+	@GetMapping("/v1/main-info")
+	public ResponseEntity<MainInfoResponseDto> getMainInfo(@AuthenticationPrincipal CustomUserDetails userDetails) {
 		if (userDetails == null || userDetails.getUser() == null) {
 			throw new InvalidUserException();
 		}
 
 		User user = userDetails.getUser();
-		MainResponseDto mainResponse = mainService.getMainResponse(user);
+		MainInfoResponseDto mainInfoResponse = mainInfoService.getMainInfoResponse(user);
 
-		return ResponseEntity.ok(mainResponse);
+		return ResponseEntity.ok(mainInfoResponse);
 	}
 }

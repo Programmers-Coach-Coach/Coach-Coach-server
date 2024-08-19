@@ -1,4 +1,4 @@
-package site.coach_coach.coach_coach_server.coach.dto;
+package site.coach_coach.coach_coach_server.maininfo.dto;
 
 import java.util.List;
 
@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import site.coach_coach.coach_coach_server.sport.dto.CoachingSportDto;
 
-public record CoachDto(
+public record MainInfoCoachDto(
 	@NotNull
 	Long coachId,
 	@NotBlank
@@ -16,9 +16,7 @@ public record CoachDto(
 	String profileImageUrl,
 	@NotBlank
 	String description,
-	@NotNull
 	int countOfLikes,
-	@NotNull
 	boolean isLiked,
 	List<CoachingSportDto> coachingSports
 ) {

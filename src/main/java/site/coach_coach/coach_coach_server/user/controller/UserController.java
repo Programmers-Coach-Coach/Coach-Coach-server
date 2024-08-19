@@ -1,5 +1,7 @@
 package site.coach_coach.coach_coach_server.user.controller;
 
+import java.io.IOException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -7,10 +9,15 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,6 +34,7 @@ import site.coach_coach.coach_coach_server.user.domain.User;
 import site.coach_coach.coach_coach_server.user.dto.LoginRequest;
 import site.coach_coach.coach_coach_server.user.dto.PasswordRequest;
 import site.coach_coach.coach_coach_server.user.dto.SignUpRequest;
+import site.coach_coach.coach_coach_server.user.dto.UserProfileRequest;
 import site.coach_coach.coach_coach_server.user.dto.UserProfileResponse;
 import site.coach_coach.coach_coach_server.user.service.UserService;
 import site.coach_coach.coach_coach_server.user.validation.Nickname;
@@ -114,10 +122,27 @@ public class UserController {
 		);
 	}
 
-	@GetMapping("/v1/user/me")
+	@GetMapping("/v1/users/me")
 	public ResponseEntity<UserProfileResponse> getMyProfile(@AuthenticationPrincipal CustomUserDetails userDetails) {
 		Long userId = userDetails.getUserId();
 		return ResponseEntity.ok(userService.getUserProfile(userId));
+	}
+
+	@PutMapping("/v1/users/me")
+	public ResponseEntity<SuccessResponse> updateMyProfile(@AuthenticationPrincipal CustomUserDetails userDetails,
+		@RequestPart(value = "profileImage", required = false) MultipartFile profileImage,
+		@RequestPart(value = "userProfileRequest") String userProfileRequestJson
+	) throws IOException {
+		Long userId = userDetails.getUserId();
+
+		ObjectMapper objectMapper = new ObjectMapper();
+		UserProfileRequest userProfileRequest = objectMapper.readValue(userProfileRequestJson,
+			UserProfileRequest.class);
+
+		userService.updateUserProfile(userId, profileImage, userProfileRequest);
+		return ResponseEntity.ok(
+			new SuccessResponse(HttpStatus.OK.value(), SuccessMessage.UPDATE_PROFILE_SUCCESS.getMessage())
+		);
 	}
 
 	@GetMapping("/v1/auth/reissue")
