@@ -6,9 +6,9 @@ import java.time.ZoneId;
 
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import io.jsonwebtoken.JwtException;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.auth.exception.InvalidTokenException;
 import site.coach_coach.coach_coach_server.auth.jwt.TokenProvider;
