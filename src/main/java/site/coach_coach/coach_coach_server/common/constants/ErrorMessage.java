@@ -29,8 +29,6 @@ public final class ErrorMessage {
 	public static final String NOT_FOUND_COACH = "존재하지 않는 코치입니다.";
 	public static final String NOT_FOUND_TOKEN = "토큰이 존재하지 않습니다.";
 	public static final String NOT_FOUND_ROUTINE = "존재하지 않는 루틴입니다.";
-	public static final String NOT_FOUND_SPORTS = "종목 정보가 없습니다.";
-
 	public static final String NOT_MY_ROUTINE = "접근 권한이 없습니다.";
 
 	public static final String EXPIRED_TOKEN = "만료된 토큰입니다.";
@@ -39,7 +37,10 @@ public final class ErrorMessage {
 
 	public static final String NOT_MATCHING = "매칭되지 않은 대상입니다.";
 
+	public static final String NOT_FOUND_SPORTS = "종목 정보를 찾을 수 없습니다.";
 	public static final String SERVER_SHUTDOWN = "서버가 종료되었습니다.";
+	public static final String NOT_FOUND_PAGE = "페이지 정보를 찾을 수 없습니다.";
+	public static final String INVALID_QUERY_PARAMETER = "잘못된 쿼리 파라미터입니다.";
 
 	public static final String CONVERT_FAIL = "파일 변환에 실패했습니다.";
 	public static final String INVALID_FILE_EXTENSION = "허용된 파일 확장자가 아닙니다.";
