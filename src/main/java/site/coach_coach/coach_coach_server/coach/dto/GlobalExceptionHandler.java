@@ -1,4 +1,4 @@
-package site.coach_coach.coach_coach_server.common.exception;
+package site.coach_coach.coach_coach_server.coach.dto;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -21,6 +21,9 @@ import site.coach_coach.coach_coach_server.coach.exception.InvalidQueryParameter
 import site.coach_coach.coach_coach_server.coach.exception.NotFoundPageException;
 import site.coach_coach.coach_coach_server.coach.exception.NotFoundSportException;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
+import site.coach_coach.coach_coach_server.common.exception.InvalidFileException;
+import site.coach_coach.coach_coach_server.common.exception.InvalidInputException;
+import site.coach_coach.coach_coach_server.common.exception.UserNotFoundException;
 import site.coach_coach.coach_coach_server.common.response.ErrorResponse;
 import site.coach_coach.coach_coach_server.user.exception.IncorrectPasswordException;
 import site.coach_coach.coach_coach_server.user.exception.InvalidUserException;
