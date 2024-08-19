@@ -30,7 +30,6 @@ import site.coach_coach.coach_coach_server.auth.jwt.service.TokenService;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
 import site.coach_coach.coach_coach_server.common.constants.SuccessMessage;
 import site.coach_coach.coach_coach_server.common.response.SuccessResponse;
-import site.coach_coach.coach_coach_server.common.utils.AmazonS3Uploader;
 import site.coach_coach.coach_coach_server.user.domain.User;
 import site.coach_coach.coach_coach_server.user.dto.LoginRequest;
 import site.coach_coach.coach_coach_server.user.dto.PasswordRequest;
@@ -47,7 +46,6 @@ public class UserController {
 	private final UserService userService;
 	private final TokenService tokenService;
 	private final TokenProvider tokenProvider;
-	private final AmazonS3Uploader amazonS3Uploader;
 
 	@PostMapping("/v1/auth/signup")
 	public ResponseEntity<SuccessResponse> signup(@RequestBody @Valid SignUpRequest signUpRequest) {
