@@ -122,13 +122,13 @@ public class UserController {
 		);
 	}
 
-	@GetMapping("/v1/user/me")
+	@GetMapping("/v1/users/me")
 	public ResponseEntity<UserProfileResponse> getMyProfile(@AuthenticationPrincipal CustomUserDetails userDetails) {
 		Long userId = userDetails.getUserId();
 		return ResponseEntity.ok(userService.getUserProfile(userId));
 	}
 
-	@PutMapping("/v1/user/me")
+	@PutMapping("/v1/users/me")
 	public ResponseEntity<SuccessResponse> updateMyProfile(@AuthenticationPrincipal CustomUserDetails userDetails,
 		@RequestPart(value = "profileImage", required = false) MultipartFile profileImage,
 		@RequestPart(value = "userProfileRequest") String userProfileRequestJson
