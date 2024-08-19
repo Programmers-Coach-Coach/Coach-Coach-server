@@ -40,7 +40,7 @@ public class Notification extends DateEntity {
 	private User user;
 
 	@NotBlank
-	@Column(name = "message")
+	@Column(name = "message", nullable = false, length = 100)
 	@Size(max = 100)
 	private String message;
 

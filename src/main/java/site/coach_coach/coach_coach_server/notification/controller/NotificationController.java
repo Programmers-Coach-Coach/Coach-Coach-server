@@ -23,6 +23,7 @@ public class NotificationController {
 	public ResponseEntity<List<NotificationResponse>> getAllNotification(
 		@AuthenticationPrincipal CustomUserDetails userDetails) {
 		Long userId = userDetails.getUserId();
-		return ResponseEntity.ok(notificationService.getAllNotifications(userId));
+		List<NotificationResponse> notifications = notificationService.getAllNotifications(userId);
+		return ResponseEntity.ok(notifications);
 	}
 }

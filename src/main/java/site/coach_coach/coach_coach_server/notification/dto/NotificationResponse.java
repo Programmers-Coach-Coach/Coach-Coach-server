@@ -14,11 +14,11 @@ public record NotificationResponse(
 	LocalDateTime createdAt
 ) {
 	public static NotificationResponse from(Notification notification) {
-		return NotificationResponse.builder()
-			.notificationId(notification.getNotificationId())
-			.message(notification.getMessage())
-			.relationFunction(notification.getRelationFunction())
-			.createdAt(notification.getCreatedAt())
-			.build();
+		return new NotificationResponse(
+			notification.getNotificationId(),
+			notification.getMessage(),
+			notification.getRelationFunction(),
+			notification.getCreatedAt()
+		);
 	}
 }
