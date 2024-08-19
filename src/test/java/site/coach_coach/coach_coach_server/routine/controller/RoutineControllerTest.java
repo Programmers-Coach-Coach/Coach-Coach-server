@@ -274,8 +274,7 @@ public class RoutineControllerTest {
 	@DisplayName("루틴 개별 조회 성공 - 일반 회원")
 	public void getRoutineSuccessTest() throws Exception {
 		// Given
-		Long userIdByJwt = 1L;
-		Long routineId = 1L;
+		Long userIdParam = 1L;
 		ActionDto actionDto = new ActionDto(1L, "actionName", "sets", "10", "description");
 		List<ActionDto> actionList = new ArrayList<>();
 		actionList.add(actionDto);
@@ -284,9 +283,16 @@ public class RoutineControllerTest {
 		categoryList.add(categoryDto);
 		RoutineResponse routineResponse = new RoutineResponse("routineName", categoryList);
 
-		when(routineService.getRoutineWithCategoriesAndActions(anyLong(), anyLong())).thenReturn(routineResponse);
+		when(routineService.getRoutineWithCategoriesAndActions(anyLong(), anyLong(), anyLong())).thenReturn(
+			routineResponse);
 
-		//perform할때 userId 받는거 입력을 해야해서 지금은 개발 중지!
+		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/routines/" + routine.routineId())
+				.contentType(MediaType.APPLICATION_JSON)
+				.queryParam(("userId"), userIdParam.toString()))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andReturn();
+
+		assertThat(result.getResponse().getContentAsString()).contains(actionDto.actionName());
 	}
 
 	public void setSecurityContextWithMockUserDetails(Long userIdByJwt) {

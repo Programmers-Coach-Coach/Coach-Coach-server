@@ -87,14 +87,14 @@ public class RoutineController {
 	@GetMapping("/v1/routines/{routineId}")
 	public ResponseEntity<RoutineResponse> getRoutine(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
-		@PathVariable(name = "routineId") @Valid Long routineId
+		@PathVariable(name = "routineId") @Valid Long routineId,
+		@RequestParam(name = "userId", required = false) Long userIdParam
 	) {
 		Long userIdByJwt = userDetails.getUserId();
 
-		// 개별 루틴 - 카테고리 - 운동 정보 조회하여 반환
 		// 조회시에는 코치의 접근 경우를 구분하기위해 무조건 userId를 null이나 특정값 받아야함.
 		RoutineResponse routineResponse = routineService.getRoutineWithCategoriesAndActions(routineId,
-			userIdByJwt); //추후에 userId넣어야함.
+			userIdByJwt, userIdParam); //추후에 userId넣어야함.
 		return ResponseEntity.ok(routineResponse);
 	}
 

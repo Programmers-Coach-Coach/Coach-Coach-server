@@ -2,7 +2,6 @@ package site.coach_coach.coach_coach_server.routine.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import org.springframework.stereotype.Service;
 
@@ -125,28 +124,25 @@ public class RoutineService {
 
 	// NoSuchElementException -> NoExistRoutineException으로 바꾸기
 	// 추후에 인자값으로 userIParam이든 userIdBody든 넣어야 함.
-	public RoutineResponse getRoutineWithCategoriesAndActions(Long routineId, Long userIdByJwt) {
+	public RoutineResponse getRoutineWithCategoriesAndActions(Long routineId, Long userIdByJwt, Long userIdParam) {
 
 		log.info("여기서부터 루틴 개별 조회 시작");
 		Routine routine = routineRepository.findById(routineId)
-			.orElseThrow(() -> new NoSuchElementException());
-
-		Long userIdParam = null;
+			.orElseThrow(() -> new NoExistRoutineException(ErrorMessage.NOT_FOUND_ROUTINE));
 
 		validateGetRoutine(routine, userIdParam, userIdByJwt);
-
 		return RoutineResponse.from(routine);
 	}
 
 	public void validateGetRoutine(Routine routine, Long userIdParam, Long userIdByJwt) {
 		if (userIdParam == null) { // 스스로 조회
 			if (!routine.getUserId().equals(userIdByJwt)) {
-				throw new NoSuchElementException();
+				throw new NoExistRoutineException(ErrorMessage.NOT_MY_ROUTINE);
 			}
 		} else { // 코치가 조회
 			Long coachId = getCoachId(userIdByJwt);
 			if (!routine.getCoachId().equals(coachId)) {
-				throw new NoSuchElementException();
+				throw new NoExistRoutineException(ErrorMessage.NOT_MY_ROUTINE);
 			}
 		}
 

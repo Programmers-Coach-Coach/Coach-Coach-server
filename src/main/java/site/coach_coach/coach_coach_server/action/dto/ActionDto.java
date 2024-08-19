@@ -10,7 +10,7 @@ public record ActionDto(
 	@NotNull
 	String actionName,
 
-	String sets,
+	String set,
 
 	String countOrMinutes,
 
