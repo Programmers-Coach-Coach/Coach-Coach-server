@@ -115,6 +115,13 @@ public class GlobalExceptionHandler {
 			.body(new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), ex.getMessage()));
 	}
 
+	@ExceptionHandler(InvalidFileException.class)
+	public ResponseEntity<ErrorResponse> handleInvalidFileException(InvalidFileException ex) {
+		log.error("Handled exception: [{}] - {}", ex.getClass().getSimpleName(), ex.getMessage());
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+			.body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage()));
+	}
+
 	@ExceptionHandler(IncorrectPasswordException.class)
 	public ResponseEntity<ErrorResponse> handleIncorrectPasswordException(IncorrectPasswordException ex) {
 		Sentry.captureException(ex);

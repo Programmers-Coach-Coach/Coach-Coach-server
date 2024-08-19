@@ -23,8 +23,9 @@ public interface CoachRepository extends JpaRepository<Coach, Long> {
 		+ "LEFT JOIN c.reviews r "
 		+ "WHERE (:sports IS NULL OR cs.sport.sportId IN :sports) "
 		+ "AND (:search IS NULL OR c.user.nickname LIKE %:search%) "
-		+ "GROUP BY c.coachId")
-	Page<Coach> findAllWithFilters(@Param("sports") List<Long> sports,
+		+ "GROUP BY c.coachId "
+		+ "ORDER BY c.updatedAt DESC")
+	Page<Coach> findAllWithLatestSorted(@Param("sports") List<Long> sports,
 		@Param("search") String search,
 		Pageable pageable);
 
@@ -51,7 +52,16 @@ public interface CoachRepository extends JpaRepository<Coach, Long> {
 		Pageable pageable);
 
 	@Query("SELECT c FROM Coach c "
+		+ "LEFT JOIN c.coachingSports cs "
+		+ "LEFT JOIN c.reviews r "
 		+ "JOIN UserCoachLike ucl ON ucl.coach = c "
-		+ "WHERE ucl.user.userId = :userId")
-	Page<Coach> findMyCoaches(@Param("userId") Long userId, Pageable pageable);
+		+ "WHERE ucl.user.userId = :userId "
+		+ "AND (:sports IS NULL OR cs.sport.sportId IN :sports) "
+		+ "AND (:search IS NULL OR c.user.nickname LIKE %:search%) "
+		+ "GROUP BY c.coachId "
+		+ "ORDER BY c.updatedAt DESC")
+	Page<Coach> findMyCoaches(Long userId,
+		@Param("sports") List<Long> sports,
+		@Param("search") String search,
+		Pageable pageable);
 }

@@ -13,6 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.coach.domain.Coach;
+import site.coach_coach.coach_coach_server.coach.dto.CoachListDto;
+import site.coach_coach.coach_coach_server.coach.dto.CoachListResponse;
+import site.coach_coach.coach_coach_server.coach.exception.InvalidQueryParameterException;
 import site.coach_coach.coach_coach_server.coach.dto.CoachDetailDto;
 import site.coach_coach.coach_coach_server.coach.dto.CoachListDto;
 import site.coach_coach.coach_coach_server.coach.dto.CoachListResponse;
@@ -112,11 +115,11 @@ public class CoachService {
 		} else if (liked != null && liked) {
 			coachesPage = coachRepository.findAllWithLikesSorted(sportsList, search, pageable);
 		} else if (latest != null && latest) {
-			coachesPage = coachRepository.findAllWithFilters(sportsList, search, pageable);
+			coachesPage = coachRepository.findAllWithLatestSorted(sportsList, search, pageable);
 		} else if (my != null && my) {
-			coachesPage = coachRepository.findMyCoaches(user.getUserId(), pageable);
+			coachesPage = coachRepository.findMyCoaches(user.getUserId(), sportsList, search, pageable);
 		} else {
-			throw new InvalidQueryParameterException(ErrorMessage.INVALID_REQUEST);
+			throw new InvalidQueryParameterException(ErrorMessage.INVALID_QUERY_PARAMETER);
 		}
 
 		if (page > coachesPage.getTotalPages()) {

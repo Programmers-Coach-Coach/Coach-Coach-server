@@ -18,7 +18,6 @@ public class SportsValidator implements ConstraintValidator<Sports, Long[]> {
 		this.sportRepository = sportRepository;
 	}
 
-	@Override
 	public boolean isValid(Long[] sports, ConstraintValidatorContext context) {
 		if (sports == null || sports.length == 0) {
 			return true;

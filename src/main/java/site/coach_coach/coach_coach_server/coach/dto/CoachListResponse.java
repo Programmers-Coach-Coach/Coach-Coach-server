@@ -5,7 +5,7 @@ import java.util.List;
 import jakarta.validation.constraints.NotNull;
 
 public record CoachListResponse(
-	List<site.coach_coach.coach_coach_server.coach.dto.CoachListDto> data,
+	List<CoachListDto> data,
 	@NotNull
 	int totalCount,
 	@NotNull
