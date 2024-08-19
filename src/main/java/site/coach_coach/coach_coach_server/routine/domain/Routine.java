@@ -1,5 +1,7 @@
 package site.coach_coach.coach_coach_server.routine.domain;
 
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -8,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -15,6 +18,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import site.coach_coach.coach_coach_server.category.domain.Category;
 import site.coach_coach.coach_coach_server.common.domain.DateEntity;
 import site.coach_coach.coach_coach_server.sport.domain.Sport;
 
@@ -46,6 +50,9 @@ public class Routine extends DateEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "sport_id")
 	private Sport sport;
+
+	@OneToMany(mappedBy = "routine")
+	private List<Category> categoryList;
 
 }
 

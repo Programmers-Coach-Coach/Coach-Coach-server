@@ -2,10 +2,12 @@ package site.coach_coach.coach_coach_server.routine.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import site.coach_coach.coach_coach_server.coach.repository.CoachRepository;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.common.exception.UserNotFoundException;
@@ -15,6 +17,7 @@ import site.coach_coach.coach_coach_server.routine.domain.Routine;
 import site.coach_coach.coach_coach_server.routine.dto.CreateRoutineRequest;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineForListDto;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineListRequest;
+import site.coach_coach.coach_coach_server.routine.dto.RoutineResponse;
 import site.coach_coach.coach_coach_server.routine.dto.UserInfoForRoutineList;
 import site.coach_coach.coach_coach_server.routine.exception.NotMatchingException;
 import site.coach_coach.coach_coach_server.routine.repository.RoutineRepository;
@@ -23,6 +26,7 @@ import site.coach_coach.coach_coach_server.user.domain.User;
 import site.coach_coach.coach_coach_server.user.repository.UserRepository;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class RoutineService {
 	private final RoutineRepository routineRepository;
@@ -116,5 +120,34 @@ public class RoutineService {
 		}
 
 		return routineRepository.save(routineBuilder.build()).getRoutineId();
+	}
+
+	// NoSuchElementException -> NoExistRoutineException으로 바꾸기
+	// 추후에 인자값으로 userIParam이든 userIdBody든 넣어야 함.
+	public RoutineResponse getRoutineWithCategoriesAndActions(Long routineId, Long userIdByJwt) {
+
+		log.info("여기서부터 루틴 개별 조회 시작");
+		Routine routine = routineRepository.findById(routineId)
+			.orElseThrow(() -> new NoSuchElementException());
+
+		Long userIdParam = null;
+
+		validateGetRoutine(routine, userIdParam, userIdByJwt);
+
+		return RoutineResponse.from(routine);
+	}
+
+	public void validateGetRoutine(Routine routine, Long userIdParam, Long userIdByJwt) {
+		if (userIdParam == null) { // 스스로 조회
+			if (!routine.getUserId().equals(userIdByJwt)) {
+				throw new NoSuchElementException();
+			}
+		} else { // 코치가 조회
+			Long coachId = getCoachId(userIdByJwt);
+			if (!routine.getCoachId().equals(coachId)) {
+				throw new NoSuchElementException();
+			}
+		}
+
 	}
 }

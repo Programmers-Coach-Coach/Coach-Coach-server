@@ -24,12 +24,15 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import site.coach_coach.coach_coach_server.action.dto.ActionDto;
 import site.coach_coach.coach_coach_server.auth.jwt.TokenProvider;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
+import site.coach_coach.coach_coach_server.category.dto.CategoryDto;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.routine.dto.CreateRoutineRequest;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineForListDto;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineListRequest;
+import site.coach_coach.coach_coach_server.routine.dto.RoutineResponse;
 import site.coach_coach.coach_coach_server.routine.dto.UserInfoForRoutineList;
 import site.coach_coach.coach_coach_server.routine.service.RoutineService;
 
@@ -211,6 +214,25 @@ public class RoutineControllerTest {
 			.andReturn();
 
 		assertThat(result.getResponse().getContentAsString()).contains(ErrorMessage.INVALID_VALUE);
+	}
+
+	@Test
+	@DisplayName("루틴 개별 조회 성공 - 일반 회원")
+	public void getRoutineSuccessTest() throws Exception {
+		// Given
+		Long userIdByJwt = 1L;
+		Long routineId = 1L;
+		ActionDto actionDto = new ActionDto(1L, "actionName", "sets", "10", "description");
+		List<ActionDto> actionList = new ArrayList<>();
+		actionList.add(actionDto);
+		CategoryDto categoryDto = new CategoryDto(1L, "categoryName", actionList);
+		List<CategoryDto> categoryList = new ArrayList<>();
+		categoryList.add(categoryDto);
+		RoutineResponse routineResponse = new RoutineResponse("routineName", categoryList);
+
+		when(routineService.getRoutineWithCategoriesAndActions(anyLong(), anyLong())).thenReturn(routineResponse);
+
+		//perform할때 userId 받는거 입력을 해야해서 지금은 개발 중지!
 	}
 
 	public void setSecurityContextWithMockUserDetails(Long userIdByJwt) {
