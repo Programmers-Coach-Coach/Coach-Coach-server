@@ -137,7 +137,7 @@ public class RoutineService {
 			}
 		} else {
 			Long coachId = getCoachId(userIdByJwt);
-			if (!routine.getCoachId().equals(coachId)) {
+			if (routine.getCoachId() != coachId) {
 				throw new NoExistRoutineException(ErrorMessage.NOT_MY_ROUTINE);
 			}
 		}
