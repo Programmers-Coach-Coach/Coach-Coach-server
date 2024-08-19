@@ -29,11 +29,13 @@ import site.coach_coach.coach_coach_server.auth.jwt.TokenProvider;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
 import site.coach_coach.coach_coach_server.category.dto.CategoryDto;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
+import site.coach_coach.coach_coach_server.common.constants.SuccessMessage;
 import site.coach_coach.coach_coach_server.routine.dto.CreateRoutineRequest;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineForListDto;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineListRequest;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineResponse;
 import site.coach_coach.coach_coach_server.routine.dto.UserInfoForRoutineList;
+import site.coach_coach.coach_coach_server.routine.exception.NoExistRoutineException;
 import site.coach_coach.coach_coach_server.routine.service.RoutineService;
 
 @WebMvcTest(RoutineController.class)
@@ -56,10 +58,15 @@ public class RoutineControllerTest {
 	private List<RoutineForListDto> routineList;
 	private UserInfoForRoutineList userInfoForRoutineList;
 	private ObjectMapper objectMapper;
+	private Long userIdByJwt;
 
 	@BeforeEach
 	public void setUp() {
 		objectMapper = new ObjectMapper();
+		userIdByJwt = 1L;
+
+		// Set the SecurityContext with mockUserDetails
+		setSecurityContextWithMockUserDetails(userIdByJwt);
 
 		routine = new RoutineForListDto(1L, "routineName", "sportName");
 		routineList = List.of(routine);
@@ -214,6 +221,53 @@ public class RoutineControllerTest {
 			.andReturn();
 
 		assertThat(result.getResponse().getContentAsString()).contains(ErrorMessage.INVALID_VALUE);
+	}
+
+	@Test
+	@DisplayName("루틴 삭제 성공 테스트")
+	public void deleteRoutineSuccessTest() throws Exception {
+
+		doNothing().when(routineService).validateRoutineDelete(1L, userIdByJwt);
+
+		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/routines/1").with(csrf()))
+			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andReturn();
+
+		assertThat(result.getResponse().getContentAsString()).contains(
+			SuccessMessage.DELETE_ROUTINE_SUCCESS.getMessage());
+	}
+
+	@Test
+	@DisplayName("루틴 삭제 실패 테스트 - 미존재 루틴 삭제")
+	public void deleteRoutineFailByNotExistTest() throws Exception {
+		// Given
+		Long routineId = 0L;
+		doThrow(new NoExistRoutineException(ErrorMessage.NOT_FOUND_ROUTINE)).when(routineService)
+			.validateRoutineDelete(anyLong(), anyLong());
+
+		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/routines/" + routineId).with(csrf()))
+			.andExpect(MockMvcResultMatchers.status().isNotFound())
+			.andReturn();
+
+		assertThat(result.getResponse().getContentAsString()).contains(
+			ErrorMessage.NOT_FOUND_ROUTINE);
+	}
+
+	@Test
+	@DisplayName("루틴 삭제 실패 테스트 - 소유하지 않은 루틴 접근")
+	public void deleteRoutineFailTest() throws Exception {
+		// Given
+		Long routineId = 0L;
+
+		doThrow(new NoExistRoutineException(ErrorMessage.NOT_MY_ROUTINE)).when(routineService)
+			.validateRoutineDelete(routineId, userIdByJwt);
+
+		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/routines/" + routineId).with(csrf()))
+			.andExpect(MockMvcResultMatchers.status().isNotFound())
+			.andReturn();
+
+		assertThat(result.getResponse().getContentAsString()).contains(
+			ErrorMessage.NOT_MY_ROUTINE);
 	}
 
 	@Test
