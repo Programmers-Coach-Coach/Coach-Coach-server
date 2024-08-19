@@ -65,7 +65,7 @@ public class CoachService {
 		} else if (my != null && my) {
 			coachesPage = coachRepository.findMyCoaches(user.getUserId(), sportsList, search, pageable);
 		} else {
-			throw new InvalidQueryParameterException(ErrorMessage.INVALID_REQUEST);
+			throw new InvalidQueryParameterException(ErrorMessage.INVALID_QUERY_PARAMETER);
 		}
 
 		if (page > coachesPage.getTotalPages()) {
