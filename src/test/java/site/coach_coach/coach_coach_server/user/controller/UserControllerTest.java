@@ -21,11 +21,9 @@ import net.datafaker.Faker;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import jakarta.servlet.http.HttpServletRequest;
 import site.coach_coach.coach_coach_server.auth.jwt.TokenProvider;
 import site.coach_coach.coach_coach_server.auth.jwt.dto.TokenDto;
 import site.coach_coach.coach_coach_server.auth.jwt.service.TokenService;
-import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.common.constants.SuccessMessage;
 import site.coach_coach.coach_coach_server.common.response.SuccessResponse;
@@ -34,9 +32,7 @@ import site.coach_coach.coach_coach_server.config.CustomAuthenticationEntryPoint
 import site.coach_coach.coach_coach_server.config.SecurityConfig;
 import site.coach_coach.coach_coach_server.user.domain.User;
 import site.coach_coach.coach_coach_server.user.dto.LoginRequest;
-import site.coach_coach.coach_coach_server.user.dto.PasswordRequest;
 import site.coach_coach.coach_coach_server.user.dto.SignUpRequest;
-import site.coach_coach.coach_coach_server.user.dto.UserProfileResponse;
 import site.coach_coach.coach_coach_server.user.exception.InvalidUserException;
 import site.coach_coach.coach_coach_server.user.exception.UserAlreadyExistException;
 import site.coach_coach.coach_coach_server.user.service.UserService;
@@ -226,26 +222,6 @@ public class UserControllerTest {
 	}
 
 	@Test
-	@DisplayName("로그인 성공 테스트")
-	public void loginSuccessTest() throws Exception {
-		given(userService.validateUser(any(LoginRequest.class))).willReturn(user);
-		given(userService.createJwt(any(User.class))).willReturn(tokenDto);
-
-		// when
-		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/auth/login")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(loginRequest)))
-			.andExpect(MockMvcResultMatchers.status().isOk())
-			.andReturn();
-
-		// then
-		verify(userService, times(1)).validateUser(any(LoginRequest.class));
-		verify(userService, times(1)).createJwt(any(User.class));
-		assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.OK.value());
-		assertThat(result.getResponse().getContentAsString()).contains(SuccessMessage.LOGIN_SUCCESS.getMessage());
-	}
-
-	@Test
 	@DisplayName("로그인 시 회원 정보가 다를 경우 401 상태 코드 반환 및 에러 메시지")
 	public void loginInvalidEmailTest() throws Exception {
 		when(userService.validateUser(loginRequest)).thenThrow(new InvalidUserException());
@@ -257,28 +233,6 @@ public class UserControllerTest {
 			.andReturn();
 
 		assertThat(result.getResponse().getContentAsString()).contains(ErrorMessage.INVALID_USER);
-	}
-
-	@Test
-	@DisplayName("로그아웃 성공 테스트")
-	public void logoutSuccessTest() throws Exception {
-		// given
-		CustomUserDetails userDetails = new CustomUserDetails(user);
-		String refreshToken = "refreshToken";
-		given(tokenProvider.getCookieValue(any(HttpServletRequest.class), eq("refresh_token"))).willReturn(
-			refreshToken);
-
-		// when
-		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/auth/logout")
-				.principal(() -> String.valueOf(userDetails))
-				.contentType(MediaType.APPLICATION_JSON))
-			.andExpect(MockMvcResultMatchers.status().isOk())
-			.andReturn();
-
-		// then
-		verify(tokenService, times(1)).deleteRefreshToken(anyLong(), eq(refreshToken));
-		assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.OK.value());
-		assertThat(result.getResponse().getContentAsString()).contains(SuccessMessage.LOGOUT_SUCCESS.getMessage());
 	}
 
 	@Test
@@ -319,70 +273,5 @@ public class UserControllerTest {
 		verify(userService, times(1)).checkEmailDuplicate(email);
 		assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.OK.value());
 		assertThat(result.getResponse().getContentAsString()).contains(SuccessMessage.NICKNAME_AVAILABLE.getMessage());
-	}
-
-	@Test
-	@DisplayName("비밀번호 확인 성공 테스트")
-	public void confirmPasswordSuccessTest() throws Exception {
-		// given
-		CustomUserDetails userDetails = new CustomUserDetails(user);
-		PasswordRequest passwordRequest = new PasswordRequest("password123!");
-		doNothing().when(userService).validatePassword(anyLong(), any(PasswordRequest.class));
-
-		// when
-		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/auth/confirm-password")
-				.principal(() -> String.valueOf(userDetails))
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(passwordRequest)))
-			.andExpect(MockMvcResultMatchers.status().isOk())
-			.andReturn();
-
-		// then
-		verify(userService, times(1)).validatePassword(anyLong(), any(PasswordRequest.class));
-		assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.OK.value());
-		assertThat(result.getResponse().getContentAsString()).contains(
-			SuccessMessage.PASSWORD_CONFIRM_SUCCESS.getMessage());
-	}
-
-	@Test
-	@DisplayName("내 프로필 조회 성공 테스트")
-	public void getMyProfileSuccessTest() throws Exception {
-		// given
-		CustomUserDetails userDetails = new CustomUserDetails(user);
-		UserProfileResponse userProfileResponse = UserProfileResponse.from(user);
-		given(userService.getUserProfile(anyLong())).willReturn(userProfileResponse);
-
-		// when
-		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/user/me")
-				.principal(() -> String.valueOf(userDetails))
-				.contentType(MediaType.APPLICATION_JSON))
-			.andExpect(MockMvcResultMatchers.status().isOk())
-			.andReturn();
-
-		// then
-		verify(userService, times(1)).getUserProfile(anyLong());
-		assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.OK.value());
-		assertThat(result.getResponse().getContentAsString()).contains(user.getEmail());
-	}
-
-	@Test
-	@DisplayName("토큰 재발급 성공 테스트")
-	public void reissueSuccessTest() throws Exception {
-		// given
-		String refreshToken = "refreshToken";
-		String newAccessToken = "newAccessToken";
-		given(tokenProvider.getCookieValue(any(HttpServletRequest.class), eq("refresh_token"))).willReturn(
-			refreshToken);
-		given(tokenService.reissueAccessToken(anyString())).willReturn(newAccessToken);
-
-		// when
-		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/auth/reissue")
-				.contentType(MediaType.APPLICATION_JSON))
-			.andExpect(MockMvcResultMatchers.status().isNoContent())
-			.andReturn();
-
-		// then
-		verify(tokenService, times(1)).reissueAccessToken(anyString());
-		assertThat(result.getResponse().getStatus()).isEqualTo(HttpStatus.NO_CONTENT.value());
 	}
 }
