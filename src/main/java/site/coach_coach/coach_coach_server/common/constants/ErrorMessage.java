@@ -46,5 +46,6 @@ public final class ErrorMessage {
 	public static final String INVALID_FILE_EXTENSION = "허용된 파일 확장자가 아닙니다.";
 	public static final String INVALID_FILE_NAME = "유효하지 않은 파일 이름입니다.";
 	public static final String INVALID_FILE_SIZE = "파일 크기는 5MB 미만이어야 합니다.";
+
 }
 
