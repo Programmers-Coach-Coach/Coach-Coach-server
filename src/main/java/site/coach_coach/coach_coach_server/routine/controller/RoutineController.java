@@ -92,9 +92,8 @@ public class RoutineController {
 	) {
 		Long userIdByJwt = userDetails.getUserId();
 
-		// 조회시에는 코치의 접근 경우를 구분하기위해 무조건 userId를 null이나 특정값 받아야함.
 		RoutineResponse routineResponse = routineService.getRoutineWithCategoriesAndActions(routineId,
-			userIdByJwt, userIdParam); //추후에 userId넣어야함.
+			userIdByJwt, userIdParam);
 		return ResponseEntity.ok(routineResponse);
 	}
 

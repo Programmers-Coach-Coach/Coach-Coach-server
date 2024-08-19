@@ -122,8 +122,6 @@ public class RoutineService {
 		return routineRepository.save(routineBuilder.build()).getRoutineId();
 	}
 
-	// NoSuchElementException -> NoExistRoutineException으로 바꾸기
-	// 추후에 인자값으로 userIParam이든 userIdBody든 넣어야 함.
 	public RoutineResponse getRoutineWithCategoriesAndActions(Long routineId, Long userIdByJwt, Long userIdParam) {
 
 		log.info("여기서부터 루틴 개별 조회 시작");
@@ -135,11 +133,11 @@ public class RoutineService {
 	}
 
 	public void validateGetRoutine(Routine routine, Long userIdParam, Long userIdByJwt) {
-		if (userIdParam == null) { // 스스로 조회
+		if (userIdParam == null) {
 			if (!routine.getUserId().equals(userIdByJwt)) {
 				throw new NoExistRoutineException(ErrorMessage.NOT_MY_ROUTINE);
 			}
-		} else { // 코치가 조회
+		} else {
 			Long coachId = getCoachId(userIdByJwt);
 			if (!routine.getCoachId().equals(coachId)) {
 				throw new NoExistRoutineException(ErrorMessage.NOT_MY_ROUTINE);
