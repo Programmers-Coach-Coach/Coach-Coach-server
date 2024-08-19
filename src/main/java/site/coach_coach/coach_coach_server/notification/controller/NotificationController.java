@@ -20,7 +20,7 @@ public class NotificationController {
 	private final NotificationService notificationService;
 
 	@GetMapping("/v1/notifications")
-	public ResponseEntity<List<NotificationResponse>> getAllNotification(
+	public ResponseEntity<List<NotificationResponse>> getAllNotifications(
 		@AuthenticationPrincipal CustomUserDetails userDetails) {
 		Long userId = userDetails.getUserId();
 		List<NotificationResponse> notifications = notificationService.getAllNotifications(userId);
