@@ -79,4 +79,15 @@ public class User extends DateEntity {
 
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
 	private List<InterestedSport> interestedSports;
+
+	public void updateProfile(String nickname, String profileImageUrl, GenderEnum gender, String localAddress,
+		String localAddressDetail, String introduction, List<InterestedSport> interestedSports) {
+		this.nickname = nickname;
+		this.profileImageUrl = profileImageUrl;
+		this.gender = gender;
+		this.localAddress = localAddress;
+		this.localAddressDetail = localAddressDetail;
+		this.introduction = introduction;
+		this.interestedSports = interestedSports;
+	}
 }

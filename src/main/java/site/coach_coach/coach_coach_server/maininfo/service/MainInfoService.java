@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.like.repository.UserCoachLikeRepository;
 import site.coach_coach.coach_coach_server.maininfo.dto.MainInfoCoachDto;
@@ -18,19 +19,12 @@ import site.coach_coach.coach_coach_server.sport.repository.SportRepository;
 import site.coach_coach.coach_coach_server.user.domain.User;
 
 @Service
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class MainInfoService {
 
 	private final SportRepository sportRepository;
 	private final UserCoachLikeRepository userCoachLikeRepository;
-
-	public MainInfoService(
-		SportRepository sportRepository,
-		UserCoachLikeRepository userCoachLikeRepository
-	) {
-		this.sportRepository = sportRepository;
-		this.userCoachLikeRepository = userCoachLikeRepository;
-	}
 
 	public MainInfoResponseDto getMainInfoResponse(User user) {
 		List<SportDto> sports = getSports();
@@ -57,7 +51,7 @@ public class MainInfoService {
 			.collect(Collectors.toList());
 	}
 
-	public static MainInfoCoachDto buildMainInfoCoachDto(Coach coach, User user,
+	public MainInfoCoachDto buildMainInfoCoachDto(Coach coach, User user,
 		UserCoachLikeRepository userCoachLikeRepository) {
 		List<CoachingSportDto> coachingSports = coach.getCoachingSports().stream()
 			.map(cs -> new CoachingSportDto(
