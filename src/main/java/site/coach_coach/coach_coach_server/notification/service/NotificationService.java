@@ -18,6 +18,7 @@ public class NotificationService {
 	private final UserRepository userRepository;
 	private final NotificationRepository notificationRepository;
 
+	@Transactional(readOnly = true)
 	public List<NotificationResponse> getAllNotifications(Long userId) {
 		userRepository.findById(userId).orElseThrow(InvalidUserException::new);
 		return notificationRepository.findByUser_UserId(userId)
