@@ -123,8 +123,6 @@ public class RoutineService {
 	}
 
 	public RoutineResponse getRoutineWithCategoriesAndActions(Long routineId, Long userIdByJwt, Long userIdParam) {
-
-		log.info("여기서부터 루틴 개별 조회 시작");
 		Routine routine = routineRepository.findById(routineId)
 			.orElseThrow(() -> new NoExistRoutineException(ErrorMessage.NOT_FOUND_ROUTINE));
 
@@ -143,7 +141,6 @@ public class RoutineService {
 				throw new NoExistRoutineException(ErrorMessage.NOT_MY_ROUTINE);
 			}
 		}
-
 	}
 
 	public void validateRoutineDelete(Long routineId, Long userIdByJwt) {
