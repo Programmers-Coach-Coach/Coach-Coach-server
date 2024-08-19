@@ -20,7 +20,7 @@ public class NotificationService {
 
 	public List<NotificationResponse> getAllNotifications(Long userId) {
 		userRepository.findById(userId).orElseThrow(InvalidUserException::new);
-		return notificationRepository.findByUserId(userId)
+		return notificationRepository.findByUser_UserId(userId)
 			.stream()
 			.map(NotificationResponse::from)
 			.toList();
