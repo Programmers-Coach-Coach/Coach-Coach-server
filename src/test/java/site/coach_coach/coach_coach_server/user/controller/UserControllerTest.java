@@ -27,6 +27,7 @@ import site.coach_coach.coach_coach_server.auth.jwt.service.TokenService;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.common.constants.SuccessMessage;
 import site.coach_coach.coach_coach_server.common.response.SuccessResponse;
+import site.coach_coach.coach_coach_server.common.utils.AmazonS3Uploader;
 import site.coach_coach.coach_coach_server.common.utils.AuthenticationUtil;
 import site.coach_coach.coach_coach_server.config.CustomAuthenticationEntryPoint;
 import site.coach_coach.coach_coach_server.config.SecurityConfig;
@@ -55,6 +56,9 @@ public class UserControllerTest {
 
 	@MockBean
 	private AuthenticationUtil authenticationUtil;
+
+	@MockBean
+	private AmazonS3Uploader amazonS3Uploader;
 
 	private ObjectMapper objectMapper;
 	Faker faker = new Faker();
