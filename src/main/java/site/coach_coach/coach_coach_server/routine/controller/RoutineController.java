@@ -78,8 +78,7 @@ public class RoutineController {
 		@PathVariable(name = "routineId") @Valid Long routineId
 	) {
 		Long userIdByJwt = userDetails.getUserId();
-		routineService.validateRoutineAccess(routineId, userIdByJwt);
-		routineService.deleteRoutine(routineId);
+		routineService.validateRoutineDelete(routineId, userIdByJwt);
 		return ResponseEntity.ok(
 			new SuccessResponse(HttpStatus.OK.value(), SuccessMessage.DELETE_ROUTINE_SUCCESS.getMessage()));
 	}

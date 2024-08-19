@@ -119,11 +119,7 @@ public class RoutineService {
 		return routineRepository.save(routineBuilder.build()).getRoutineId();
 	}
 
-	public void deleteRoutine(Long routineId) {
-		routineRepository.deleteById(routineId);
-	}
-
-	public void validateRoutineAccess(Long routineId, Long userIdByJwt) {
+	public void validateRoutineDelete(Long routineId, Long userIdByJwt) {
 		Routine routine = routineRepository.findById(routineId)
 			.orElseThrow(() -> new NoExistRoutineException(ErrorMessage.NOT_FOUND_ROUTINE));
 
@@ -137,5 +133,7 @@ public class RoutineService {
 				throw new NoExistRoutineException(ErrorMessage.NOT_MY_ROUTINE);
 			}
 		}
+
+		routineRepository.deleteById(routineId);
 	}
 }
