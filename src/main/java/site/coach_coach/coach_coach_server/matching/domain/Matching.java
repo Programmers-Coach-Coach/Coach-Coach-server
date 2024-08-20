@@ -6,7 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,15 +20,14 @@ import site.coach_coach.coach_coach_server.common.domain.DateEntity;
 public class Matching extends DateEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@NotBlank
 	@Column(name = "user_coach_matching_id")
 	private Long userCoachMatchingId;
 
-	@NotBlank
+	@NotNull
 	@Column(name = "user_id")
 	private Long userId;
 
-	@NotBlank
+	@NotNull
 	@Column(name = "coach_id")
 	private Long coachId;
 
