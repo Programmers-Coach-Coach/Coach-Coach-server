@@ -7,14 +7,14 @@ import site.coach_coach.coach_coach_server.common.domain.RelationFunctionEnum;
 import site.coach_coach.coach_coach_server.notification.domain.Notification;
 
 @Builder
-public record NotificationResponse(
+public record NotificationListResponse(
 	Long notificationId,
 	String message,
 	RelationFunctionEnum relationFunction,
 	LocalDateTime createdAt
 ) {
-	public static NotificationResponse from(Notification notification) {
-		return new NotificationResponse(
+	public static NotificationListResponse from(Notification notification) {
+		return new NotificationListResponse(
 			notification.getNotificationId(),
 			notification.getMessage(),
 			notification.getRelationFunction(),

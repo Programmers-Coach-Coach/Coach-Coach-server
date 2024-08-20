@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
-import site.coach_coach.coach_coach_server.notification.dto.NotificationResponse;
+import site.coach_coach.coach_coach_server.notification.dto.NotificationListResponse;
 import site.coach_coach.coach_coach_server.notification.service.NotificationService;
 
 @RestController
@@ -20,10 +20,10 @@ public class NotificationController {
 	private final NotificationService notificationService;
 
 	@GetMapping("/v1/notifications")
-	public ResponseEntity<List<NotificationResponse>> getAllNotifications(
+	public ResponseEntity<List<NotificationListResponse>> getAllNotifications(
 		@AuthenticationPrincipal CustomUserDetails userDetails) {
 		Long userId = userDetails.getUserId();
-		List<NotificationResponse> notifications = notificationService.getAllNotifications(userId);
+		List<NotificationListResponse> notifications = notificationService.getAllNotifications(userId);
 		return ResponseEntity.ok(notifications);
 	}
 }
