@@ -160,7 +160,7 @@ public class CoachService {
 		return new CoachListResponse(coaches, (int)coachesPage.getTotalElements(), page);
 	}
 
-	@Transactional
+	@Transactional(readOnly = true)
 	public void contactCoach(User user, Long coachId) {
 		Long userId = user.getUserId();
 		coachRepository.findById(coachId).orElseThrow(() -> new NotFoundCoachException(ErrorMessage.NOT_FOUND_COACH));
