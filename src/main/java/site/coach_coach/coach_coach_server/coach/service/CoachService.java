@@ -16,6 +16,7 @@ import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.coach.dto.CoachDetailDto;
 import site.coach_coach.coach_coach_server.coach.dto.CoachListDto;
 import site.coach_coach.coach_coach_server.coach.dto.CoachListResponse;
+import site.coach_coach.coach_coach_server.coach.dto.CoachRequest;
 import site.coach_coach.coach_coach_server.coach.exception.InvalidQueryParameterException;
 import site.coach_coach.coach_coach_server.coach.exception.NotFoundCoachException;
 import site.coach_coach.coach_coach_server.coach.exception.NotFoundPageException;
@@ -26,10 +27,14 @@ import site.coach_coach.coach_coach_server.like.repository.UserCoachLikeReposito
 import site.coach_coach.coach_coach_server.review.domain.Review;
 import site.coach_coach.coach_coach_server.review.dto.ReviewDto;
 import site.coach_coach.coach_coach_server.review.repository.ReviewRepository;
+import site.coach_coach.coach_coach_server.sport.domain.CoachingSport;
 import site.coach_coach.coach_coach_server.sport.domain.Sport;
 import site.coach_coach.coach_coach_server.sport.dto.CoachingSportDto;
+import site.coach_coach.coach_coach_server.sport.repository.CoachingSportRepository;
 import site.coach_coach.coach_coach_server.sport.repository.SportRepository;
 import site.coach_coach.coach_coach_server.user.domain.User;
+import site.coach_coach.coach_coach_server.user.exception.InvalidUserException;
+import site.coach_coach.coach_coach_server.user.repository.UserRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +44,60 @@ public class CoachService {
 	private final ReviewRepository reviewRepository;
 	private final UserCoachLikeRepository userCoachLikeRepository;
 	private final SportRepository sportRepository;
+	private final UserRepository userRepository;
+	private final CoachingSportRepository coachingSportRepository;
+
+	@Transactional
+	public Coach getOrCreateCoach(Long userId) {
+		User user = userRepository.findById(userId).orElseThrow(InvalidUserException::new);
+		return coachRepository.findByUser(user).orElse(new Coach(user));
+	}
+
+	@Transactional
+	public void updateCoachInfo(Coach coach, CoachRequest coachRequest) {
+		coach.update(
+			coachRequest.coachIntroduction(),
+			coachRequest.activeCenter() != null ? coachRequest.activeCenter() : coach.getActiveCenter(),
+			coachRequest.activeCenterDetail() != null ? coachRequest.activeCenterDetail() :
+				coach.getActiveCenterDetail(),
+			coachRequest.activeHours(),
+			coachRequest.chattingUrl(),
+			coachRequest.isOpen() != null ? coachRequest.isOpen() : coach.getIsOpen()
+		);
+
+		coachRepository.save(coach);
+	}
+
+	@Transactional
+	public void addNewCoachingSports(Coach coach, List<CoachingSportDto> coachingSports) {
+		List<Long> sportIds = coachingSports.stream()
+			.map(CoachingSportDto::sportId)
+			.collect(Collectors.toList());
+
+		List<Sport> sports = sportRepository.findAllById(sportIds);
+
+		List<CoachingSport> coachingSportsEntities = sports.stream()
+			.map(sport -> new CoachingSport(coach, sport))
+			.collect(Collectors.toList());
+
+		coachingSportRepository.saveAll(coachingSportsEntities);
+	}
+
+	@Transactional
+	public void saveOrUpdateCoach(Long userId, CoachRequest coachRequest) {
+		Coach coach = getOrCreateCoach(userId);
+
+		updateCoachInfo(coach, coachRequest);
+
+		removeExistingCoachingSports(coach);
+
+		addNewCoachingSports(coach, coachRequest.coachingSports());
+	}
+
+	@Transactional
+	public void removeExistingCoachingSports(Coach coach) {
+		coachingSportRepository.deleteByCoach(coach);
+	}
 
 	@Transactional(readOnly = true)
 	public CoachDetailDto getCoachDetail(User user, Long coachId) {

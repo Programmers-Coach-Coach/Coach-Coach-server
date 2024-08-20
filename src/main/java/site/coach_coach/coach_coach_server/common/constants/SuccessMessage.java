@@ -12,7 +12,8 @@ public enum SuccessMessage {
 	PASSWORD_CONFIRM_SUCCESS("비밀번호 확인 성공"),
 	UPDATE_PROFILE_SUCCESS("수정 완료"),
 	CREATE_ROUTINE_SUCCESS("루틴 추가 성공"),
-	DELETE_ROUTINE_SUCCESS("루틴 삭제 성공");
+	DELETE_ROUTINE_SUCCESS("루틴 삭제 성공"),
+	UPDATE_COACH_PROFILE_SUCCESS("업로드 성공");
 
 	private final String message;
 
