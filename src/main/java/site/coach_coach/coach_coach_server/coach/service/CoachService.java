@@ -161,8 +161,7 @@ public class CoachService {
 
 	@Transactional
 	public void contactCoach(User user, Long coachId) {
-		Coach coach = coachRepository.findById(coachId)
-			.orElseThrow(() -> new NotFoundCoachException(ErrorMessage.NOT_FOUND_COACH));
+		coachRepository.findById(coachId).orElseThrow(() -> new NotFoundCoachException(ErrorMessage.NOT_FOUND_COACH));
 
 		Matching matching = new Matching(null, user.getUserId(), coachId, false);
 		matchingRepository.save(matching);
