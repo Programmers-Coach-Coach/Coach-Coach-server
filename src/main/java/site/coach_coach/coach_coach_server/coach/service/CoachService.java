@@ -1,6 +1,7 @@
 package site.coach_coach.coach_coach_server.coach.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -164,9 +165,12 @@ public class CoachService {
 		Long userId = user.getUserId();
 		coachRepository.findById(coachId).orElseThrow(() -> new NotFoundCoachException(ErrorMessage.NOT_FOUND_COACH));
 
-		Matching existingMatching = matchingRepository.findByUserIdAndCoachId(userId, coachId)
-			.orElse(new Matching(null, userId, coachId, false));
-		matchingRepository.save(existingMatching);
+		Optional<Matching> existingMatchingOpt = matchingRepository.findByUserIdAndCoachId(userId, coachId);
+
+		if (existingMatchingOpt.isEmpty()) {
+			Matching newMatching = new Matching(null, userId, coachId, false);
+			matchingRepository.save(newMatching);
+		}
 	}
 
 	private int getCountOfLikes(Coach coach) {
