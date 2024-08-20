@@ -60,7 +60,8 @@ public interface CoachRepository extends JpaRepository<Coach, Long> {
 		+ "AND (:search IS NULL OR c.user.nickname LIKE %:search%) "
 		+ "GROUP BY c.coachId "
 		+ "ORDER BY c.updatedAt DESC")
-	Page<Coach> findMyCoaches(Long userId,
+	Page<Coach> findMyCoaches(
+		@Param("userId") Long userId,
 		@Param("sports") List<Long> sports,
 		@Param("search") String search,
 		Pageable pageable);
