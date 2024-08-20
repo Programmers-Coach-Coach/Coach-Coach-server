@@ -26,7 +26,6 @@ public class TokenFilter extends OncePerRequestFilter {
 		response.setCharacterEncoding("utf-8");
 
 		String accessToken = tokenProvider.getCookieValue(request, ACCESS_TOKEN);
-		
 		if (accessToken == null) {
 			filterChain.doFilter(request, response);
 			return;
