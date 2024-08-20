@@ -90,13 +90,15 @@ public class CoachService {
 	public CoachListResponse getAllCoaches(User user, int page, String sports, String search, Boolean latest,
 		Boolean review, Boolean liked, Boolean my) {
 
+		List<Long> allSportsIds = List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L);
+
 		Sort sort = Sort.by("updatedAt").descending();
 		Pageable pageable = PageRequest.of(page - 1, 20, sort);
 
-		List<Long> sportsList = (sports != null && !sports.isEmpty()) ? parseSports(sports) : null;
+		List<Long> sportsList = (sports != null && !sports.isEmpty()) ? parseSports(sports) : allSportsIds;
 		sportsList = getExistingSportsList(sportsList);
 
-		if (sports != null && !sports.isEmpty() && sportsList.isEmpty()) {
+		if (sportsList.isEmpty() && (sports != null && !sports.isEmpty())) {
 			return new CoachListResponse(List.of(), 0, page);
 		}
 
@@ -183,9 +185,6 @@ public class CoachService {
 	}
 
 	private List<Long> parseSports(String sports) {
-		if (sports == null || sports.isEmpty()) {
-			return List.of();
-		}
 		return Stream.of(sports.split(","))
 			.map(Long::parseLong)
 			.collect(Collectors.toList());
