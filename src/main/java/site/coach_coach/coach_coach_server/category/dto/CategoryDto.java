@@ -14,6 +14,8 @@ public record CategoryDto(
 	@NotNull
 	String categoryName,
 
+	// Boolean isCompleted,
+
 	List<ActionDto> actionList
 ) {
 	public static CategoryDto from(Category category) {
