@@ -12,7 +12,6 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -54,12 +53,12 @@ public class Coach extends DateEntity {
 	private String activeCenterDetail;
 
 	@Size(max = 100)
-	@NotBlank
+	@NotNull
 	@Column(name = "active_hours")
 	private String activeHours;
 
 	@Size(max = 400)
-	@NotBlank
+	@NotNull
 	@Column(name = "chatting_url")
 	private String chattingUrl;
 
