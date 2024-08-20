@@ -47,10 +47,17 @@ public class CoachService {
 	private final UserRepository userRepository;
 	private final CoachingSportRepository coachingSportRepository;
 
-	@Transactional
-	public Coach getOrCreateCoach(Long userId) {
+	@Transactional(readOnly = true)
+	public Coach getCoachByUserId(Long userId) {
 		User user = userRepository.findById(userId).orElseThrow(InvalidUserException::new);
-		return coachRepository.findByUser(user).orElse(new Coach(user));
+		return coachRepository.findByUser(user)
+			.orElseThrow(() -> new NotFoundCoachException(ErrorMessage.NOT_FOUND_COACH));
+	}
+
+	@Transactional
+	public Coach createCoachForUser(Long userId) {
+		User user = userRepository.findById(userId).orElseThrow(InvalidUserException::new);
+		return coachRepository.save(new Coach(user));
 	}
 
 	@Transactional
@@ -85,12 +92,14 @@ public class CoachService {
 
 	@Transactional
 	public void saveOrUpdateCoach(Long userId, CoachRequest coachRequest) {
-		Coach coach = getOrCreateCoach(userId);
-
+		Coach coach;
+		try {
+			coach = getCoachByUserId(userId);
+		} catch (NotFoundCoachException e) {
+			coach = createCoachForUser(userId);
+		}
 		updateCoachInfo(coach, coachRequest);
-
 		removeExistingCoachingSports(coach);
-
 		addNewCoachingSports(coach, coachRequest.coachingSports());
 	}
 
