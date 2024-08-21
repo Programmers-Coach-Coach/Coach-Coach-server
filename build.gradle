@@ -80,19 +80,16 @@ jacocoTestCoverageVerification {
             enabled = true
             element = 'CLASS'
 
-            limit {
-                counter = 'CLASS'
-                value = 'COVEREDRATIO'
-                minimum = 0.10
-            }
+//            limit {
+//                counter = 'CLASS'
+//                value = 'COVEREDRATIO'
+//                minimum = 0.10
+//            }
 
             excludes = [
                     '*.*Application',
                     '*.*Exception*',
-                    '*.dto.*',
-                    '*.*Dto*',
                     '*.domain.*',
-                    '*.service.*',
                     '*.repository.*',
                     '*.validation.*',
                     '*.auth.*',

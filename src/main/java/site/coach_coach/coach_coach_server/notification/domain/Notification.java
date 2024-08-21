@@ -1,7 +1,10 @@
-package site.coach_coach.coach_coach_server.matching.domain;
+package site.coach_coach.coach_coach_server.notification.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -10,35 +13,39 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.common.domain.DateEntity;
+import site.coach_coach.coach_coach_server.common.domain.RelationFunctionEnum;
 import site.coach_coach.coach_coach_server.user.domain.User;
 
-@Table(name = "user_coach_matching")
+@Table(name = "notifications")
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Matching extends DateEntity {
+public class Notification extends DateEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@NotBlank
-	@Column(name = "user_coach_matching_id")
-	private Long userCoachMatchingId;
+	@Column(name = "notification_id")
+	private Long notificationId;
 
 	@NotNull
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	private User user;
 
-	@NotNull
-	@ManyToOne
-	@JoinColumn(name = "coach_id")
-	private Coach coach;
+	@NotBlank
+	@Column(name = "message", nullable = false, length = 100)
+	@Size(max = 100)
+	private String message;
 
-	@Column(name = "is_matching")
-	private Boolean isMatching;
+	@NotNull
+	@Column(name = "relation_function")
+	@Enumerated(EnumType.STRING)
+	private RelationFunctionEnum relationFunction;
 }
