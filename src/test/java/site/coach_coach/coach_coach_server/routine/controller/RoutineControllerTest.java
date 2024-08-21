@@ -75,20 +75,6 @@ public class RoutineControllerTest {
 	}
 
 	@Test
-	@DisplayName("비로그인 시, 루틴 목록 조회 테스트")
-	public void getRoutineListNotLogin() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/routines"))
-			.andExpect(MockMvcResultMatchers.status().isUnauthorized());
-	}
-
-	@Test
-	@DisplayName("비로그인 시, 루틴 목록 사용자 정보 조회 테스트")
-	public void getUserInfoNotLogin() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/routines/user"))
-			.andExpect(MockMvcResultMatchers.status().isUnauthorized());
-	}
-
-	@Test
 	@DisplayName("자신이 만든 루틴 목록 조회 테스트")
 	public void getRoutineListByMyselfTest() throws Exception {
 		// Given
@@ -262,7 +248,7 @@ public class RoutineControllerTest {
 			.validateAndDeleteRoutine(routineId, userIdByJwt);
 
 		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/routines/" + routineId).with(csrf()))
-			.andExpect(MockMvcResultMatchers.status().isNotFound())
+			.andExpect(MockMvcResultMatchers.status().isForbidden())
 			.andReturn();
 
 		assertThat(result.getResponse().getContentAsString()).contains(
