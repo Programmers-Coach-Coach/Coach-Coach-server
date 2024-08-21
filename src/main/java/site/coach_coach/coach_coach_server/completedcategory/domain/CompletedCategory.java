@@ -10,10 +10,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import site.coach_coach.coach_coach_server.category.domain.Category;
 import site.coach_coach.coach_coach_server.common.domain.DateEntity;
 import site.coach_coach.coach_coach_server.userrecord.domain.UserRecord;
@@ -22,16 +22,13 @@ import site.coach_coach.coach_coach_server.userrecord.domain.UserRecord;
 @Entity
 @Getter
 @Builder
-@NotNull
+@NoArgsConstructor
 @AllArgsConstructor
 public class CompletedCategory extends DateEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "completed_category_id")
 	private Long completedCategoryId;
-
-	@Column(name = "is_completed")
-	private Boolean isCompleted;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_record_id")

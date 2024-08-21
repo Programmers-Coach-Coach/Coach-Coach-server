@@ -45,6 +45,10 @@ public class Category extends DateEntity {
 	@JoinColumn(name = "routine_id")
 	private Routine routine;
 
+	@NotNull
+	@Column(name = "is_completed")
+	private Boolean isCompleted;
+
 	@OneToMany(mappedBy = "category")
 	private List<Action> actionList;
 

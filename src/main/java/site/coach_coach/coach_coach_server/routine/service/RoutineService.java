@@ -143,7 +143,7 @@ public class RoutineService {
 		}
 	}
 
-	public void validateRoutineDelete(Long routineId, Long userIdByJwt) {
+	public void validateAndDeleteRoutine(Long routineId, Long userIdByJwt) {
 		Routine routine = routineRepository.findById(routineId)
 			.orElseThrow(() -> new NoExistRoutineException(ErrorMessage.NOT_FOUND_ROUTINE));
 
