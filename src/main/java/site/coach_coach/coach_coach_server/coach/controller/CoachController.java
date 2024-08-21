@@ -13,9 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
 import site.coach_coach.coach_coach_server.coach.dto.CoachDetailDto;
 import site.coach_coach.coach_coach_server.coach.dto.CoachListResponse;
+import site.coach_coach.coach_coach_server.coach.dto.CreateContactResponse;
 import site.coach_coach.coach_coach_server.coach.service.CoachService;
-import site.coach_coach.coach_coach_server.common.constants.SuccessMessage;
-import site.coach_coach.coach_coach_server.common.response.SuccessResponse;
 import site.coach_coach.coach_coach_server.user.domain.User;
 import site.coach_coach.coach_coach_server.user.exception.InvalidUserException;
 
@@ -63,13 +62,14 @@ public class CoachController {
 	}
 
 	@PostMapping("/v1/coaches/{coachId}/contact")
-	public ResponseEntity<SuccessResponse> contactCoach(
+	public ResponseEntity<CreateContactResponse> contactCoach(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
 		@PathVariable Long coachId
 	) {
 		User user = userDetails.getUser();
-		coachService.contactCoach(user, coachId);
-		return ResponseEntity.ok(
-			new SuccessResponse(HttpStatus.OK.value(), SuccessMessage.CREATE_CONTACT_SUCCESS.getMessage()));
+		Long matchingId = coachService.contactCoach(user, coachId);
+
+		return ResponseEntity.status(HttpStatus.CREATED)
+			.body(new CreateContactResponse(HttpStatus.CREATED.value(), matchingId));
 	}
 }

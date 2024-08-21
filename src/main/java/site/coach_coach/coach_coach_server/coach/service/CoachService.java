@@ -161,7 +161,7 @@ public class CoachService {
 	}
 
 	@Transactional
-	public void contactCoach(User user, Long coachId) {
+	public Long contactCoach(User user, Long coachId) {
 		Coach coach = coachRepository.findById(coachId)
 			.orElseThrow(() -> new NotFoundCoachException(ErrorMessage.NOT_FOUND_COACH));
 
@@ -170,8 +170,11 @@ public class CoachService {
 
 		if (existingMatchingOpt.isEmpty()) {
 			Matching newMatching = new Matching(null, user, coach, false);
-			matchingRepository.save(newMatching);
+			Matching savedMatching = matchingRepository.save(newMatching);
+			return savedMatching.getUserCoachMatchingId();
 		}
+
+		return existingMatchingOpt.get().getUserCoachMatchingId();
 	}
 
 	private int getCountOfLikes(Coach coach) {
