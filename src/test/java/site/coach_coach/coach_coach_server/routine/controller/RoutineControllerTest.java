@@ -30,6 +30,7 @@ import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
 import site.coach_coach.coach_coach_server.category.dto.CategoryDto;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.common.constants.SuccessMessage;
+import site.coach_coach.coach_coach_server.common.exception.AccessDeniedException;
 import site.coach_coach.coach_coach_server.routine.dto.CreateRoutineRequest;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineForListDto;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineListRequest;
@@ -136,14 +137,12 @@ public class RoutineControllerTest {
 	@DisplayName("자신이 만든 루틴 목록이 비어있는 경우 테스트")
 	public void getRoutineListIsEmptyTest() throws Exception {
 		// Given
-		Long userIdParam = null;
-		Long coachIdParam = null;
 		Long userIdByJwt = 1L;
 
 		// Set the SecurityContext with mockUserDetails
 		setSecurityContextWithMockUserDetails(userIdByJwt);
 
-		when(routineService.confirmIsMatching(userIdParam, coachIdParam, userIdByJwt)).thenReturn(routineListRequest);
+		when(routineService.confirmIsMatching(null, null, userIdByJwt)).thenReturn(routineListRequest);
 		when(routineService.getRoutineForList(routineListRequest)).thenReturn(new ArrayList<>()); // Empty list
 
 		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/routines"))
@@ -259,7 +258,7 @@ public class RoutineControllerTest {
 		// Given
 		Long routineId = 0L;
 
-		doThrow(new NoExistRoutineException(ErrorMessage.NOT_MY_ROUTINE)).when(routineService)
+		doThrow(new AccessDeniedException()).when(routineService)
 			.validateAndDeleteRoutine(routineId, userIdByJwt);
 
 		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/routines/" + routineId).with(csrf()))
@@ -267,7 +266,7 @@ public class RoutineControllerTest {
 			.andReturn();
 
 		assertThat(result.getResponse().getContentAsString()).contains(
-			ErrorMessage.NOT_MY_ROUTINE);
+			ErrorMessage.ACCESS_DENIED);
 	}
 
 	@Test
@@ -278,7 +277,7 @@ public class RoutineControllerTest {
 		ActionDto actionDto = new ActionDto(1L, "actionName", "set", "10", "description");
 		List<ActionDto> actionList = new ArrayList<>();
 		actionList.add(actionDto);
-		CategoryDto categoryDto = new CategoryDto(1L, "categoryName", actionList);
+		CategoryDto categoryDto = new CategoryDto(1L, "categoryName", false, actionList);
 		List<CategoryDto> categoryList = new ArrayList<>();
 		categoryList.add(categoryDto);
 		RoutineResponse routineResponse = new RoutineResponse("routineName", categoryList);

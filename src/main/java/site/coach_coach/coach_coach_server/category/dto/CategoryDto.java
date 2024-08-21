@@ -24,7 +24,7 @@ public record CategoryDto(
 			.map(ActionDto::from)
 			.collect(Collectors.toList());
 
-		return new CategoryDto(category.getCategoryId(), category.getCategoryName(), category.getIsCompleted()
-			, actionList);
+		return new CategoryDto(category.getCategoryId(), category.getCategoryName(), category.getIsCompleted(),
+			actionList);
 	}
 }

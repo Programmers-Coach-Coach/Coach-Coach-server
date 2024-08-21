@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import site.coach_coach.coach_coach_server.coach.repository.CoachRepository;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
+import site.coach_coach.coach_coach_server.common.exception.AccessDeniedException;
 import site.coach_coach.coach_coach_server.common.exception.UserNotFoundException;
 import site.coach_coach.coach_coach_server.matching.domain.Matching;
 import site.coach_coach.coach_coach_server.matching.repository.MatchingRepository;
@@ -133,12 +134,12 @@ public class RoutineService {
 	public void validateGetRoutine(Routine routine, Long userIdParam, Long userIdByJwt) {
 		if (userIdParam == null) {
 			if (!routine.getUserId().equals(userIdByJwt)) {
-				throw new NoExistRoutineException(ErrorMessage.NOT_MY_ROUTINE);
+				throw new AccessDeniedException();
 			}
 		} else {
 			Long coachId = getCoachId(userIdByJwt);
-			if (routine.getCoachId() != coachId) {
-				throw new NoExistRoutineException(ErrorMessage.NOT_MY_ROUTINE);
+			if (!routine.getCoachId().equals(coachId) || !routine.getUserId().equals(userIdParam)) {
+				throw new NoExistRoutineException(ErrorMessage.NOT_FOUND_ROUTINE);
 			}
 		}
 	}
@@ -149,12 +150,12 @@ public class RoutineService {
 
 		if (routine.getCoachId() == null) {
 			if (!routine.getUserId().equals(userIdByJwt)) {
-				throw new NoExistRoutineException(ErrorMessage.NOT_MY_ROUTINE);
+				throw new AccessDeniedException();
 			}
 		} else {
 			Long coachId = getCoachId(userIdByJwt);
 			if (!routine.getCoachId().equals(coachId)) {
-				throw new NoExistRoutineException(ErrorMessage.NOT_MY_ROUTINE);
+				throw new AccessDeniedException();
 			}
 		}
 
