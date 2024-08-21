@@ -9,5 +9,5 @@ import site.coach_coach.coach_coach_server.matching.domain.Matching;
 
 @Repository
 public interface MatchingRepository extends JpaRepository<Matching, Long> {
-	Optional<Matching> findByUserIdAndCoachId(Long userId, Long coachId);
+	Optional<Matching> findByUserUserIdAndCoachCoachId(Long userId, Long coachId);
 }
