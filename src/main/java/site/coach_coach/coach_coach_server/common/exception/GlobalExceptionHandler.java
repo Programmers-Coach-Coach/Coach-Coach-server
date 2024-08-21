@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
+import io.sentry.Sentry;
 import lombok.extern.slf4j.Slf4j;
 import site.coach_coach.coach_coach_server.coach.exception.DuplicateContactException;
 import site.coach_coach.coach_coach_server.coach.exception.InvalidQueryParameterException;
@@ -33,7 +34,7 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(HandlerMethodValidationException.class)
 	public ResponseEntity<ErrorResponse> handlerMethodValidationException(HandlerMethodValidationException ex) {
-		// Sentry.captureException(ex);
+		Sentry.captureException(ex);
 		String errorMessage = ex.getAllValidationResults()
 			.getFirst()
 			.getResolvableErrors()
@@ -47,7 +48,7 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
-		// Sentry.captureException(ex);
+		Sentry.captureException(ex);
 		List<FieldError> fieldErrors = ex.getFieldErrors();
 		String message = fieldErrors.stream()
 			.map(FieldError::getDefaultMessage)
@@ -70,6 +71,7 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(NoSuchElementException.class)
 	public ResponseEntity<ErrorResponse> handleNoSuchElementException(NoSuchElementException ex) {
 		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage());
+
 		return ResponseEntity.status(HttpStatus.NOT_FOUND)
 			.body(errorResponse);
 	}
@@ -155,7 +157,7 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ErrorResponse> handleException(Exception ex) {
-		// Sentry.captureException(ex);
+		Sentry.captureException(ex);
 		log.error("Unhandled exception: [{}] - {}", ex.getClass().getSimpleName(), ex.getMessage());
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 			.body(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), ErrorMessage.SERVER_ERROR));
