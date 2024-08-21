@@ -35,7 +35,7 @@ public class RoutineService {
 	private final UserRepository userRepository;
 
 	public void checkIsMatching(Long userId, Long coachId) {
-		matchingRepository.findByUserIdAndCoachId(userId, coachId)
+		matchingRepository.findByUserUserIdAndCoachCoachId(userId, coachId)
 			.map(Matching::getIsMatching)
 			.filter(isMatching -> isMatching) // isMatching이 true일 때만 통과
 			.orElseThrow(() -> new NotMatchingException(ErrorMessage.NOT_MATCHING));
