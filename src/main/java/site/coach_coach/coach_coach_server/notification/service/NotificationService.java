@@ -11,6 +11,7 @@ import site.coach_coach.coach_coach_server.coach.repository.CoachRepository;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.common.domain.RelationFunctionEnum;
 import site.coach_coach.coach_coach_server.common.exception.InvalidInputException;
+import site.coach_coach.coach_coach_server.common.exception.UserNotFoundException;
 import site.coach_coach.coach_coach_server.notification.constants.NotificationMessage;
 import site.coach_coach.coach_coach_server.notification.domain.Notification;
 import site.coach_coach.coach_coach_server.notification.dto.NotificationListResponse;
@@ -45,7 +46,7 @@ public class NotificationService {
 		User user = userRepository.findById(userId)
 			.orElseThrow(InvalidUserException::new);
 		User coach = coachRepository.findUserByCoachId(coachId)
-			.orElseThrow(() -> new InvalidInputException(ErrorMessage.INVALID_REQUEST));
+			.orElseThrow(() -> new UserNotFoundException(ErrorMessage.NOT_FOUND_COACH));
 
 		String message = createMessage(user, relationFunction);
 		if (message.isEmpty()) {
