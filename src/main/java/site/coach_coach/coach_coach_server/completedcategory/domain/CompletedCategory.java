@@ -30,6 +30,9 @@ public class CompletedCategory extends DateEntity {
 	@Column(name = "completed_category_id")
 	private Long completedCategoryId;
 
+	@Column(name = "is_completed")
+	private Boolean isCompleted;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_record_id")
 	private UserRecord userRecord;

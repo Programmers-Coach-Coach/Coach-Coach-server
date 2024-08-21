@@ -14,7 +14,8 @@ public record CategoryDto(
 	@NotNull
 	String categoryName,
 
-	// Boolean isCompleted,
+	// 주석예상
+	Boolean isCompleted,
 
 	List<ActionDto> actionList
 ) {
@@ -23,6 +24,7 @@ public record CategoryDto(
 			.map(ActionDto::from)
 			.collect(Collectors.toList());
 
-		return new CategoryDto(category.getCategoryId(), category.getCategoryName(), actionList);
+		return new CategoryDto(category.getCategoryId(), category.getCategoryName(),
+			category.getCompletedCategory().getIsCompleted(), actionList);
 	}
 }
