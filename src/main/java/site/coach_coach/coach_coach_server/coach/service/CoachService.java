@@ -125,22 +125,21 @@ public class CoachService {
 		}
 
 		List<CoachingSport> existingSports = coachingSportRepository.findAllBySport_SportIdIn(sportsList);
-		List<Long> validSportIds = existingSports.stream()
+
+		return existingSports.stream()
 			.map(cs -> cs.getSport().getSportId())
 			.collect(Collectors.toList());
-
-		return validSportIds;
 	}
 
 	private Page<Coach> fetchCoachesPage(User user, List<Long> sportsList, String search, Pageable pageable,
 		Boolean review, Boolean liked, Boolean latest, Boolean my) {
-		if (review != null && review) {
+		if (Boolean.TRUE.equals(review)) {
 			return coachRepository.findAllWithReviewsSorted(sportsList, search, pageable);
-		} else if (liked != null && liked) {
+		} else if (Boolean.TRUE.equals(liked)) {
 			return coachRepository.findAllWithLikesSorted(sportsList, search, pageable);
-		} else if (latest != null && latest) {
+		} else if (Boolean.TRUE.equals(latest)) {
 			return coachRepository.findAllWithLatestSorted(sportsList, search, pageable);
-		} else if (my != null && my) {
+		} else if (Boolean.TRUE.equals(my)) {
 			return coachRepository.findMyCoaches(user.getUserId(), sportsList, search, pageable);
 		} else {
 			return coachRepository.findAllWithLatestSorted(sportsList, search, pageable);
