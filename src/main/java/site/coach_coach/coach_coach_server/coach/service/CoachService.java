@@ -160,15 +160,16 @@ public class CoachService {
 		return new CoachListResponse(coaches, (int)coachesPage.getTotalElements(), page);
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional
 	public void contactCoach(User user, Long coachId) {
-		Long userId = user.getUserId();
-		coachRepository.findById(coachId).orElseThrow(() -> new NotFoundCoachException(ErrorMessage.NOT_FOUND_COACH));
+		Coach coach = coachRepository.findById(coachId)
+			.orElseThrow(() -> new NotFoundCoachException(ErrorMessage.NOT_FOUND_COACH));
 
-		Optional<Matching> existingMatchingOpt = matchingRepository.findByUserIdAndCoachId(userId, coachId);
+		Optional<Matching> existingMatchingOpt = matchingRepository.findByUserUserIdAndCoachCoachId(user.getUserId(),
+			coachId);
 
 		if (existingMatchingOpt.isEmpty()) {
-			Matching newMatching = new Matching(null, userId, coachId, false);
+			Matching newMatching = new Matching(null, user, coach, false);
 			matchingRepository.save(newMatching);
 		}
 	}
