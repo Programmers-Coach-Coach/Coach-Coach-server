@@ -1,6 +1,7 @@
 package site.coach_coach.coach_coach_server.user.controller;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +32,7 @@ import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
 import site.coach_coach.coach_coach_server.common.constants.SuccessMessage;
 import site.coach_coach.coach_coach_server.common.response.SuccessResponse;
 import site.coach_coach.coach_coach_server.user.domain.User;
+import site.coach_coach.coach_coach_server.user.dto.AuthResponse;
 import site.coach_coach.coach_coach_server.user.dto.LoginRequest;
 import site.coach_coach.coach_coach_server.user.dto.PasswordRequest;
 import site.coach_coach.coach_coach_server.user.dto.SignUpRequest;
@@ -73,6 +75,13 @@ public class UserController {
 
 		tokenService.createRefreshToken(user, tokenDto.refreshToken(), tokenDto);
 		return ResponseEntity.ok(new SuccessResponse(HttpStatus.OK.value(), SuccessMessage.LOGIN_SUCCESS.getMessage()));
+	}
+
+	@GetMapping("/v1/auth")
+	public ResponseEntity<AuthResponse> authenticate(@AuthenticationPrincipal CustomUserDetails userDetails) {
+		Optional<User> user = Optional.ofNullable(userDetails.getUser());
+		AuthResponse response = userService.authenticate(user);
+		return ResponseEntity.ok(response);
 	}
 
 	@DeleteMapping("/v1/auth/logout")
