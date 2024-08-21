@@ -146,6 +146,13 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<ErrorResponse> handleDuplicateContactException(DuplicateContactException ex) {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 			.body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage()));
+  }
+
+  @ExceptionHandler(AccessDeniedException.class)
+	public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex) {
+		log.error("Handled exception: [{}] - {}", ex.getClass().getSimpleName(), ex.getMessage());
+		return ResponseEntity.status(HttpStatus.FORBIDDEN)
+			.body(new ErrorResponse(HttpStatus.FORBIDDEN.value(), ex.getMessage()));
 	}
 
 	@ExceptionHandler(Exception.class)
