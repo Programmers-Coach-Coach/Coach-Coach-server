@@ -17,6 +17,7 @@ import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.coach.dto.CoachDetailDto;
 import site.coach_coach.coach_coach_server.coach.dto.CoachListDto;
 import site.coach_coach.coach_coach_server.coach.dto.CoachListResponse;
+import site.coach_coach.coach_coach_server.coach.exception.DuplicateContactException;
 import site.coach_coach.coach_coach_server.coach.exception.InvalidQueryParameterException;
 import site.coach_coach.coach_coach_server.coach.exception.NotFoundCoachException;
 import site.coach_coach.coach_coach_server.coach.exception.NotFoundPageException;
@@ -161,20 +162,19 @@ public class CoachService {
 	}
 
 	@Transactional
-	public Long contactCoach(User user, Long coachId) {
+	public void contactCoach(User user, Long coachId) {
 		Coach coach = coachRepository.findById(coachId)
 			.orElseThrow(() -> new NotFoundCoachException(ErrorMessage.NOT_FOUND_COACH));
 
 		Optional<Matching> existingMatchingOpt = matchingRepository.findByUserUserIdAndCoachCoachId(user.getUserId(),
 			coachId);
 
-		if (existingMatchingOpt.isEmpty()) {
-			Matching newMatching = new Matching(null, user, coach, false);
-			Matching savedMatching = matchingRepository.save(newMatching);
-			return savedMatching.getUserCoachMatchingId();
+		if (existingMatchingOpt.isPresent()) {
+			throw new DuplicateContactException(ErrorMessage.DUPLICATE_CONTACT);
 		}
 
-		return existingMatchingOpt.get().getUserCoachMatchingId();
+		Matching newMatching = new Matching(null, user, coach, false);
+		matchingRepository.save(newMatching);
 	}
 
 	private int getCountOfLikes(Coach coach) {

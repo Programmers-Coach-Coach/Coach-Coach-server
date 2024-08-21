@@ -42,6 +42,8 @@ public final class ErrorMessage {
 	public static final String NOT_FOUND_PAGE = "페이지 정보를 찾을 수 없습니다.";
 	public static final String INVALID_QUERY_PARAMETER = "잘못된 쿼리 파라미터입니다.";
 
+	public static final String DUPLICATE_CONTACT = "이미 문의 요청이 존재하는 코치입니다.";
+
 	public static final String CONVERT_FAIL = "파일 변환에 실패했습니다.";
 	public static final String INVALID_FILE_EXTENSION = "허용된 파일 확장자가 아닙니다.";
 	public static final String INVALID_FILE_NAME = "유효하지 않은 파일 이름입니다.";
