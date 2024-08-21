@@ -5,12 +5,17 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.common.domain.DateEntity;
+import site.coach_coach.coach_coach_server.user.domain.User;
 
 @Table(name = "user_coach_matching")
 @Entity
@@ -24,13 +29,15 @@ public class Matching extends DateEntity {
 	@Column(name = "user_coach_matching_id")
 	private Long userCoachMatchingId;
 
-	@NotBlank
-	@Column(name = "user_id")
-	private Long userId;
+	@NotNull
+	@ManyToOne
+	@JoinColumn(name = "user_id")
+	private User user;
 
-	@NotBlank
-	@Column(name = "coach_id")
-	private Long coachId;
+	@NotNull
+	@ManyToOne
+	@JoinColumn(name = "coach_id")
+	private Coach coach;
 
 	@Column(name = "is_matching")
 	private Boolean isMatching;
