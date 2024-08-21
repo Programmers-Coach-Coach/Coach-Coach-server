@@ -68,7 +68,7 @@ public class NotificationService {
 			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_NOTIFICATION));
 
 		if (!notification.getUser().getUserId().equals(userId)) {
-			throw new AccessDeniedException(ErrorMessage.ACCESS_DENIED);
+			throw new AccessDeniedException();
 		}
 		notificationRepository.delete(notification);
 	}
