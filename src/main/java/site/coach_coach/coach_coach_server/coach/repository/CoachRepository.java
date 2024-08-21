@@ -15,7 +15,8 @@ import site.coach_coach.coach_coach_server.user.domain.User;
 
 @Repository
 public interface CoachRepository extends JpaRepository<Coach, Long> {
-	User findUserByCoachId(Long coachId);
+	@Query("SELECT c.user FROM Coach c WHERE c.coachId = :coachId")
+	Optional<User> findUserByCoachId(@Param("coachId") Long coachId);
 
 	@Query("SELECT c.coachId FROM Coach c WHERE c.user.userId = :userId")
 	Optional<Long> findCoachIdByUserId(@Param("userId") Long userId);

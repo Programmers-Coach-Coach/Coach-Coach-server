@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import site.coach_coach.coach_coach_server.coach.repository.CoachRepository;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.common.domain.RelationFunctionEnum;
@@ -13,12 +14,12 @@ import site.coach_coach.coach_coach_server.common.exception.InvalidInputExceptio
 import site.coach_coach.coach_coach_server.notification.constants.NotificationMessage;
 import site.coach_coach.coach_coach_server.notification.domain.Notification;
 import site.coach_coach.coach_coach_server.notification.dto.NotificationListResponse;
-import site.coach_coach.coach_coach_server.notification.dto.NotificationRequest;
 import site.coach_coach.coach_coach_server.notification.repository.NotificationRepository;
 import site.coach_coach.coach_coach_server.user.domain.User;
 import site.coach_coach.coach_coach_server.user.exception.InvalidUserException;
 import site.coach_coach.coach_coach_server.user.repository.UserRepository;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -40,30 +41,31 @@ public class NotificationService {
 	}
 
 	@Transactional
-	public Long createNotification(Long userId, NotificationRequest notificationRequest) {
-		User user = userRepository.findById(userId).orElseThrow(InvalidUserException::new);
-		String message;
-		Long coachId = notificationRequest.coachId();
-		User coach = coachRepository.findUserByCoachId(coachId);
-		if (notificationRequest.relationFunction() == RelationFunctionEnum.ask) {
-			message =
-				user.getNickname() + NotificationMessage.USER_MESSAGE.getMessage()
-					+ NotificationMessage.ASK_MESSAGE.getMessage();
-		} else if (notificationRequest.relationFunction() == RelationFunctionEnum.like) {
-			message = user.getNickname() + NotificationMessage.USER_MESSAGE.getMessage()
-				+ NotificationMessage.LIKE_MESSAGE.getMessage();
-		} else if (notificationRequest.relationFunction() == RelationFunctionEnum.review) {
-			message = NotificationMessage.REVIEW_MESSAGE.getMessage();
-		} else {
-			throw new InvalidInputException(ErrorMessage.INVALID_REQUEST);
-		}
+	public Long createNotification(Long userId, Long coachId, RelationFunctionEnum relationFunction) {
+		User user = userRepository.findById(userId)
+			.orElseThrow(InvalidUserException::new);
+		User coach = coachRepository.findUserByCoachId(coachId)
+			.orElseThrow(() -> new InvalidInputException(ErrorMessage.INVALID_REQUEST));
+
+		String message = createMessage(user, relationFunction);
 
 		Notification notification = Notification.builder()
 			.user(coach)
 			.message(message)
-			.relationFunction(notificationRequest.relationFunction())
+			.relationFunction(relationFunction)
 			.build();
 		notificationRepository.save(notification);
+
 		return notification.getNotificationId();
+	}
+
+	private String createMessage(User user, RelationFunctionEnum relationFunction) {
+		return switch (relationFunction) {
+			case RelationFunctionEnum.ask -> user.getNickname() + NotificationMessage.USER_MESSAGE.getMessage()
+				+ NotificationMessage.ASK_MESSAGE.getMessage();
+			case RelationFunctionEnum.like -> user.getNickname() + NotificationMessage.USER_MESSAGE.getMessage()
+				+ NotificationMessage.LIKE_MESSAGE.getMessage();
+			case RelationFunctionEnum.review -> NotificationMessage.REVIEW_MESSAGE.getMessage();
+		};
 	}
 }
