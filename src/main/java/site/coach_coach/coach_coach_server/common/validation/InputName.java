@@ -1,4 +1,4 @@
-package site.coach_coach.coach_coach_server.routine.validation;
+package site.coach_coach.coach_coach_server.common.validation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -11,10 +11,10 @@ import jakarta.validation.Payload;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 
 @Documented
-@Constraint(validatedBy = RoutineNameValidator.class)
+@Constraint(validatedBy = InputNameValidator.class)
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface RoutineName {
+public @interface InputName {
 	String message() default ErrorMessage.INVALID_VALUE;
 
 	Class<?>[] groups() default {};
