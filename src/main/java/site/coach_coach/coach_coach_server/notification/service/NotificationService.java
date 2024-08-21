@@ -48,6 +48,9 @@ public class NotificationService {
 			.orElseThrow(() -> new InvalidInputException(ErrorMessage.INVALID_REQUEST));
 
 		String message = createMessage(user, relationFunction);
+		if (message.isEmpty()) {
+			throw new InvalidInputException(ErrorMessage.INVALID_REQUEST);
+		}
 
 		Notification notification = Notification.builder()
 			.user(coach)
