@@ -1,5 +1,6 @@
 package site.coach_coach.coach_coach_server.notification.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -71,6 +72,14 @@ public class NotificationService {
 			throw new AccessDeniedException();
 		}
 		notificationRepository.delete(notification);
+	}
+
+	public void deleteAllNotifications(Long userId) {
+		User user = userRepository.findById(userId).orElseThrow(InvalidUserException::new);
+		List<Notification> notifications = new ArrayList<>(user.getNotifications());
+		if (!notifications.isEmpty()) {
+			notificationRepository.deleteAll(notifications);
+		}
 	}
 
 	private String createMessage(User user, RelationFunctionEnum relationFunction) {
