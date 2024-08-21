@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ErrorMessage {
+	public static final String ACCESS_DENIED = "접근 권한이 없습니다.";
 	public static final String INVALID_REQUEST = "유효하지 않은 요청입니다.";
 	public static final String SERVER_ERROR = "서버 오류가 발생했습니다.";
 
@@ -30,6 +31,7 @@ public final class ErrorMessage {
 	public static final String NOT_FOUND_TOKEN = "토큰이 존재하지 않습니다.";
 	public static final String NOT_FOUND_ROUTINE = "존재하지 않는 루틴입니다.";
 	public static final String NOT_MY_ROUTINE = "접근 권한이 없습니다.";
+	public static final String NOT_FOUND_NOTIFICATION = "해당 알림을 찾을 수 없습니다.";
 
 	public static final String EXPIRED_TOKEN = "만료된 토큰입니다.";
 	public static final String INVALID_TOKEN = "유효하지 않은 토큰입니다.";
