@@ -40,7 +40,6 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
 			Sentry.captureException(e);
 			setErrorResponse(response, ErrorMessage.INVALID_TOKEN);
 		} catch (JwtException e) {
-			Sentry.captureException(e);
 			setErrorResponse(response, ErrorMessage.NOT_FOUND_TOKEN);
 		}
 	}
