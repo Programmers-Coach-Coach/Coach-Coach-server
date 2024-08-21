@@ -16,11 +16,15 @@ import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.coach.dto.CoachDetailDto;
 import site.coach_coach.coach_coach_server.coach.dto.CoachListDto;
 import site.coach_coach.coach_coach_server.coach.dto.CoachListResponse;
+import site.coach_coach.coach_coach_server.coach.exception.AlreadyMatchedException;
 import site.coach_coach.coach_coach_server.coach.exception.NotFoundCoachException;
+import site.coach_coach.coach_coach_server.coach.exception.NotFoundMatchingException;
 import site.coach_coach.coach_coach_server.coach.exception.NotFoundPageException;
 import site.coach_coach.coach_coach_server.coach.repository.CoachRepository;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.like.repository.UserCoachLikeRepository;
+import site.coach_coach.coach_coach_server.matching.domain.Matching;
+import site.coach_coach.coach_coach_server.matching.repository.MatchingRepository;
 import site.coach_coach.coach_coach_server.review.domain.Review;
 import site.coach_coach.coach_coach_server.review.dto.ReviewDto;
 import site.coach_coach.coach_coach_server.review.repository.ReviewRepository;
@@ -37,6 +41,7 @@ public class CoachService {
 	private final ReviewRepository reviewRepository;
 	private final UserCoachLikeRepository userCoachLikeRepository;
 	private final CoachingSportRepository coachingSportRepository;
+	private final MatchingRepository matchingRepository;
 
 	@Transactional(readOnly = true)
 	public CoachDetailDto getCoachDetail(User user, Long coachId) {
@@ -187,5 +192,21 @@ public class CoachService {
 		return Stream.of(sports.split(","))
 			.map(Long::parseLong)
 			.collect(Collectors.toList());
+	}
+
+	@Transactional
+	public void matchMember(Long coachUserId, Long userId) {
+		Coach coach = coachRepository.findByUser_UserId(coachUserId)
+			.orElseThrow(() -> new NotFoundCoachException(ErrorMessage.NOT_FOUND_COACH));
+
+		Matching matching = matchingRepository.findByUser_UserIdAndCoach_CoachId(userId, coach.getCoachId())
+			.orElseThrow(() -> new NotFoundMatchingException(ErrorMessage.NOT_FOUND_MATCHING));
+
+		if (Boolean.TRUE.equals(matching.getIsMatching())) {
+			throw new AlreadyMatchedException(ErrorMessage.DUPLICATE_MATCHING);
+		}
+
+		matching.markAsMatched();
+		matchingRepository.save(matching);
 	}
 }
