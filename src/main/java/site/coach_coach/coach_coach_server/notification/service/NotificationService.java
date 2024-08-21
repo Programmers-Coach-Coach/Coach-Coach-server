@@ -42,7 +42,7 @@ public class NotificationService {
 	}
 
 	@Transactional
-	public Long createNotification(Long userId, Long coachId, RelationFunctionEnum relationFunction) {
+	public void createNotification(Long userId, Long coachId, RelationFunctionEnum relationFunction) {
 		User user = userRepository.findById(userId)
 			.orElseThrow(InvalidUserException::new);
 		User coach = coachRepository.findUserByCoachId(coachId)
@@ -59,17 +59,15 @@ public class NotificationService {
 			.relationFunction(relationFunction)
 			.build();
 		notificationRepository.save(notification);
-
-		return notification.getNotificationId();
 	}
 
 	private String createMessage(User user, RelationFunctionEnum relationFunction) {
 		return switch (relationFunction) {
-			case RelationFunctionEnum.ask -> user.getNickname() + NotificationMessage.USER_MESSAGE.getMessage()
+			case ask -> user.getNickname() + NotificationMessage.USER_MESSAGE.getMessage()
 				+ NotificationMessage.ASK_MESSAGE.getMessage();
-			case RelationFunctionEnum.like -> user.getNickname() + NotificationMessage.USER_MESSAGE.getMessage()
+			case like -> user.getNickname() + NotificationMessage.USER_MESSAGE.getMessage()
 				+ NotificationMessage.LIKE_MESSAGE.getMessage();
-			case RelationFunctionEnum.review -> NotificationMessage.REVIEW_MESSAGE.getMessage();
+			case review -> NotificationMessage.REVIEW_MESSAGE.getMessage();
 		};
 	}
 }
