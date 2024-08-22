@@ -91,7 +91,7 @@ public class UserService {
 		return UserProfileResponse.from(user);
 	}
 
-	@Transactional
+	@Transactional(readOnly = true)
 	public AuthResponse getUserAuthStatus(Optional<User> user) {
 		boolean isLogin = user.isPresent();
 		String nickname = isLogin ? user.get().getNickname() : null;
