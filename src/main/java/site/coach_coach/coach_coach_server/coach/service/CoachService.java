@@ -20,6 +20,7 @@ import site.coach_coach.coach_coach_server.coach.exception.NotFoundCoachExceptio
 import site.coach_coach.coach_coach_server.coach.exception.NotFoundPageException;
 import site.coach_coach.coach_coach_server.coach.repository.CoachRepository;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
+import site.coach_coach.coach_coach_server.common.exception.AccessDeniedException;
 import site.coach_coach.coach_coach_server.like.repository.UserCoachLikeRepository;
 import site.coach_coach.coach_coach_server.review.domain.Review;
 import site.coach_coach.coach_coach_server.review.dto.ReviewDto;
@@ -39,31 +40,28 @@ public class CoachService {
 	private final CoachingSportRepository coachingSportRepository;
 
 	@Transactional(readOnly = true)
-	public CoachDetailDto getCoachDetail(User user, Long coachId) {
-		Coach coach = coachRepository.findById(coachId)
+	public Coach getCoachById(Long coachId) {
+		return coachRepository.findById(coachId)
 			.orElseThrow(() -> new NotFoundCoachException(ErrorMessage.NOT_FOUND_COACH));
+	}
 
-		List<ReviewDto> reviews = reviewRepository.findByCoach_CoachId(coach.getCoachId()).stream()
-			.map(review -> new ReviewDto(
-				review.getUser().getUserId(),
-				review.getUser().getNickname(),
-				review.getContents(),
-				review.getStars(),
-				review.getCreatedAt().toString()
-			))
-			.collect(Collectors.toList());
+	@Transactional(readOnly = true)
+	public Coach getCoachByUserId(User user) {
+		return coachRepository.findByUser_UserId(user.getUserId())
+			.orElseThrow(AccessDeniedException::new);
+	}
 
-		double averageRating = reviews.stream().mapToInt(ReviewDto::stars).average().orElse(0.0);
+	@Transactional(readOnly = true)
+	public CoachDetailDto getCoachDetail(User user, Long coachId) {
+		Coach coach = (coachId != null) ? getCoachById(coachId) : getCoachByUserId(user);
+
+		List<ReviewDto> reviews = getReviews(coach);
+		double averageRating = calculateAverageRating(reviews);
 
 		boolean isLiked = isLikedByUser(user, coach);
 		int countOfLikes = getCountOfLikes(coach);
 
-		List<CoachingSportDto> coachingSports = coach.getCoachingSports().stream()
-			.map(cs -> new CoachingSportDto(
-				cs.getSport().getSportId(),
-				cs.getSport().getSportName()
-			))
-			.collect(Collectors.toList());
+		List<CoachingSportDto> coachingSports = getCoachingSports(coach);
 
 		return CoachDetailDto.builder()
 			.coachName(coach.getUser().getNickname())
@@ -173,6 +171,32 @@ public class CoachService {
 			.isLiked(isLiked)
 			.countOfLikes(countOfLikes)
 			.build();
+	}
+
+	@Transactional(readOnly = true)
+	public List<ReviewDto> getReviews(Coach coach) {
+		return reviewRepository.findByCoach_CoachId(coach.getCoachId()).stream()
+			.map(review -> new ReviewDto(
+				review.getUserId(),
+				review.getUserNickname(),
+				review.getContents(),
+				review.getStars(),
+				review.getCreatedAt().toString()
+			))
+			.collect(Collectors.toList());
+	}
+
+	public List<CoachingSportDto> getCoachingSports(Coach coach) {
+		return coach.getCoachingSports().stream()
+			.map(cs -> new CoachingSportDto(
+				cs.getSportId(),
+				cs.getSportName()
+			))
+			.collect(Collectors.toList());
+	}
+
+	public double calculateAverageRating(List<ReviewDto> reviews) {
+		return reviews.stream().mapToInt(ReviewDto::stars).average().orElse(0.0);
 	}
 
 	private int getCountOfLikes(Coach coach) {
