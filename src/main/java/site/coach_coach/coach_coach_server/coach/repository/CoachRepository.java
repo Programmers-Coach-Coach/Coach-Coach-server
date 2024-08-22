@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import jakarta.validation.constraints.NotNull;
 import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.user.domain.User;
 
@@ -20,6 +21,8 @@ public interface CoachRepository extends JpaRepository<Coach, Long> {
 
 	@Query("SELECT c.user FROM Coach c WHERE c.coachId = :coachId")
 	Optional<User> findUserByCoachId(@Param("coachId") Long coachId);
+
+	Optional<Coach> findByUser(@NotNull User user);
 
 	@Query("SELECT c.coachId FROM Coach c WHERE c.user.userId = :userId")
 	Optional<Long> findCoachIdByUserId(@Param("userId") Long userId);
