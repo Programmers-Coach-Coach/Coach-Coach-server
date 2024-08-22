@@ -23,13 +23,12 @@ import site.coach_coach.coach_coach_server.user.repository.UserRepository;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class RecordDataService {
 	private final RecordDataRepository recordDataRepository;
 	private final UserRepository userRepository;
 
 	@Transactional
-	public void createRecordDate(String date, Long userId, RecordDataRequest recordDataRequest) {
+	public void createOrUpdateRecordData(String date, Long userId, RecordDataRequest recordDataRequest) {
 		if (!isValidDate(date)) {
 			throw new InvalidInputException(ErrorMessage.INVALID_REQUEST);
 		}

@@ -29,7 +29,7 @@ public class RecordDataController {
 		@RequestBody RecordDataRequest recordDataRequest
 	) {
 		Long userId = userDetails.getUserId();
-		recordDataService.createRecordDate(date, userId, recordDataRequest);
+		recordDataService.createOrUpdateRecordData(date, userId, recordDataRequest);
 
 		return ResponseEntity.ok(
 			new SuccessResponse(HttpStatus.OK.value(), SuccessMessage.CREATE_RECORD_DATA_SUCCESS.getMessage())
