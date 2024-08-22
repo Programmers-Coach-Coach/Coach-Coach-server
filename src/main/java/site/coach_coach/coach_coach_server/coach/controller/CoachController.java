@@ -69,8 +69,8 @@ public class CoachController {
 		coachService.updateMatchingStatus(coachUserId, userId);
 		return ResponseEntity.status(HttpStatus.CREATED)
 			.body(new SuccessResponse(HttpStatus.CREATED.value(), SuccessMessage.MATCH_MEMBER_SUCCESS.getMessage()));
-  }
-  
+	}
+
 	@PostMapping("/v1/coaches/{coachId}/contact")
 	public ResponseEntity<SuccessResponse> contactCoach(
 		@AuthenticationPrincipal CustomUserDetails userDetails,

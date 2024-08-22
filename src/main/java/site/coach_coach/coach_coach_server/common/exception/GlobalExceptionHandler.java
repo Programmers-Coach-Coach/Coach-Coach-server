@@ -161,8 +161,8 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<ErrorResponse> handleNotFoundMatchingException(NotFoundMatchingException ex) {
 		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.FORBIDDEN.value(), ex.getMessage());
 		return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
-  }
-  
+	}
+
 	@ExceptionHandler(DuplicateContactException.class)
 	public ResponseEntity<ErrorResponse> handleDuplicateContactException(DuplicateContactException ex) {
 		return ResponseEntity.status(HttpStatus.CONFLICT)
