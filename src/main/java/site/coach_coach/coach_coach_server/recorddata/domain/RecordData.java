@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -35,21 +36,22 @@ public class RecordData extends DateEntity {
 	private User user;
 
 	@Column(name = "weight")
-	private Integer weight;
+	private Double weight;
 
 	@Column(name = "skeletal_muscle")
-	private Integer skeletalMuscle;
+	private Double skeletalMuscle;
 
 	@Column(name = "fat_percentage")
-	private Integer fatPercentage;
+	private Double fatPercentage;
 
 	@Column(name = "bmi")
 	private Double bmi;
 
+	@NotNull
 	@Column(name = "record_date")
 	private Date recordDate;
 
-	public void updateRecordData(Integer weight, Integer skeletalMuscle, Integer fatPercentage, Double bmi) {
+	public void updateRecordData(Double weight, Double skeletalMuscle, Double fatPercentage, Double bmi) {
 		this.weight = weight;
 		this.skeletalMuscle = skeletalMuscle;
 		this.fatPercentage = fatPercentage;

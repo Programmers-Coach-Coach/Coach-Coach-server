@@ -4,9 +4,9 @@ import lombok.Builder;
 
 @Builder
 public record RecordDataRequest(
-	Integer weight,
-	Integer skeletalMuscle,
-	Integer fatPercentage,
+	Double weight,
+	Double skeletalMuscle,
+	Double fatPercentage,
 	Double bmi
 ) {
 }
