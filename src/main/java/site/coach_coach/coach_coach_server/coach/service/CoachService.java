@@ -221,6 +221,7 @@ public class CoachService {
 		if (!userCoachLikeRepository.existsByUser_UserIdAndCoach_CoachId(userId, coachId)) {
 			userCoachLikeRepository.save(new UserCoachLike(null, user, coach));
 		}
+		notificationService.createNotification(user.getUserId(), coachId, RelationFunctionEnum.like);
 	}
 
 	private List<Long> getExistingSportsList(List<Long> sportsList) {
