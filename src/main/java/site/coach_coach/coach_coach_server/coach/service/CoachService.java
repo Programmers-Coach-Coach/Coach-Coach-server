@@ -211,17 +211,10 @@ public class CoachService {
 
 	@Transactional
 	public void cancelLikeCoach(Long userId, Long coachId) {
-		validateUserAndCoach(userId, coachId);
-		userCoachLikeRepository.deleteByUser_UserIdAndCoach_CoachId(userId, coachId);
-	}
+		coachRepository.findById(coachId)
+			.orElseThrow(() -> new NotFoundCoachException(ErrorMessage.NOT_FOUND_COACH));
 
-	private void validateUserAndCoach(Long userId, Long coachId) {
-		if (!userRepository.existsById(userId)) {
-			throw new InvalidUserException();
-		}
-		if (!coachRepository.existsById(coachId)) {
-			throw new NotFoundCoachException(ErrorMessage.NOT_FOUND_COACH);
-		}
+		userCoachLikeRepository.deleteByUser_UserIdAndCoach_CoachId(userId, coachId);
 	}
 
 	private List<Long> getExistingSportsList(List<Long> sportsList) {
