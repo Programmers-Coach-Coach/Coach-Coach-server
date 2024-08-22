@@ -151,8 +151,8 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(DuplicateContactException.class)
 	public ResponseEntity<ErrorResponse> handleDuplicateContactException(DuplicateContactException ex) {
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-			.body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage()));
+		return ResponseEntity.status(HttpStatus.CONFLICT)
+			.body(new ErrorResponse(HttpStatus.CONFLICT.value(), ex.getMessage()));
 	}
 
 	@ExceptionHandler(Exception.class)
