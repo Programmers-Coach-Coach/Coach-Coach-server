@@ -114,7 +114,7 @@ ALTER TABLE `coachcoach`.`completed_categories`
     ADD COLUMN `record_date` DATE   NULL AFTER `updated_at`, #record_date 추가
     ADD INDEX `fk_completed_categories_user_id_idx` (`user_id` ASC) VISIBLE,
     DROP INDEX `completed_categories_idx`;
-;
+
 ALTER TABLE `coachcoach`.`completed_categories`
     ADD CONSTRAINT `fk_completed_categories_user_id`
         FOREIGN KEY (`user_id`)
