@@ -14,7 +14,9 @@ public enum SuccessMessage {
 	CREATE_ROUTINE_SUCCESS("루틴 추가 성공"),
 	DELETE_ROUTINE_SUCCESS("루틴 삭제 성공"),
 	UPDATE_COACH_PROFILE_SUCCESS("업로드 성공"),
-	DELETE_NOTIFICATION_SUCCESS("알림 삭제 성공");
+	DELETE_NOTIFICATION_SUCCESS("알림 삭제 성공"),
+	MATCH_MEMBER_SUCCESS("관리 회원에 등록되었습니다."),
+	CREATE_CONTACT_SUCCESS("문의 회원으로 등록되었습니다.");
 
 	private final String message;
 

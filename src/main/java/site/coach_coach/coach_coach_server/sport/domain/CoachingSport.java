@@ -46,4 +46,12 @@ public class CoachingSport extends DateEntity {
 		this.coach = coach;
 		this.sport = sport;
 	}
+
+	public Long getSportId() {
+		return this.sport.getSportId();
+	}
+
+	public String getSportName() {
+		return this.sport.getSportName();
+	}
 }

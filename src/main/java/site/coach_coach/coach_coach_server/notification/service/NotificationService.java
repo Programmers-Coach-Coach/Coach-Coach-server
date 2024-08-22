@@ -34,11 +34,9 @@ public class NotificationService {
 
 	@Transactional(readOnly = true)
 	public List<NotificationListResponse> getAllNotifications(Long userId) {
-		boolean userExists = userRepository.existsById(userId);
-		if (!userExists) {
-			throw new InvalidUserException();
-		}
-		return notificationRepository.findByUser_UserId(userId)
+		User user = userRepository.findById(userId).orElseThrow(InvalidUserException::new);
+
+		return user.getNotifications()
 			.stream()
 			.map(NotificationListResponse::from)
 			.toList();

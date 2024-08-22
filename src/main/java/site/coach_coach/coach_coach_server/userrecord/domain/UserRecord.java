@@ -1,4 +1,6 @@
-package site.coach_coach.coach_coach_server.review.domain;
+package site.coach_coach.coach_coach_server.userrecord.domain;
+
+import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -7,57 +9,47 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.common.domain.DateEntity;
+import site.coach_coach.coach_coach_server.completedcategory.domain.CompletedCategory;
 import site.coach_coach.coach_coach_server.user.domain.User;
 
+@Table(name = "user_records")
 @Entity
-@Table(name = "reviews")
 @Getter
-@Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class Review extends DateEntity {
-
+public class UserRecord extends DateEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "review_id")
-	private Long reviewId;
-
-	@NotNull
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "coach_id")
-	private Coach coach;
+	@Column(name = "user_record_id")
+	private Long userRecordId;
 
 	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	private User user;
 
-	@NotNull
-	@Lob
-	@Column(name = "contents")
-	private String contents;
+	@Column(name = "weight")
+	private int weight;
 
-	@NotNull
-	@Column(name = "stars")
-	private int stars;
+	@Column(name = "skeletal_muscle")
+	private int skeletalMuscle;
 
-	public Long getUserId() {
-		return this.user.getUserId();
-	}
+	@Column(name = "fat_percentage")
+	private int fatPercentage;
 
-	public String getUserNickname() {
-		return this.user.getNickname();
-	}
+	@Column(name = "bmi")
+	private int bmi;
+
+	@OneToMany(mappedBy = "userRecord")
+	private List<CompletedCategory> categoryList;
 }
