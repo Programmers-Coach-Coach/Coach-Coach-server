@@ -61,7 +61,6 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(UserNotFoundException.class)
 	public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException ex) {
-		Sentry.captureException(ex);
 		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage());
 		log.error("Handled exception: [{}] - {}", ex.getClass().getSimpleName(), ex.getMessage());
 		return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -70,7 +69,6 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(NoSuchElementException.class)
 	public ResponseEntity<ErrorResponse> handleNoSuchElementException(NoSuchElementException ex) {
-		Sentry.captureException(ex);
 		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage());
 
 		return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -79,21 +77,18 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(AuthenticationException.class)
 	public ResponseEntity<ErrorResponse> handleAuthenticationException(AuthenticationException ex) {
-		Sentry.captureException(ex);
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
 			.body(new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), ErrorMessage.NOT_FOUND_TOKEN));
 	}
 
 	@ExceptionHandler(HttpMessageNotReadableException.class)
 	public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
-		Sentry.captureException(ex);
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 			.body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ErrorMessage.INVALID_VALUE));
 	}
 
 	@ExceptionHandler(UserAlreadyExistException.class)
 	public ResponseEntity<ErrorResponse> handleUserAlreadyExistException(UserAlreadyExistException ex) {
-		Sentry.captureException(ex);
 		log.error("Handled exception: [{}] - {}", ex.getClass().getSimpleName(), ex.getMessage());
 		return ResponseEntity.status(HttpStatus.CONFLICT)
 			.body(new ErrorResponse(HttpStatus.CONFLICT.value(), ex.getMessage()));
@@ -101,7 +96,6 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(InvalidInputException.class)
 	public ResponseEntity<ErrorResponse> handleInvalidInputException(InvalidInputException ex) {
-		Sentry.captureException(ex);
 		log.error("Handled exception: [{}] - {}", ex.getClass().getSimpleName(), ex.getMessage());
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 			.body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage()));
@@ -109,15 +103,20 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(InvalidUserException.class)
 	public ResponseEntity<ErrorResponse> handleInvalidUserException(InvalidUserException ex) {
-		Sentry.captureException(ex);
 		log.error("Handled exception: [{}] - {}", ex.getClass().getSimpleName(), ex.getMessage());
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
 			.body(new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), ex.getMessage()));
 	}
 
+	@ExceptionHandler(InvalidFileException.class)
+	public ResponseEntity<ErrorResponse> handleInvalidFileException(InvalidFileException ex) {
+		log.error("Handled exception: [{}] - {}", ex.getClass().getSimpleName(), ex.getMessage());
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+			.body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage()));
+	}
+
 	@ExceptionHandler(IncorrectPasswordException.class)
 	public ResponseEntity<ErrorResponse> handleIncorrectPasswordException(IncorrectPasswordException ex) {
-		Sentry.captureException(ex);
 		log.error("Handled exception: [{}] - {}", ex.getClass().getSimpleName(), ex.getMessage());
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 			.body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage()));
@@ -140,6 +139,13 @@ public class GlobalExceptionHandler {
 		log.error("Handled exception: [{}] - {}", ex.getClass().getSimpleName(), ex.getMessage());
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 			.body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage()));
+	}
+
+	@ExceptionHandler(AccessDeniedException.class)
+	public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex) {
+		log.error("Handled exception: [{}] - {}", ex.getClass().getSimpleName(), ex.getMessage());
+		return ResponseEntity.status(HttpStatus.FORBIDDEN)
+			.body(new ErrorResponse(HttpStatus.FORBIDDEN.value(), ex.getMessage()));
 	}
 
 	@ExceptionHandler(Exception.class)

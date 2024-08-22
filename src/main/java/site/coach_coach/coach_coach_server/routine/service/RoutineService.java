@@ -16,6 +16,7 @@ import site.coach_coach.coach_coach_server.routine.dto.CreateRoutineRequest;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineForListDto;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineListRequest;
 import site.coach_coach.coach_coach_server.routine.dto.UserInfoForRoutineList;
+import site.coach_coach.coach_coach_server.routine.exception.NoExistRoutineException;
 import site.coach_coach.coach_coach_server.routine.exception.NotMatchingException;
 import site.coach_coach.coach_coach_server.routine.repository.RoutineRepository;
 import site.coach_coach.coach_coach_server.sport.domain.Sport;
@@ -31,7 +32,7 @@ public class RoutineService {
 	private final UserRepository userRepository;
 
 	public void checkIsMatching(Long userId, Long coachId) {
-		matchingRepository.findByUserIdAndCoachId(userId, coachId)
+		matchingRepository.findByUserUserIdAndCoachCoachId(userId, coachId)
 			.map(Matching::getIsMatching)
 			.filter(isMatching -> isMatching) // isMatching이 true일 때만 통과
 			.orElseThrow(() -> new NotMatchingException(ErrorMessage.NOT_MATCHING));
@@ -116,5 +117,23 @@ public class RoutineService {
 		}
 
 		return routineRepository.save(routineBuilder.build()).getRoutineId();
+	}
+
+	public void validateRoutineDelete(Long routineId, Long userIdByJwt) {
+		Routine routine = routineRepository.findById(routineId)
+			.orElseThrow(() -> new NoExistRoutineException(ErrorMessage.NOT_FOUND_ROUTINE));
+
+		if (routine.getCoachId() == null) {
+			if (!routine.getUserId().equals(userIdByJwt)) {
+				throw new NoExistRoutineException(ErrorMessage.NOT_MY_ROUTINE);
+			}
+		} else {
+			Long coachId = getCoachId(userIdByJwt);
+			if (!routine.getCoachId().equals(coachId)) {
+				throw new NoExistRoutineException(ErrorMessage.NOT_MY_ROUTINE);
+			}
+		}
+
+		routineRepository.deleteById(routineId);
 	}
 }
