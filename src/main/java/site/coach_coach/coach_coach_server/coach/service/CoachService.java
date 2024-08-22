@@ -22,6 +22,7 @@ import site.coach_coach.coach_coach_server.coach.exception.DuplicateContactExcep
 import site.coach_coach.coach_coach_server.coach.exception.NotFoundCoachException;
 import site.coach_coach.coach_coach_server.coach.exception.NotFoundMatchingException;
 import site.coach_coach.coach_coach_server.coach.exception.NotFoundPageException;
+import site.coach_coach.coach_coach_server.coach.exception.NotFoundSportException;
 import site.coach_coach.coach_coach_server.coach.repository.CoachRepository;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.common.domain.RelationFunctionEnum;
@@ -85,11 +86,10 @@ public class CoachService {
 
 	@Transactional
 	public void addNewCoachingSports(Coach coach, List<CoachingSportDto> coachingSports) {
-		List<Long> sportIds = coachingSports.stream()
-			.map(CoachingSportDto::sportId)
-			.collect(Collectors.toList());
-
-		List<Sport> sports = sportRepository.findAllById(sportIds);
+		List<Sport> sports = coachingSports.stream()
+			.map(coachingSportDto -> sportRepository.findBySportName(coachingSportDto.sportName())
+				.orElseThrow(() -> new NotFoundSportException(ErrorMessage.NOT_FOUND_SPORTS)))
+			.toList();
 
 		List<CoachingSport> coachingSportsEntities = sports.stream()
 			.map(sport -> new CoachingSport(coach, sport))
