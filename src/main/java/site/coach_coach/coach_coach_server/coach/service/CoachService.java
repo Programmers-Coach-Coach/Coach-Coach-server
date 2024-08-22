@@ -26,6 +26,7 @@ import site.coach_coach.coach_coach_server.coach.repository.CoachRepository;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.common.domain.RelationFunctionEnum;
 import site.coach_coach.coach_coach_server.common.exception.AccessDeniedException;
+import site.coach_coach.coach_coach_server.common.exception.UserNotFoundException;
 import site.coach_coach.coach_coach_server.like.repository.UserCoachLikeRepository;
 import site.coach_coach.coach_coach_server.matching.domain.Matching;
 import site.coach_coach.coach_coach_server.matching.repository.MatchingRepository;
@@ -212,7 +213,7 @@ public class CoachService {
 	@Transactional
 	public void deleteMatching(Long coachUserId, Long userId) {
 		User user = userRepository.findById(userId)
-			.orElseThrow(InvalidUserException::new);
+			.orElseThrow(() -> new UserNotFoundException(ErrorMessage.NOT_FOUND_USER));
 
 		Coach coach = coachRepository.findByUser_UserId(coachUserId)
 			.orElseThrow(() -> new NotFoundCoachException(ErrorMessage.NOT_FOUND_COACH));
