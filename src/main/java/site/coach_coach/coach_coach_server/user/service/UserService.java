@@ -17,6 +17,7 @@ import site.coach_coach.coach_coach_server.auth.jwt.dto.TokenDto;
 import site.coach_coach.coach_coach_server.coach.exception.NotFoundSportException;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.common.utils.AmazonS3Uploader;
+import site.coach_coach.coach_coach_server.notification.repository.NotificationRepository;
 import site.coach_coach.coach_coach_server.sport.domain.InterestedSport;
 import site.coach_coach.coach_coach_server.sport.domain.Sport;
 import site.coach_coach.coach_coach_server.sport.repository.InterestedSportRepository;
@@ -43,6 +44,7 @@ public class UserService {
 	private final InterestedSportRepository interestedSportRepository;
 	private final AmazonS3Uploader amazonS3Uploader;
 	private final SportRepository sportRepository;
+	private final NotificationRepository notificationRepository;
 
 	public void checkNicknameDuplicate(String nickname) {
 		if (userRepository.existsByNickname(nickname)) {
@@ -102,7 +104,7 @@ public class UserService {
 
 	private AuthResponse getLoggedInUserAuthStatus(User user) {
 		String nickname = user.getNickname();
-		int countOfNotifications = userRepository.countByUserId(user.getUserId());
+		int countOfNotifications = notificationRepository.countByUser_UserId(user.getUserId());
 		return AuthResponse.builder()
 			.isLogin(true)
 			.nickname(nickname)
