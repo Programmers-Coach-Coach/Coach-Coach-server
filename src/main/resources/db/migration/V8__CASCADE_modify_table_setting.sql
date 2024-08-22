@@ -1,6 +1,3 @@
-# user_record 테이블 삭제
-DROP TABLE `coachcoach`.`user_records`;
-
 # record_data 테이블 생성
 CREATE TABLE `coachcoach`.`record_data`
 (
@@ -131,3 +128,6 @@ ALTER TABLE `coachcoach`.`reviews`
     ADD CONSTRAINT `fk_reviews_user_id`
         FOREIGN KEY (`user_id`)
             REFERENCES `coachcoach`.`users` (`user_id`);
+
+# user_record 테이블 삭제
+DROP TABLE `coachcoach`.`user_records`;
