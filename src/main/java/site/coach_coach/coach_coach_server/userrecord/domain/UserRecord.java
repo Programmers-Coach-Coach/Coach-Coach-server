@@ -1,4 +1,4 @@
-package site.coach_coach.coach_coach_server.routine.domain;
+package site.coach_coach.coach_coach_server.userrecord.domain;
 
 import java.util.List;
 
@@ -13,47 +13,43 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import site.coach_coach.coach_coach_server.category.domain.Category;
 import site.coach_coach.coach_coach_server.common.domain.DateEntity;
-import site.coach_coach.coach_coach_server.sport.domain.Sport;
+import site.coach_coach.coach_coach_server.completedcategory.domain.CompletedCategory;
+import site.coach_coach.coach_coach_server.user.domain.User;
 
-@Table(name = "routines")
+@Table(name = "user_records")
 @Entity
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Routine extends DateEntity {
+public class UserRecord extends DateEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "routine_id")
-	private Long routineId;
-
-	@NotNull
-	@Column(name = "user_id")
-	private Long userId;
-
-	@Column(name = "coach_id")
-	private Long coachId;
-
-	@NotNull
-	@Size(max = 45)
-	@Column(name = "routine_Name", nullable = false, length = 45)
-	private String routineName;
+	@Column(name = "user_record_id")
+	private Long userRecordId;
 
 	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "sport_id")
-	private Sport sport;
+	@JoinColumn(name = "user_id")
+	private User user;
 
-	@OneToMany(mappedBy = "routine")
-	private List<Category> categoryList;
+	@Column(name = "weight")
+	private int weight;
 
+	@Column(name = "skeletal_muscle")
+	private int skeletalMuscle;
+
+	@Column(name = "fat_percentage")
+	private int fatPercentage;
+
+	@Column(name = "bmi")
+	private int bmi;
+
+	@OneToMany(mappedBy = "userRecord")
+	private List<CompletedCategory> categoryList;
 }
-
-

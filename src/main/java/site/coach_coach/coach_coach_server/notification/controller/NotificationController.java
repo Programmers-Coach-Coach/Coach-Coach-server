@@ -32,6 +32,16 @@ public class NotificationController {
 		return ResponseEntity.ok(notifications);
 	}
 
+	@DeleteMapping("/v1/notifications")
+	public ResponseEntity<SuccessResponse> deleteAllNotifications(
+		@AuthenticationPrincipal CustomUserDetails userDetails) {
+		Long userId = userDetails.getUserId();
+		notificationService.deleteAllNotifications(userId);
+		return ResponseEntity.ok(
+			new SuccessResponse(HttpStatus.OK.value(), SuccessMessage.DELETE_NOTIFICATION_SUCCESS.getMessage())
+		);
+	}
+
 	@DeleteMapping("/v1/notifications/{notificationId}")
 	public ResponseEntity<SuccessResponse> deleteNotification(
 		@AuthenticationPrincipal CustomUserDetails customUserDetails,
