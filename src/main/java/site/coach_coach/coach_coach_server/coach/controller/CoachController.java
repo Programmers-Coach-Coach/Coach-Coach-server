@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -57,6 +58,17 @@ public class CoachController {
 		User user = userDetails.getUser();
 		CoachListResponse response = coachService.getAllCoaches(user, page, sports, search, latest, review, liked, my);
 		return ResponseEntity.ok(response);
+	}
+
+	@PatchMapping("/v1/coaches/matches/{userId}")
+	public ResponseEntity<SuccessResponse> matchMember(
+		@AuthenticationPrincipal CustomUserDetails userDetails,
+		@PathVariable Long userId) {
+
+		Long coachUserId = userDetails.getUser().getUserId();
+		coachService.updateMatchingStatus(coachUserId, userId);
+		return ResponseEntity.status(HttpStatus.CREATED)
+			.body(new SuccessResponse(HttpStatus.CREATED.value(), SuccessMessage.MATCH_MEMBER_SUCCESS.getMessage()));
 	}
 
 	@PostMapping("/v1/coaches/{coachId}/contact")

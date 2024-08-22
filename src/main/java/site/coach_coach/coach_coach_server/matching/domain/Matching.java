@@ -39,4 +39,8 @@ public class Matching extends DateEntity {
 
 	@Column(name = "is_matching")
 	private Boolean isMatching;
+
+	public void markAsMatched() {
+		this.isMatching = true;
+	}
 }

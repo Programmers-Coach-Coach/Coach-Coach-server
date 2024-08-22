@@ -38,6 +38,8 @@ public final class ErrorMessage {
 	public static final String INVALID_ID = "유효하지 않은 ID 입니다.";
 
 	public static final String NOT_MATCHING = "매칭되지 않은 대상입니다.";
+	public static final String NOT_FOUND_MATCHING = "문의 회원이 아닙니다.";
+	public static final String DUPLICATE_MATCHING = "이미 매칭된 회원입니다.";
 
 	public static final String NOT_FOUND_SPORTS = "종목 정보를 찾을 수 없습니다.";
 	public static final String SERVER_SHUTDOWN = "서버가 종료되었습니다.";
