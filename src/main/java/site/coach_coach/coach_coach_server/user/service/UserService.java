@@ -3,6 +3,7 @@ package site.coach_coach.coach_coach_server.user.service;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,6 +22,7 @@ import site.coach_coach.coach_coach_server.sport.domain.Sport;
 import site.coach_coach.coach_coach_server.sport.repository.InterestedSportRepository;
 import site.coach_coach.coach_coach_server.sport.repository.SportRepository;
 import site.coach_coach.coach_coach_server.user.domain.User;
+import site.coach_coach.coach_coach_server.user.dto.AuthResponse;
 import site.coach_coach.coach_coach_server.user.dto.LoginRequest;
 import site.coach_coach.coach_coach_server.user.dto.PasswordRequest;
 import site.coach_coach.coach_coach_server.user.dto.SignUpRequest;
@@ -87,6 +89,18 @@ public class UserService {
 	public UserProfileResponse getUserProfile(Long userId) {
 		User user = userRepository.findById(userId).orElseThrow(InvalidUserException::new);
 		return UserProfileResponse.from(user);
+	}
+
+	@Transactional(readOnly = true)
+	public AuthResponse getUserAuthStatus(Optional<User> user) {
+		boolean isLogin = user.isPresent();
+		String nickname = isLogin ? user.get().getNickname() : null;
+		int countOfNotifications = isLogin ? userRepository.countNotificationsByUserId(user.get().getUserId()) : 0;
+		return AuthResponse.builder()
+			.isLogin(isLogin)
+			.nickname(nickname)
+			.countOfNotifications(countOfNotifications)
+			.build();
 	}
 
 	@Transactional

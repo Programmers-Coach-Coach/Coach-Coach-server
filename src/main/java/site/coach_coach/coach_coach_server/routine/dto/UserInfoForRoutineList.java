@@ -11,7 +11,6 @@ public record UserInfoForRoutineList(
 	Long userId,
 
 	@NotBlank
-	@Size(max = 45)
 	String nickname,
 
 	@Size(max = 500)
