@@ -1,4 +1,6 @@
-package site.coach_coach.coach_coach_server.review.domain;
+package site.coach_coach.coach_coach_server.completedcategory.domain;
+
+import java.util.Date;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -7,57 +9,38 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import site.coach_coach.coach_coach_server.coach.domain.Coach;
+import site.coach_coach.coach_coach_server.category.domain.Category;
 import site.coach_coach.coach_coach_server.common.domain.DateEntity;
 import site.coach_coach.coach_coach_server.user.domain.User;
 
+@Table(name = "completed_categories")
 @Entity
-@Table(name = "reviews")
 @Getter
-@Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class Review extends DateEntity {
-
+public class CompletedCategory extends DateEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "review_id")
-	private Long reviewId;
+	@Column(name = "completed_category_id")
+	private Long completedCategoryId;
 
-	@NotNull
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "coach_id")
-	private Coach coach;
-
-	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	private User user;
 
-	@NotNull
-	@Lob
-	@Column(name = "contents")
-	private String contents;
+	@OneToOne
+	@JoinColumn(name = "routine_category_id")
+	private Category category;
 
-	@NotNull
-	@Column(name = "stars")
-	private int stars;
+	@Column(name = "record_date")
+	private Date recordDate;
 
-	public Long getUserId() {
-		return this.user.getUserId();
-	}
-
-	public String getUserNickname() {
-		return this.user.getNickname();
-	}
 }

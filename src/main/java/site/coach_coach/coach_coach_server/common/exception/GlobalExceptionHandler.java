@@ -17,7 +17,10 @@ import org.springframework.web.method.annotation.HandlerMethodValidationExceptio
 
 import io.sentry.Sentry;
 import lombok.extern.slf4j.Slf4j;
+import site.coach_coach.coach_coach_server.coach.exception.AlreadyMatchedException;
+import site.coach_coach.coach_coach_server.coach.exception.DuplicateContactException;
 import site.coach_coach.coach_coach_server.coach.exception.InvalidQueryParameterException;
+import site.coach_coach.coach_coach_server.coach.exception.NotFoundMatchingException;
 import site.coach_coach.coach_coach_server.coach.exception.NotFoundPageException;
 import site.coach_coach.coach_coach_server.coach.exception.NotFoundSportException;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
@@ -146,6 +149,24 @@ public class GlobalExceptionHandler {
 		log.error("Handled exception: [{}] - {}", ex.getClass().getSimpleName(), ex.getMessage());
 		return ResponseEntity.status(HttpStatus.FORBIDDEN)
 			.body(new ErrorResponse(HttpStatus.FORBIDDEN.value(), ex.getMessage()));
+	}
+
+	@ExceptionHandler(AlreadyMatchedException.class)
+	public ResponseEntity<ErrorResponse> handleAlreadyMatchedException(AlreadyMatchedException ex) {
+		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.CONFLICT.value(), ex.getMessage());
+		return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+	}
+
+	@ExceptionHandler(NotFoundMatchingException.class)
+	public ResponseEntity<ErrorResponse> handleNotFoundMatchingException(NotFoundMatchingException ex) {
+		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.FORBIDDEN.value(), ex.getMessage());
+		return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+	}
+
+	@ExceptionHandler(DuplicateContactException.class)
+	public ResponseEntity<ErrorResponse> handleDuplicateContactException(DuplicateContactException ex) {
+		return ResponseEntity.status(HttpStatus.CONFLICT)
+			.body(new ErrorResponse(HttpStatus.CONFLICT.value(), ex.getMessage()));
 	}
 
 	@ExceptionHandler(Exception.class)
