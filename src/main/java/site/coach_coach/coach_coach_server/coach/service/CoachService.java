@@ -40,19 +40,20 @@ public class CoachService {
 	private final CoachingSportRepository coachingSportRepository;
 
 	@Transactional(readOnly = true)
-	public Coach getCoach(User user, Long coachId) {
-		if (coachId == null) {
-			return coachRepository.findByUser_UserId(user.getUserId())
-				.orElseThrow(AccessDeniedException::new);
-		} else {
-			return coachRepository.findById(coachId)
-				.orElseThrow(() -> new NotFoundCoachException(ErrorMessage.NOT_FOUND_COACH));
-		}
+	public Coach getCoachById(Long coachId) {
+		return coachRepository.findById(coachId)
+			.orElseThrow(() -> new NotFoundCoachException(ErrorMessage.NOT_FOUND_COACH));
+	}
+
+	@Transactional(readOnly = true)
+	public Coach getCoachByUserId(User user) {
+		return coachRepository.findByUser_UserId(user.getUserId())
+			.orElseThrow(AccessDeniedException::new);
 	}
 
 	@Transactional(readOnly = true)
 	public CoachDetailDto getCoachDetail(User user, Long coachId) {
-		Coach coach = getCoach(user, coachId);
+		Coach coach = (coachId != null) ? getCoachById(coachId) : getCoachByUserId(user);
 
 		List<ReviewDto> reviews = getReviews(coach);
 		double averageRating = calculateAverageRating(reviews);
