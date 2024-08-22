@@ -218,15 +218,8 @@ public class CoachService {
 		Coach coach = coachRepository.findById(coachId)
 			.orElseThrow(() -> new NotFoundCoachException(ErrorMessage.NOT_FOUND_COACH));
 
-		boolean alreadyLiked = userCoachLikeRepository.existsByUser_UserIdAndCoach_CoachId(userId, coachId);
-
-		if (!alreadyLiked) {
-			UserCoachLike userCoachLike = UserCoachLike.builder()
-				.user(user)
-				.coach(coach)
-				.build();
-
-			userCoachLikeRepository.save(userCoachLike);
+		if (!userCoachLikeRepository.existsByUser_UserIdAndCoach_CoachId(userId, coachId)) {
+			userCoachLikeRepository.save(new UserCoachLike(null, user, coach));
 		}
 	}
 
