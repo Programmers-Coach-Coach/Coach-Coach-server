@@ -209,6 +209,20 @@ public class CoachService {
 		return new CoachListResponse(coaches, (int)coachesPage.getTotalElements(), page);
 	}
 
+	@Transactional
+	public void deleteMatching(Long coachUserId, Long userId) {
+		User user = userRepository.findById(userId)
+			.orElseThrow(InvalidUserException::new);
+
+		Coach coach = coachRepository.findByUser_UserId(coachUserId)
+			.orElseThrow(() -> new NotFoundCoachException(ErrorMessage.NOT_FOUND_COACH));
+
+		Matching matching = matchingRepository.findByUser_UserIdAndCoach_CoachId(user.getUserId(), coach.getCoachId())
+			.orElseThrow(() -> new NotFoundMatchingException(ErrorMessage.NOT_FOUND_MATCHING));
+
+		matchingRepository.delete(matching);
+	}
+
 	private List<Long> getExistingSportsList(List<Long> sportsList) {
 		if (sportsList == null || sportsList.isEmpty()) {
 			return List.of();
