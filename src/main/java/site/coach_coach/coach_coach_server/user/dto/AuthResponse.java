@@ -5,6 +5,7 @@ import lombok.Builder;
 @Builder
 public record AuthResponse(
 	Boolean isLogin,
-	String nickname
+	String nickname,
+	Integer countOfNotifications
 ) {
 }

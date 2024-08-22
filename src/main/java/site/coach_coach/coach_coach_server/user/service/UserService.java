@@ -91,10 +91,15 @@ public class UserService {
 		return UserProfileResponse.from(user);
 	}
 
-	public AuthResponse authenticate(Optional<User> user) {
+	@Transactional
+	public AuthResponse getUserAuthStatus(Optional<User> user) {
+		boolean isLogin = user.isPresent();
+		String nickname = isLogin ? user.get().getNickname() : null;
+		int countOfNotifications = isLogin ? userRepository.countNotificationsByUserId(user.get().getUserId()) : 0;
 		return AuthResponse.builder()
-			.isLogin(user.isPresent())
-			.nickname(user.map(User::getNickname).orElse(null))
+			.isLogin(isLogin)
+			.nickname(nickname)
+			.countOfNotifications(countOfNotifications)
 			.build();
 	}
 

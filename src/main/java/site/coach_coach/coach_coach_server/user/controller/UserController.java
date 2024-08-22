@@ -79,8 +79,8 @@ public class UserController {
 
 	@GetMapping("/v1/auth")
 	public ResponseEntity<AuthResponse> authenticate(@AuthenticationPrincipal CustomUserDetails userDetails) {
-		Optional<User> user = Optional.ofNullable(userDetails.getUser());
-		AuthResponse response = userService.authenticate(user);
+		Optional<User> user = Optional.ofNullable(userDetails).map(CustomUserDetails::getUser);
+		AuthResponse response = userService.getUserAuthStatus(user);
 		return ResponseEntity.ok(response);
 	}
 
