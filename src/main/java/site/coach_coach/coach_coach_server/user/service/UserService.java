@@ -93,13 +93,28 @@ public class UserService {
 
 	@Transactional(readOnly = true)
 	public AuthResponse getUserAuthStatus(Optional<User> user) {
-		boolean isLogin = user.isPresent();
-		String nickname = isLogin ? user.get().getNickname() : null;
-		int countOfNotifications = isLogin ? userRepository.countNotificationsByUserId(user.get().getUserId()) : 0;
+		if (user.isPresent()) {
+			return getLoggedInUserAuthStatus(user.get());
+		} else {
+			return getAnonymousUserAuthStatus();
+		}
+	}
+
+	private AuthResponse getLoggedInUserAuthStatus(User user) {
+		String nickname = user.getNickname();
+		int countOfNotifications = userRepository.countByUser_UserId(user.getUserId());
 		return AuthResponse.builder()
-			.isLogin(isLogin)
+			.isLogin(true)
 			.nickname(nickname)
 			.countOfNotifications(countOfNotifications)
+			.build();
+	}
+
+	private AuthResponse getAnonymousUserAuthStatus() {
+		return AuthResponse.builder()
+			.isLogin(false)
+			.nickname(null)
+			.countOfNotifications(0)
 			.build();
 	}
 
