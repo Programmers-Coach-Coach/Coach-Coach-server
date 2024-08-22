@@ -1,15 +1,15 @@
 package site.coach_coach.coach_coach_server.category.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.category.domain.Category;
 import site.coach_coach.coach_coach_server.category.dto.CreateCategoryRequest;
+import site.coach_coach.coach_coach_server.category.exception.NotFoundCategoryException;
 import site.coach_coach.coach_coach_server.category.repository.CategoryRepository;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
-import site.coach_coach.coach_coach_server.common.exception.AccessDeniedException;
 import site.coach_coach.coach_coach_server.routine.domain.Routine;
-import site.coach_coach.coach_coach_server.routine.exception.NoExistRoutineException;
 import site.coach_coach.coach_coach_server.routine.repository.RoutineRepository;
 import site.coach_coach.coach_coach_server.routine.service.RoutineService;
 
@@ -20,8 +20,9 @@ public class CategoryService {
 	private final RoutineService routineService;
 	private final RoutineRepository routineRepository;
 
+	@Transactional
 	public Long createCategory(CreateCategoryRequest createCategoryRequest, Long routineId, Long userIdByJwt) {
-		Routine routine = validateAccessToRoutine(routineId, userIdByJwt);
+		Routine routine = routineService.validateAccessToRoutine(routineId, userIdByJwt);
 
 		Category category = Category.builder()
 			.routine(routine)
@@ -32,19 +33,15 @@ public class CategoryService {
 		return categoryRepository.save(category).getCategoryId();
 	}
 
-	public Routine validateAccessToRoutine(Long routineId, Long userIdByJwt) {
-		Routine routine = routineRepository.findById(routineId)
-			.orElseThrow(() -> new NoExistRoutineException(ErrorMessage.NOT_FOUND_ROUTINE));
+	@Transactional
+	public void deleteCategory(Long routineId, Long categoryId, Long userIdByJwt) {
+		routineService.validateAccessToRoutine(routineId, userIdByJwt);
 
-		if (!routine.getUserId().equals(userIdByJwt)) {
-			Long coachId = routineService.getCoachId(userIdByJwt);
-			if (routine.getCoachId() != coachId) {
-				throw new AccessDeniedException();
-			}
-		} else if (routine.getCoachId() != null) {
-			throw new AccessDeniedException();
+		Boolean isExistCategory = categoryRepository.existsById(categoryId);
+		if (isExistCategory) {
+			categoryRepository.deleteById(categoryId);
+		} else {
+			throw new NotFoundCategoryException(ErrorMessage.NOT_FOUND_CATEGORY);
 		}
-
-		return routine;
 	}
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -160,5 +161,22 @@ public class RoutineService {
 		}
 
 		routineRepository.deleteById(routineId);
+	}
+
+	@Transactional
+	public Routine validateAccessToRoutine(Long routineId, Long userIdByJwt) {
+		Routine routine = routineRepository.findById(routineId)
+			.orElseThrow(() -> new NoExistRoutineException(ErrorMessage.NOT_FOUND_ROUTINE));
+
+		if (!routine.getUserId().equals(userIdByJwt)) {
+			Long coachId = getCoachId(userIdByJwt);
+			if (routine.getCoachId() != coachId) {
+				throw new AccessDeniedException();
+			}
+		} else if (routine.getCoachId() != null) {
+			throw new AccessDeniedException();
+		}
+
+		return routine;
 	}
 }

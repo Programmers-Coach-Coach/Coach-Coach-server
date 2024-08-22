@@ -13,6 +13,7 @@ public enum SuccessMessage {
 	UPDATE_PROFILE_SUCCESS("수정 완료"),
 	CREATE_ROUTINE_SUCCESS("루틴 추가 성공"),
 	DELETE_ROUTINE_SUCCESS("루틴 삭제 성공"),
+	DELETE_CATEGORY_SUCCESS("카테고리 삭제 성공"),
 	UPDATE_COACH_PROFILE_SUCCESS("업로드 성공"),
 	DELETE_NOTIFICATION_SUCCESS("알림 삭제 성공"),
 	MATCH_MEMBER_SUCCESS("관리 회원에 등록되었습니다."),
