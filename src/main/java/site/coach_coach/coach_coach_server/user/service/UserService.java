@@ -102,7 +102,7 @@ public class UserService {
 
 	private AuthResponse getLoggedInUserAuthStatus(User user) {
 		String nickname = user.getNickname();
-		int countOfNotifications = userRepository.countByUser_UserId(user.getUserId());
+		int countOfNotifications = userRepository.countByUserId(user.getUserId());
 		return AuthResponse.builder()
 			.isLogin(true)
 			.nickname(nickname)
