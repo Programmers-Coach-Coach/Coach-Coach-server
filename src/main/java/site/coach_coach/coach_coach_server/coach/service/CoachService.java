@@ -115,6 +115,7 @@ public class CoachService {
 	public void removeExistingCoachingSports(Coach coach) {
 		coachingSportRepository.deleteByCoach(coach);
 	}
+
 	@Transactional
 	public void contactCoach(User user, Long coachId) {
 		Coach coach = coachRepository.findById(coachId)
