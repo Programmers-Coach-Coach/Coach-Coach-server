@@ -44,4 +44,14 @@ public class CategoryService {
 			throw new NotFoundCategoryException(ErrorMessage.NOT_FOUND_CATEGORY);
 		}
 	}
+
+	@Transactional
+	public Category changeIsCompleted(Long categoryId) {
+		Category category = categoryRepository.findById(categoryId)
+			.orElseThrow(() -> new NotFoundCategoryException(ErrorMessage.NOT_FOUND_CATEGORY));
+
+		// Dirty Checking
+		category.setIsCompleted(!category.getIsCompleted());
+		return category;
+	}
 }
