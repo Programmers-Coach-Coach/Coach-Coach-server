@@ -62,13 +62,13 @@ public class CoachController {
 		return ResponseEntity.ok(response);
 	}
 
-	@PatchMapping("/v1/coaches/matched/members/{userId}")
+	@PatchMapping("/v1/coaches/matches/{userId}")
 	public ResponseEntity<SuccessResponse> matchMember(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
 		@PathVariable Long userId) {
 
 		Long coachUserId = userDetails.getUser().getUserId();
-		coachService.matchMember(coachUserId, userId);
+		coachService.updateMatchingStatus(coachUserId, userId);
 		return ResponseEntity.status(HttpStatus.CREATED)
 			.body(new SuccessResponse(HttpStatus.CREATED.value(), SuccessMessage.MATCH_MEMBER_SUCCESS.getMessage()));
 	}

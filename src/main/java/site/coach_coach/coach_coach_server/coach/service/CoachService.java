@@ -195,7 +195,7 @@ public class CoachService {
 	}
 
 	@Transactional
-	public void matchMember(Long coachUserId, Long userId) {
+	public void updateMatchingStatus(Long coachUserId, Long userId) {
 		Coach coach = coachRepository.findByUser_UserId(coachUserId)
 			.orElseThrow(() -> new NotFoundCoachException(ErrorMessage.NOT_FOUND_COACH));
 
@@ -207,6 +207,5 @@ public class CoachService {
 		}
 
 		matching.markAsMatched();
-		matchingRepository.save(matching);
 	}
 }
