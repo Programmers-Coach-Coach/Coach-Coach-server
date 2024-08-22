@@ -41,4 +41,12 @@ public class CoachingSport extends DateEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "sport_id")
 	private Sport sport;
+
+	public Long getSportId() {
+		return this.sport.getSportId();
+	}
+
+	public String getSportName() {
+		return this.sport.getSportName();
+	}
 }
