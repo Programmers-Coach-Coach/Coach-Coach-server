@@ -42,6 +42,11 @@ public class CoachingSport extends DateEntity {
 	@JoinColumn(name = "sport_id")
 	private Sport sport;
 
+	public CoachingSport(Coach coach, Sport sport) {
+		this.coach = coach;
+		this.sport = sport;
+	}
+
 	public Long getSportId() {
 		return this.sport.getSportId();
 	}

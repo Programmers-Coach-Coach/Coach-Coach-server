@@ -12,7 +12,6 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -54,12 +53,12 @@ public class Coach extends DateEntity {
 	private String activeCenterDetail;
 
 	@Size(max = 100)
-	@NotBlank
+	@NotNull
 	@Column(name = "active_hours")
 	private String activeHours;
 
 	@Size(max = 400)
-	@NotBlank
+	@NotNull
 	@Column(name = "chatting_url")
 	private String chattingUrl;
 
@@ -72,4 +71,24 @@ public class Coach extends DateEntity {
 
 	@OneToMany(mappedBy = "coach")
 	private List<Review> reviews;
+
+	public void update(String coachIntroduction, String activeCenter, String activeCenterDetail,
+		String activeHours, String chattingUrl, Boolean isOpen) {
+		this.coachIntroduction = coachIntroduction;
+		this.activeCenter = activeCenter;
+		this.activeCenterDetail = activeCenterDetail;
+		this.activeHours = activeHours;
+		this.chattingUrl = chattingUrl;
+		this.isOpen = isOpen;
+	}
+
+	public Coach(User user) {
+		this.user = user;
+		this.coachIntroduction = "";
+		this.activeCenter = "";
+		this.activeCenterDetail = "";
+		this.activeHours = "";
+		this.chattingUrl = "";
+		this.isOpen = true;
+	}
 }
