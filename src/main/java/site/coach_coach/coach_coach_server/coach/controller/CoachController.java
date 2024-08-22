@@ -32,11 +32,8 @@ public class CoachController {
 	@GetMapping("/v1/coaches")
 	public ResponseEntity<CoachDetailDto> getCoachDetail(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
-		@RequestParam(name = "coachId") Long coachId
+		@RequestParam(name = "coachId", required = false) Long coachId
 	) {
-		if (userDetails == null || userDetails.getUser() == null) {
-			throw new InvalidUserException();
-		}
 		User user = userDetails.getUser();
 		CoachDetailDto response = coachService.getCoachDetail(user, coachId);
 		return ResponseEntity.ok(response);

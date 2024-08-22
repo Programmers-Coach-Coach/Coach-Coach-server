@@ -52,4 +52,12 @@ public class Review extends DateEntity {
 	@NotNull
 	@Column(name = "stars")
 	private int stars;
+
+	public Long getUserId() {
+		return this.user.getUserId();
+	}
+
+	public String getUserNickname() {
+		return this.user.getNickname();
+	}
 }
