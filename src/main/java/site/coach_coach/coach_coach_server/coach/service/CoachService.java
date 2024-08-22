@@ -16,12 +16,17 @@ import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.coach.dto.CoachDetailDto;
 import site.coach_coach.coach_coach_server.coach.dto.CoachListDto;
 import site.coach_coach.coach_coach_server.coach.dto.CoachListResponse;
+import site.coach_coach.coach_coach_server.coach.exception.DuplicateContactException;
 import site.coach_coach.coach_coach_server.coach.exception.NotFoundCoachException;
 import site.coach_coach.coach_coach_server.coach.exception.NotFoundPageException;
 import site.coach_coach.coach_coach_server.coach.repository.CoachRepository;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
+import site.coach_coach.coach_coach_server.common.domain.RelationFunctionEnum;
 import site.coach_coach.coach_coach_server.common.exception.AccessDeniedException;
 import site.coach_coach.coach_coach_server.like.repository.UserCoachLikeRepository;
+import site.coach_coach.coach_coach_server.matching.domain.Matching;
+import site.coach_coach.coach_coach_server.matching.repository.MatchingRepository;
+import site.coach_coach.coach_coach_server.notification.service.NotificationService;
 import site.coach_coach.coach_coach_server.review.domain.Review;
 import site.coach_coach.coach_coach_server.review.dto.ReviewDto;
 import site.coach_coach.coach_coach_server.review.repository.ReviewRepository;
@@ -38,6 +43,23 @@ public class CoachService {
 	private final ReviewRepository reviewRepository;
 	private final UserCoachLikeRepository userCoachLikeRepository;
 	private final CoachingSportRepository coachingSportRepository;
+	private final MatchingRepository matchingRepository;
+	private final NotificationService notificationService;
+
+	@Transactional
+	public void contactCoach(User user, Long coachId) {
+		Coach coach = coachRepository.findById(coachId)
+			.orElseThrow(() -> new NotFoundCoachException(ErrorMessage.NOT_FOUND_COACH));
+
+		if (matchingRepository.existsByUserUserIdAndCoachCoachId(user.getUserId(), coachId)) {
+			throw new DuplicateContactException(ErrorMessage.DUPLICATE_CONTACT);
+		}
+
+		Matching newMatching = new Matching(null, user, coach, false);
+		matchingRepository.save(newMatching);
+
+		notificationService.createNotification(user.getUserId(), coachId, RelationFunctionEnum.ask);
+	}
 
 	@Transactional(readOnly = true)
 	public Coach getCoachById(Long coachId) {
