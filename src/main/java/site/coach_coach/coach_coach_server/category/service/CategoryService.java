@@ -21,11 +21,7 @@ public class CategoryService {
 	private final RoutineRepository routineRepository;
 
 	public Long createCategory(CreateCategoryRequest createCategoryRequest, Long routineId, Long userIdByJwt) {
-		validateAccessCategory(routineId, userIdByJwt);
-
-		Routine routine = Routine.builder()
-			.routineId(routineId)
-			.build();
+		Routine routine = validateAccessToRoutine(routineId, userIdByJwt);
 
 		Category category = Category.builder()
 			.routine(routine)
@@ -36,7 +32,7 @@ public class CategoryService {
 		return categoryRepository.save(category).getCategoryId();
 	}
 
-	public void validateAccessCategory(Long routineId, Long userIdByJwt) {
+	public Routine validateAccessToRoutine(Long routineId, Long userIdByJwt) {
 		Routine routine = routineRepository.findById(routineId)
 			.orElseThrow(() -> new NoExistRoutineException(ErrorMessage.NOT_FOUND_ROUTINE));
 
@@ -48,5 +44,7 @@ public class CategoryService {
 		} else if (routine.getCoachId() != null) {
 			throw new AccessDeniedException();
 		}
+
+		return routine;
 	}
 }
