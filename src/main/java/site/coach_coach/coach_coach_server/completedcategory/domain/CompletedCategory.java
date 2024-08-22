@@ -1,5 +1,7 @@
 package site.coach_coach.coach_coach_server.completedcategory.domain;
 
+import java.util.Date;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -16,7 +18,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import site.coach_coach.coach_coach_server.category.domain.Category;
 import site.coach_coach.coach_coach_server.common.domain.DateEntity;
-import site.coach_coach.coach_coach_server.userrecord.domain.UserRecord;
+import site.coach_coach.coach_coach_server.user.domain.User;
 
 @Table(name = "completed_categories")
 @Entity
@@ -31,11 +33,14 @@ public class CompletedCategory extends DateEntity {
 	private Long completedCategoryId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_record_id")
-	private UserRecord userRecord;
+	@JoinColumn(name = "user_id")
+	private User user;
 
 	@OneToOne
 	@JoinColumn(name = "routine_category_id")
 	private Category category;
+
+	@Column(name = "record_date")
+	private Date recordDate;
 
 }
