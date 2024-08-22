@@ -3,6 +3,7 @@ package site.coach_coach.coach_coach_server.category.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,6 +16,8 @@ import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
 import site.coach_coach.coach_coach_server.category.dto.CreateCategoryRequest;
 import site.coach_coach.coach_coach_server.category.dto.CreateCategoryResponse;
 import site.coach_coach.coach_coach_server.category.service.CategoryService;
+import site.coach_coach.coach_coach_server.common.constants.SuccessMessage;
+import site.coach_coach.coach_coach_server.common.response.SuccessResponse;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,5 +35,17 @@ public class CategoryController {
 		Long newCategoryId = categoryService.createCategory(createCategoryRequest, routineId, userIdByJWt);
 		return ResponseEntity.status(HttpStatus.CREATED)
 			.body(new CreateCategoryResponse(HttpStatus.CREATED.value(), newCategoryId));
+	}
+
+	@DeleteMapping("/v1/routines/{routineId}/{categoryId}")
+	public ResponseEntity<SuccessResponse> deleteCategory(
+		@AuthenticationPrincipal CustomUserDetails userDetails,
+		@PathVariable(name = "routineId") Long routineId,
+		@PathVariable(name = "categoryId") Long categoryId
+	) {
+		Long userIdByJWt = userDetails.getUserId();
+		categoryService.deleteCategory(routineId, categoryId, userIdByJWt);
+		return ResponseEntity.ok(
+			new SuccessResponse(HttpStatus.OK.value(), SuccessMessage.DELETE_CATEGORY_SUCCESS.getMessage()));
 	}
 }

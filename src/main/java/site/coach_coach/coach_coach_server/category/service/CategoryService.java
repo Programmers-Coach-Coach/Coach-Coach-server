@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.category.domain.Category;
 import site.coach_coach.coach_coach_server.category.dto.CreateCategoryRequest;
+import site.coach_coach.coach_coach_server.category.exception.NotFoundCategoryException;
 import site.coach_coach.coach_coach_server.category.repository.CategoryRepository;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.common.exception.AccessDeniedException;
@@ -30,6 +31,17 @@ public class CategoryService {
 			.build();
 
 		return categoryRepository.save(category).getCategoryId();
+	}
+
+	public void deleteCategory(Long routineId, Long categoryId, Long userIdByJwt) {
+		validateAccessToRoutine(routineId, userIdByJwt);
+
+		Boolean isExistCategory = categoryRepository.existsById(categoryId);
+		if (isExistCategory) {
+			categoryRepository.deleteById(categoryId);
+		} else {
+			throw new NotFoundCategoryException(ErrorMessage.NOT_FOUND_CATEGORY);
+		}
 	}
 
 	public Routine validateAccessToRoutine(Long routineId, Long userIdByJwt) {

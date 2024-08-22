@@ -13,6 +13,7 @@ public enum SuccessMessage {
 	UPDATE_PROFILE_SUCCESS("수정 완료"),
 	CREATE_ROUTINE_SUCCESS("루틴 추가 성공"),
 	DELETE_ROUTINE_SUCCESS("루틴 삭제 성공"),
+	DELETE_CATEGORY_SUCCESS("카테고리 삭제 성공"),
 	DELETE_NOTIFICATION_SUCCESS("알림 삭제 성공");
 
 	private final String message;
