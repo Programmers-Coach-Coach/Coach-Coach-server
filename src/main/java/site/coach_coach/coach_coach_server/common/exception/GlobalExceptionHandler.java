@@ -18,6 +18,7 @@ import org.springframework.web.method.annotation.HandlerMethodValidationExceptio
 import io.sentry.Sentry;
 import lombok.extern.slf4j.Slf4j;
 import site.coach_coach.coach_coach_server.coach.exception.AlreadyMatchedException;
+import site.coach_coach.coach_coach_server.coach.exception.DuplicateContactException;
 import site.coach_coach.coach_coach_server.coach.exception.InvalidQueryParameterException;
 import site.coach_coach.coach_coach_server.coach.exception.NotFoundMatchingException;
 import site.coach_coach.coach_coach_server.coach.exception.NotFoundPageException;
@@ -160,6 +161,12 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<ErrorResponse> handleNotFoundMatchingException(NotFoundMatchingException ex) {
 		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.FORBIDDEN.value(), ex.getMessage());
 		return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+  }
+  
+	@ExceptionHandler(DuplicateContactException.class)
+	public ResponseEntity<ErrorResponse> handleDuplicateContactException(DuplicateContactException ex) {
+		return ResponseEntity.status(HttpStatus.CONFLICT)
+			.body(new ErrorResponse(HttpStatus.CONFLICT.value(), ex.getMessage()));
 	}
 
 	@ExceptionHandler(Exception.class)

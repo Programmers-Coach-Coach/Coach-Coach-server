@@ -138,8 +138,8 @@ public class RoutineService {
 			}
 		} else {
 			Long coachId = getCoachId(userIdByJwt);
-			if (!routine.getCoachId().equals(coachId) || !routine.getUserId().equals(userIdParam)) {
-				throw new NoExistRoutineException(ErrorMessage.NOT_FOUND_ROUTINE);
+			if (routine.getCoachId() != coachId || !routine.getUserId().equals(userIdParam)) {
+				throw new AccessDeniedException();
 			}
 		}
 	}

@@ -36,8 +36,8 @@ public class Action extends DateEntity {
 	private String actionName;
 
 	@Size(max = 45)
-	@Column(name = "set")
-	private String set;
+	@Column(name = "sets")
+	private String sets;
 
 	@Size(max = 45)
 	@Column(name = "count_or_minutes")
