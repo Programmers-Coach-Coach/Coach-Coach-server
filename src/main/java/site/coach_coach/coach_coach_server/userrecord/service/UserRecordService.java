@@ -35,7 +35,6 @@ public class UserRecordService {
 			throw new DuplicateRecordException(ErrorMessage.DUPLICATE_RECORD);
 		}
 
-		// 존재하지 않으면 새 레코드 생성 및 저장
 		UserRecord userRecord = UserRecord.builder()
 			.user(user)
 			.weight(userRecordCreateRequest.weight())
