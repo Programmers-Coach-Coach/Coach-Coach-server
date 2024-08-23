@@ -17,6 +17,7 @@ import site.coach_coach.coach_coach_server.coach.dto.CoachDetailDto;
 import site.coach_coach.coach_coach_server.coach.dto.CoachListDto;
 import site.coach_coach.coach_coach_server.coach.dto.CoachListResponse;
 import site.coach_coach.coach_coach_server.coach.dto.CoachRequest;
+import site.coach_coach.coach_coach_server.coach.dto.MatchingCoachResponseDto;
 import site.coach_coach.coach_coach_server.coach.dto.MatchingUserResponseDto;
 import site.coach_coach.coach_coach_server.coach.exception.AlreadyMatchedException;
 import site.coach_coach.coach_coach_server.coach.exception.DuplicateContactException;
@@ -268,6 +269,25 @@ public class CoachService {
 			user.getUserId(),
 			user.getNickname(),
 			user.getProfileImageUrl(),
+			matching.getIsMatching()
+		);
+	}
+
+	public List<MatchingCoachResponseDto> getMatchingCoachesByUserId(Long userId) {
+		List<Matching> matchings = matchingRepository.findByUser_UserId(userId);
+
+		return matchings.stream()
+			.map(this::buildMatchingCoachResponseDto)
+			.collect(Collectors.toList());
+	}
+
+	private MatchingCoachResponseDto buildMatchingCoachResponseDto(Matching matching) {
+		Coach coach = matching.getCoach();
+
+		return new MatchingCoachResponseDto(
+			coach.getCoachId(),
+			coach.getUser().getNickname(),
+			coach.getUser().getProfileImageUrl(),
 			matching.getIsMatching()
 		);
 	}
