@@ -28,6 +28,7 @@ import site.coach_coach.coach_coach_server.common.response.ErrorResponse;
 import site.coach_coach.coach_coach_server.user.exception.IncorrectPasswordException;
 import site.coach_coach.coach_coach_server.user.exception.InvalidUserException;
 import site.coach_coach.coach_coach_server.user.exception.UserAlreadyExistException;
+import site.coach_coach.coach_coach_server.userrecord.exception.DuplicateRecordException;
 
 @Slf4j
 @RestControllerAdvice
@@ -165,6 +166,12 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(DuplicateContactException.class)
 	public ResponseEntity<ErrorResponse> handleDuplicateContactException(DuplicateContactException ex) {
+		return ResponseEntity.status(HttpStatus.CONFLICT)
+			.body(new ErrorResponse(HttpStatus.CONFLICT.value(), ex.getMessage()));
+	}
+
+	@ExceptionHandler(DuplicateRecordException.class)
+	public ResponseEntity<ErrorResponse> handleDuplicateRecordException(DuplicateRecordException ex) {
 		return ResponseEntity.status(HttpStatus.CONFLICT)
 			.body(new ErrorResponse(HttpStatus.CONFLICT.value(), ex.getMessage()));
 	}

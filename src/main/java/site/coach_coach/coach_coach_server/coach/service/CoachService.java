@@ -27,6 +27,7 @@ import site.coach_coach.coach_coach_server.coach.repository.CoachRepository;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.common.domain.RelationFunctionEnum;
 import site.coach_coach.coach_coach_server.common.exception.AccessDeniedException;
+import site.coach_coach.coach_coach_server.common.exception.UserNotFoundException;
 import site.coach_coach.coach_coach_server.like.domain.UserCoachLike;
 import site.coach_coach.coach_coach_server.like.repository.UserCoachLikeRepository;
 import site.coach_coach.coach_coach_server.matching.domain.Matching;
@@ -132,6 +133,20 @@ public class CoachService {
 		notificationService.createNotification(user.getUserId(), coachId, RelationFunctionEnum.ask);
 	}
 
+	@Transactional
+	public void deleteMatching(Long coachUserId, Long userId) {
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new UserNotFoundException(ErrorMessage.NOT_FOUND_USER));
+
+		Coach coach = coachRepository.findByUser_UserId(coachUserId)
+			.orElseThrow(() -> new NotFoundCoachException(ErrorMessage.NOT_FOUND_COACH));
+
+		Matching matching = matchingRepository.findByUser_UserIdAndCoach_CoachId(user.getUserId(), coach.getCoachId())
+			.orElseThrow(() -> new NotFoundMatchingException(ErrorMessage.NOT_FOUND_MATCHING));
+
+		matchingRepository.delete(matching);
+	}
+
 	@Transactional(readOnly = true)
 	public Coach getCoachById(Long coachId) {
 		return coachRepository.findById(coachId)
@@ -221,6 +236,16 @@ public class CoachService {
 		if (!userCoachLikeRepository.existsByUser_UserIdAndCoach_CoachId(userId, coachId)) {
 			userCoachLikeRepository.save(new UserCoachLike(null, user, coach));
 			notificationService.createNotification(user.getUserId(), coachId, RelationFunctionEnum.like);
+		}
+	}
+
+	@Transactional
+	public void deleteCoachToFavorites(Long userId, Long coachId) {
+		coachRepository.findById(coachId)
+			.orElseThrow(() -> new NotFoundCoachException(ErrorMessage.NOT_FOUND_COACH));
+
+		if (userCoachLikeRepository.existsByUser_UserIdAndCoach_CoachId(userId, coachId)) {
+			userCoachLikeRepository.deleteByUser_UserIdAndCoach_CoachId(userId, coachId);
 		}
 	}
 
