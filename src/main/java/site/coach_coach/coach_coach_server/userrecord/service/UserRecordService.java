@@ -30,7 +30,7 @@ public class UserRecordService {
 
 		LocalDate recordDate = validateAndConvertToLocalDate(date);
 		User user = userRepository.findById(userId).orElseThrow(InvalidUserException::new);
-		
+
 		if (userRecordRepository.existsByRecordDateAndUser_UserId(recordDate, userId)) {
 			throw new DuplicateRecordException(ErrorMessage.DUPLICATE_RECORD);
 		}
@@ -53,7 +53,7 @@ public class UserRecordService {
 		try {
 			return LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 		} catch (DateTimeParseException e) {
-			throw new InvalidInputException(ErrorMessage.INVALID_REQUEST);
+			throw new InvalidInputException(ErrorMessage.INVALID_VALUE);
 		}
 	}
 }
