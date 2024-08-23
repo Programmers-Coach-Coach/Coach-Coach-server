@@ -26,6 +26,7 @@ import site.coach_coach.coach_coach_server.common.domain.DateEntity;
 import site.coach_coach.coach_coach_server.common.domain.GenderEnum;
 import site.coach_coach.coach_coach_server.notification.domain.Notification;
 import site.coach_coach.coach_coach_server.sport.domain.InterestedSport;
+import site.coach_coach.coach_coach_server.userrecord.domain.UserRecord;
 
 @Table(name = "users")
 @Entity
@@ -83,6 +84,9 @@ public class User extends DateEntity {
 
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
 	private List<Notification> notifications;
+
+	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+	private List<UserRecord> userRecords;
 
 	public void updateProfile(String nickname, String profileImageUrl, GenderEnum gender, String localAddress,
 		String localAddressDetail, String introduction, List<InterestedSport> interestedSports) {
