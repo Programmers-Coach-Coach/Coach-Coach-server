@@ -42,5 +42,4 @@ public class CompletedCategory extends DateEntity {
 
 	@Column(name = "record_date")
 	private LocalDate recordDate;
-
 }
