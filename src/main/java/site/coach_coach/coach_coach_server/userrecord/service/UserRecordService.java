@@ -77,16 +77,16 @@ public class UserRecordService {
 		}
 	}
 
-	public UserRecord getUserRecordForCompleteCategory(Long userId, LocalDate recordDate) {
-		if (userRecordRepository.existsByRecordDateAndUser_UserId(recordDate, userId)) {
-			return userRecordRepository.findByRecordDateAndUser_UserId(recordDate, userId);
-		} else {
-			User user = userRepository.findById(userId).orElseThrow(InvalidUserException::new);
-			UserRecord userRecord = UserRecord.builder()
-				.user(user)
-				.recordDate(recordDate)
-				.build();
-			return userRecordRepository.save(userRecord);
-		}
+	public UserRecord getUserRecordForCompleteCategory(Long userId) {
+		LocalDate recordDate = LocalDate.now();
+		return userRecordRepository.findByRecordDateAndUser_UserId(recordDate, userId)
+			.orElseGet(() -> {
+				User user = userRepository.findById(userId).orElseThrow(InvalidUserException::new);
+				UserRecord userRecord = UserRecord.builder()
+					.user(user)
+					.recordDate(recordDate)
+					.build();
+				return userRecordRepository.save(userRecord);
+			});
 	}
 }

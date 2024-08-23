@@ -10,7 +10,6 @@ import site.coach_coach.coach_coach_server.category.exception.NotFoundCategoryEx
 import site.coach_coach.coach_coach_server.category.repository.CategoryRepository;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.routine.domain.Routine;
-import site.coach_coach.coach_coach_server.routine.repository.RoutineRepository;
 import site.coach_coach.coach_coach_server.routine.service.RoutineService;
 
 @Service
@@ -18,7 +17,6 @@ import site.coach_coach.coach_coach_server.routine.service.RoutineService;
 public class CategoryService {
 	private final CategoryRepository categoryRepository;
 	private final RoutineService routineService;
-	private final RoutineRepository routineRepository;
 
 	@Transactional
 	public Long createCategory(CreateCategoryRequest createCategoryRequest, Long routineId, Long userIdByJwt) {
@@ -46,8 +44,8 @@ public class CategoryService {
 	}
 
 	@Transactional
-	public Category changeIsCompleted(Long categoryId) {
-		Category category = categoryRepository.findById(categoryId)
+	public Category changeIsCompleted(Long categoryId, Long routineId) {
+		Category category = categoryRepository.findByCategoryIdAndRoutine_RoutineId(categoryId, routineId)
 			.orElseThrow(() -> new NotFoundCategoryException(ErrorMessage.NOT_FOUND_CATEGORY));
 
 		// Dirty Checking
