@@ -97,6 +97,17 @@ public class CoachController {
 			.body(new SuccessResponse(HttpStatus.CREATED.value(), SuccessMessage.CREATE_CONTACT_SUCCESS.getMessage()));
 	}
 
+	@DeleteMapping("/v1/coaches/matches/{userId}")
+	public ResponseEntity<SuccessResponse> deleteMatching(
+		@AuthenticationPrincipal CustomUserDetails userDetails,
+		@PathVariable Long userId) {
+
+		Long coachUserId = userDetails.getUser().getUserId();
+		coachService.deleteMatching(coachUserId, userId);
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(new SuccessResponse(HttpStatus.OK.value(), SuccessMessage.DELETE_MATCHING.getMessage()));
+	}
+
 	@PostMapping("/v1/coaches/{coachId}/likes")
 	public ResponseEntity<SuccessResponse> addCoachToFavorites(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
@@ -119,4 +130,5 @@ public class CoachController {
 		return ResponseEntity.ok()
 			.body(new SuccessResponse(HttpStatus.OK.value(), SuccessMessage.DELETE_LIKE_SUCCESS.getMessage()));
 	}
+
 }
