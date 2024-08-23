@@ -1,5 +1,7 @@
 package site.coach_coach.coach_coach_server.coach.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,6 +21,7 @@ import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
 import site.coach_coach.coach_coach_server.coach.dto.CoachDetailDto;
 import site.coach_coach.coach_coach_server.coach.dto.CoachListResponse;
 import site.coach_coach.coach_coach_server.coach.dto.CoachRequest;
+import site.coach_coach.coach_coach_server.coach.dto.MatchingUserResponseDto;
 import site.coach_coach.coach_coach_server.coach.service.CoachService;
 import site.coach_coach.coach_coach_server.common.constants.SuccessMessage;
 import site.coach_coach.coach_coach_server.common.response.SuccessResponse;
@@ -131,4 +134,13 @@ public class CoachController {
 			.body(new SuccessResponse(HttpStatus.OK.value(), SuccessMessage.DELETE_LIKE_SUCCESS.getMessage()));
 	}
 
+	@GetMapping("/v1/coaches/matches")
+	public ResponseEntity<List<MatchingUserResponseDto>> getMatchingUsers(
+		@AuthenticationPrincipal CustomUserDetails userDetails) {
+
+		Long coachUserId = userDetails.getUser().getUserId();
+		List<MatchingUserResponseDto> matchingUsers = coachService.getMatchingUsersByCoachId(coachUserId);
+
+		return ResponseEntity.ok(matchingUsers);
+	}
 }
