@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.category.domain.Category;
 import site.coach_coach.coach_coach_server.category.dto.CreateCategoryRequest;
+import site.coach_coach.coach_coach_server.category.dto.UpdateCategoryInfoRequest;
 import site.coach_coach.coach_coach_server.category.exception.NotFoundCategoryException;
 import site.coach_coach.coach_coach_server.category.repository.CategoryRepository;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
@@ -61,5 +62,14 @@ public class CategoryService {
 		// Dirty Checking
 		category.setIsCompleted(!category.getIsCompleted());
 		return category;
+	}
+
+	public void updateCategory(UpdateCategoryInfoRequest updateCategoryInfoRequest, Long categoryId, Long userIdByJwt) {
+		Category category = categoryRepository.findById(categoryId)
+			.orElseThrow(() -> new NotFoundCategoryException(ErrorMessage.NOT_FOUND_CATEGORY));
+
+		routineService.validateBeforeModifyRoutineDetail(category.getRoutine().getRoutineId(), userIdByJwt);
+
+		category.updateCategoryInfo(updateCategoryInfoRequest.categoryName());
 	}
 }
