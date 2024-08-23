@@ -43,8 +43,8 @@ public class CategoryController {
 		@PathVariable(name = "routineId") Long routineId,
 		@PathVariable(name = "categoryId") Long categoryId
 	) {
-		Long userIdByJWt = userDetails.getUserId();
-		categoryService.deleteCategory(routineId, categoryId, userIdByJWt);
+		Long userIdByJwt = userDetails.getUserId();
+		categoryService.deleteCategory(routineId, categoryId, userIdByJwt);
 		return ResponseEntity.ok(
 			new SuccessResponse(HttpStatus.OK.value(), SuccessMessage.DELETE_CATEGORY_SUCCESS.getMessage()));
 	}
