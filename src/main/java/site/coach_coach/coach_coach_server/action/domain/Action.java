@@ -16,6 +16,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import site.coach_coach.coach_coach_server.action.dto.CreateActionRequest;
+import site.coach_coach.coach_coach_server.action.dto.UpdateActionInfoRequest;
 import site.coach_coach.coach_coach_server.category.domain.Category;
 import site.coach_coach.coach_coach_server.common.domain.DateEntity;
 
@@ -59,5 +60,12 @@ public class Action extends DateEntity {
 			.description(createActionRequest.description())
 			.category(category)
 			.build();
+	}
+
+	public void updateActionInfo(UpdateActionInfoRequest updateActionInfoRequest) {
+		this.actionName = updateActionInfoRequest.actionName();
+		this.sets = updateActionInfoRequest.sets();
+		this.countOrMinutes = updateActionInfoRequest.countOrMinutes();
+		this.description = updateActionInfoRequest.description();
 	}
 }

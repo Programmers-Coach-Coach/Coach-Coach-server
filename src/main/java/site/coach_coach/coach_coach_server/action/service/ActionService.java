@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.action.domain.Action;
 import site.coach_coach.coach_coach_server.action.dto.CreateActionRequest;
+import site.coach_coach.coach_coach_server.action.dto.UpdateActionInfoRequest;
 import site.coach_coach.coach_coach_server.action.exception.NotFoundActionException;
 import site.coach_coach.coach_coach_server.action.repository.ActionRepository;
 import site.coach_coach.coach_coach_server.category.domain.Category;
@@ -44,5 +45,14 @@ public class ActionService {
 		} else {
 			throw new NotFoundActionException(ErrorMessage.NOT_FOUND_ACTION);
 		}
+	}
+
+	@Transactional
+	public void updateActionInfo(UpdateActionInfoRequest updateActionInfoRequest, Long actionId, Long userIdByJwt) {
+		Action action = actionRepository.findById(actionId)
+			.orElseThrow(() -> new NotFoundActionException(ErrorMessage.NOT_FOUND_ACTION));
+
+		routineService.validateBeforeModifyRoutineDetail(action.getCategory().getRoutine().getRoutineId(), userIdByJwt);
+		action.updateActionInfo(updateActionInfoRequest);
 	}
 }
