@@ -24,7 +24,7 @@ public class ActionController {
 	private final ActionService actionService;
 
 	@PostMapping("/v1/routines/{routineId}/{categoryId}")
-	public ResponseEntity<SuccessIdResponse> createAction(
+	public ResponseEntity<SuccessIdResponse> createActionIntoCategory(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
 		@PathVariable(name = "routineId") Long routineId,
 		@PathVariable(name = "categoryId") Long categoryId,
@@ -37,7 +37,7 @@ public class ActionController {
 	}
 
 	@DeleteMapping("/v1/routines/{routineId}/{categoryId}/{actionId}")
-	public ResponseEntity<Void> deleteAction(
+	public ResponseEntity<Void> deleteActionInCategory(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
 		@PathVariable(name = "routineId") Long routineId,
 		@PathVariable(name = "categoryId") Long categoryId,

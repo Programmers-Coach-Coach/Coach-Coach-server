@@ -39,8 +39,7 @@ public class ActionService {
 		categoryRepository.findByCategoryIdAndRoutine_RoutineId(categoryId, routineId)
 			.orElseThrow(() -> new NotFoundCategoryException(ErrorMessage.NOT_FOUND_CATEGORY));
 
-		Boolean isExistsAction = actionRepository.existsById(actionId);
-		if (isExistsAction) {
+		if (actionRepository.existsById(actionId)) {
 			actionRepository.deleteById(actionId);
 		} else {
 			throw new NotFoundActionException(ErrorMessage.NOT_FOUND_ACTION);

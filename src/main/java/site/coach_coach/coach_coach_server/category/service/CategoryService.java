@@ -46,7 +46,7 @@ public class CategoryService {
 	}
 
 	@Transactional
-	public Category changeIsCompleted(Long categoryId, Long routineId, Boolean inputIsCompleted) {
+	public Category updateCategoryCompletionStatus(Long categoryId, Long routineId, Boolean inputIsCompleted) {
 		Category category = categoryRepository.findByCategoryIdAndRoutine_RoutineId(categoryId, routineId)
 			.orElseThrow(() -> new NotFoundCategoryException(ErrorMessage.NOT_FOUND_CATEGORY));
 
