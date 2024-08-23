@@ -1,7 +1,12 @@
 package site.coach_coach.coach_coach_server.userrecord.service;
 
 import java.time.LocalDate;
+<<<<<<< HEAD
 import java.time.YearMonth;
+=======
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+>>>>>>> main
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
@@ -106,5 +111,19 @@ public class UserRecordService {
 
 	private boolean isCategoryCompleted(Long recordId) {
 		completedCategoryRepository.existsByUserRecordId(recordId);
+		return false;
+	}
+
+	public UserRecord getUserRecordForCompleteCategory(Long userId) {
+		LocalDate recordDate = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDate();
+		return userRecordRepository.findByRecordDateAndUser_UserId(recordDate, userId)
+			.orElseGet(() -> {
+				User user = userRepository.findById(userId).orElseThrow(InvalidUserException::new);
+				UserRecord userRecord = UserRecord.builder()
+					.user(user)
+					.recordDate(recordDate)
+					.build();
+				return userRecordRepository.save(userRecord);
+			});
 	}
 }

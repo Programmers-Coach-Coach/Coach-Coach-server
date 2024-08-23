@@ -6,4 +6,8 @@ import site.coach_coach.coach_coach_server.completedcategory.domain.CompletedCat
 
 public interface CompletedCategoryRepository extends JpaRepository<CompletedCategory, Long> {
 	boolean existsByUserRecordId(Long userRecordId);
+
+	Boolean existsByUserRecord_UserRecordIdAndCategory_CategoryId(Long userRecordId, Long categoryId);
+
+	void deleteByUserRecord_UserRecordIdAndCategory_CategoryId(Long userRecordId, Long categoryId);
 }
