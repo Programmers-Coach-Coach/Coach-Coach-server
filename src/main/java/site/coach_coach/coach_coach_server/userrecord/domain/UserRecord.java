@@ -50,4 +50,11 @@ public class UserRecord extends DateEntity {
 	@NotNull
 	@Column(name = "record_date")
 	private LocalDate recordDate;
+
+	public void updateBodyInfo(Double weight, Double skeletalMuscle, Double fatPercentage, Double bmi) {
+		this.weight = weight;
+		this.skeletalMuscle = skeletalMuscle;
+		this.fatPercentage = fatPercentage;
+		this.bmi = bmi;
+	}
 }

@@ -9,12 +9,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
+import site.coach_coach.coach_coach_server.common.exception.AccessDeniedException;
 import site.coach_coach.coach_coach_server.common.exception.InvalidInputException;
+import site.coach_coach.coach_coach_server.notification.exception.NotFoundException;
 import site.coach_coach.coach_coach_server.user.domain.User;
 import site.coach_coach.coach_coach_server.user.exception.InvalidUserException;
 import site.coach_coach.coach_coach_server.user.repository.UserRepository;
 import site.coach_coach.coach_coach_server.userrecord.domain.UserRecord;
 import site.coach_coach.coach_coach_server.userrecord.dto.UserRecordCreateRequest;
+import site.coach_coach.coach_coach_server.userrecord.dto.UserRecordUpdateRequest;
 import site.coach_coach.coach_coach_server.userrecord.exception.DuplicateRecordException;
 import site.coach_coach.coach_coach_server.userrecord.repository.UserRecordRepository;
 
@@ -46,6 +49,24 @@ public class UserRecordService {
 		userRecordRepository.save(userRecord);
 
 		return userRecord.getUserRecordId();
+	}
+
+	@Transactional
+	public void updateBodyInfoToUserRecord(Long userId, Long recordId,
+		UserRecordUpdateRequest userRecordUpdateRequest) {
+		UserRecord userRecord = userRecordRepository.findById(recordId)
+			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_RECORD));
+
+		if (!userRecord.getUser().getUserId().equals(userId)) {
+			throw new AccessDeniedException();
+		}
+
+		userRecord.updateBodyInfo(
+			userRecordUpdateRequest.weight(),
+			userRecordUpdateRequest.skeletalMuscle(),
+			userRecordUpdateRequest.fatPercentage(),
+			userRecordUpdateRequest.bmi()
+		);
 	}
 
 	private LocalDate validateAndConvertToLocalDate(String date) {
