@@ -92,7 +92,19 @@ public class CoachController {
 	) {
 		User user = userDetails.getUser();
 		coachService.contactCoach(user, coachId);
-		return ResponseEntity.ok(
-			new SuccessResponse(HttpStatus.OK.value(), SuccessMessage.CREATE_CONTACT_SUCCESS.getMessage()));
+		return ResponseEntity.status(HttpStatus.CREATED)
+			.body(new SuccessResponse(HttpStatus.CREATED.value(), SuccessMessage.CREATE_CONTACT_SUCCESS.getMessage()));
+	}
+
+	@PostMapping("/v1/coaches/{coachId}/likes")
+	public ResponseEntity<SuccessResponse> addCoachToFavorites(
+		@AuthenticationPrincipal CustomUserDetails userDetails,
+		@PathVariable Long coachId) {
+
+		Long userId = userDetails.getUserId();
+		coachService.addCoachToFavorites(userId, coachId);
+
+		return ResponseEntity.status(HttpStatus.CREATED)
+			.body(new SuccessResponse(HttpStatus.CREATED.value(), SuccessMessage.CREATE_LIKE_SUCCESS.getMessage()));
 	}
 }
