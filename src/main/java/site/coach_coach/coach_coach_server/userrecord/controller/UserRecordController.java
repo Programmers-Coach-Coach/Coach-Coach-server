@@ -3,16 +3,20 @@ package site.coach_coach.coach_coach_server.userrecord.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
 import site.coach_coach.coach_coach_server.common.response.SuccessIdResponse;
 import site.coach_coach.coach_coach_server.userrecord.dto.UserRecordCreateRequest;
+import site.coach_coach.coach_coach_server.userrecord.dto.UserRecordUpdateRequest;
 import site.coach_coach.coach_coach_server.userrecord.service.UserRecordService;
 
 @RestController
@@ -30,5 +34,16 @@ public class UserRecordController {
 		Long recordId = userRecordService.addBodyInfoToUserRecord(userId, userRecordCreateRequest);
 		return ResponseEntity.status(HttpStatus.CREATED)
 			.body(new SuccessIdResponse(recordId));
+	}
+
+	@PutMapping("/v1/records/{recordId}")
+	public ResponseEntity<Void> updateBodyInfoToUserRecord(
+		@AuthenticationPrincipal CustomUserDetails userDetails,
+		@PathVariable("recordId") @Positive Long recordId,
+		@RequestBody @Valid UserRecordUpdateRequest userRecordUpdateRequest
+	) {
+		Long userId = userDetails.getUserId();
+		userRecordService.updateBodyInfoToUserRecord(userId, recordId, userRecordUpdateRequest);
+		return ResponseEntity.noContent().build();
 	}
 }
