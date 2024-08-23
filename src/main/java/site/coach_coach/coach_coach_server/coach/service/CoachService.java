@@ -27,6 +27,7 @@ import site.coach_coach.coach_coach_server.coach.repository.CoachRepository;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.common.domain.RelationFunctionEnum;
 import site.coach_coach.coach_coach_server.common.exception.AccessDeniedException;
+import site.coach_coach.coach_coach_server.like.domain.UserCoachLike;
 import site.coach_coach.coach_coach_server.like.repository.UserCoachLikeRepository;
 import site.coach_coach.coach_coach_server.matching.domain.Matching;
 import site.coach_coach.coach_coach_server.matching.repository.MatchingRepository;
@@ -207,6 +208,20 @@ public class CoachService {
 			.collect(Collectors.toList());
 
 		return new CoachListResponse(coaches, (int)coachesPage.getTotalElements(), page);
+	}
+
+	@Transactional
+	public void addCoachToFavorites(Long userId, Long coachId) {
+		User user = userRepository.findById(userId)
+			.orElseThrow(InvalidUserException::new);
+
+		Coach coach = coachRepository.findById(coachId)
+			.orElseThrow(() -> new NotFoundCoachException(ErrorMessage.NOT_FOUND_COACH));
+
+		if (!userCoachLikeRepository.existsByUser_UserIdAndCoach_CoachId(userId, coachId)) {
+			userCoachLikeRepository.save(new UserCoachLike(null, user, coach));
+			notificationService.createNotification(user.getUserId(), coachId, RelationFunctionEnum.like);
+		}
 	}
 
 	private List<Long> getExistingSportsList(List<Long> sportsList) {
