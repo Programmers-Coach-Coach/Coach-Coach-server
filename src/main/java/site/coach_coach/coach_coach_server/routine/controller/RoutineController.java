@@ -103,7 +103,7 @@ public class RoutineController {
 	public ResponseEntity<Void> updateRoutineInfo(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
 		@PathVariable(name = "routineId") Long routineId,
-		@RequestBody UpdateRoutineInfoRequest updateRoutineInfoRequest
+		@RequestBody @Valid UpdateRoutineInfoRequest updateRoutineInfoRequest
 	) {
 		Long userIdByJwt = userDetails.getUserId();
 		routineService.updateRoutine(updateRoutineInfoRequest, routineId, userIdByJwt);
