@@ -32,12 +32,14 @@ ALTER TABLE `coachcoach`.`completed_categories`
 ALTER TABLE `coachcoach`.`completed_categories`
     DROP COLUMN `user_id`,
     ADD COLUMN `user_record_id` BIGINT(20) NOT NULL AFTER `completed_category_id`,
-    CHANGE COLUMN `record_date` `record_date` DATE NULL DEFAULT NULL AFTER `routine_category_id`,
+    CHANGE COLUMN `record_date` `record_date` DATE NOT NULL AFTER `routine_category_id`,
     DROP INDEX `fk_completed_categories_user_id_idx`;
 
 ALTER TABLE `coachcoach`.`completed_categories`
     ADD CONSTRAINT `fk_completed_categories_user_record_id`
         FOREIGN KEY (`user_record_id`)
             REFERENCES `coachcoach`.`user_records` (`user_record_id`)
-            ON DELETE NO ACTION
-            ON UPDATE NO ACTION;
+            ON DELETE CASCADE;
+
+ALTER TABLE `coachcoach`.`actions`
+    CHANGE COLUMN `sets` `sets` INT NULL DEFAULT NULL ;
