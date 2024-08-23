@@ -19,6 +19,7 @@ import io.sentry.Sentry;
 import lombok.extern.slf4j.Slf4j;
 import site.coach_coach.coach_coach_server.coach.exception.AlreadyMatchedException;
 import site.coach_coach.coach_coach_server.coach.exception.DuplicateContactException;
+import site.coach_coach.coach_coach_server.coach.exception.DuplicateReviewException;
 import site.coach_coach.coach_coach_server.coach.exception.InvalidQueryParameterException;
 import site.coach_coach.coach_coach_server.coach.exception.NotFoundMatchingException;
 import site.coach_coach.coach_coach_server.coach.exception.NotFoundPageException;
@@ -166,6 +167,12 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(DuplicateContactException.class)
 	public ResponseEntity<ErrorResponse> handleDuplicateContactException(DuplicateContactException ex) {
+		return ResponseEntity.status(HttpStatus.CONFLICT)
+			.body(new ErrorResponse(HttpStatus.CONFLICT.value(), ex.getMessage()));
+	}
+
+	@ExceptionHandler(DuplicateReviewException.class)
+	public ResponseEntity<ErrorResponse> handleDuplicateReviewException(DuplicateReviewException ex) {
 		return ResponseEntity.status(HttpStatus.CONFLICT)
 			.body(new ErrorResponse(HttpStatus.CONFLICT.value(), ex.getMessage()));
 	}

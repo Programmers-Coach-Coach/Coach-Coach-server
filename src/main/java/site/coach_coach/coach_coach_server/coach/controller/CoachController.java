@@ -23,6 +23,7 @@ import site.coach_coach.coach_coach_server.coach.dto.CoachListResponse;
 import site.coach_coach.coach_coach_server.coach.dto.CoachRequest;
 import site.coach_coach.coach_coach_server.coach.dto.MatchingCoachResponseDto;
 import site.coach_coach.coach_coach_server.coach.dto.MatchingUserResponseDto;
+import site.coach_coach.coach_coach_server.coach.dto.ReviewRequestDto;
 import site.coach_coach.coach_coach_server.coach.service.CoachService;
 import site.coach_coach.coach_coach_server.common.constants.SuccessMessage;
 import site.coach_coach.coach_coach_server.common.response.SuccessResponse;
@@ -153,5 +154,18 @@ public class CoachController {
 		List<MatchingCoachResponseDto> matchingCoaches = coachService.getMatchingCoachesByUserId(userId);
 
 		return ResponseEntity.ok(matchingCoaches);
+	}
+
+	@PostMapping("/v1/coaches/{coachId}/reviews")
+	public ResponseEntity<SuccessResponse> addReview(
+		@AuthenticationPrincipal CustomUserDetails userDetails,
+		@PathVariable Long coachId,
+		@RequestBody @Valid ReviewRequestDto requestDto) {
+
+		Long userId = userDetails.getUserId();
+		coachService.addReview(userId, coachId, requestDto);
+
+		return ResponseEntity.status(HttpStatus.CREATED)
+			.body(new SuccessResponse(HttpStatus.CREATED.value(), SuccessMessage.CREATE_REVIEW_SUCCESS.getMessage()));
 	}
 }
