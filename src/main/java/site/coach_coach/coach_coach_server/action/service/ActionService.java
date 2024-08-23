@@ -24,7 +24,7 @@ public class ActionService {
 	public Long createAction(Long routineId, Long categoryId, Long userIdByJwt,
 		CreateActionRequest createActionRequest) {
 		routineService.validateAccessToRoutine(routineId, userIdByJwt);
-		Category category = categoryRepository.findById(categoryId)
+		Category category = categoryRepository.findByCategoryIdAndRoutine_RoutineId(categoryId, routineId)
 			.orElseThrow(() -> new NotFoundCategoryException(ErrorMessage.NOT_FOUND_CATEGORY));
 
 		Action action = Action.of(createActionRequest, category);
