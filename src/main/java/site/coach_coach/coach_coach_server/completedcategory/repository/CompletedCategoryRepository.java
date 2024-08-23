@@ -1,11 +1,13 @@
 package site.coach_coach.coach_coach_server.completedcategory.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import site.coach_coach.coach_coach_server.completedcategory.domain.CompletedCategory;
 
 public interface CompletedCategoryRepository extends JpaRepository<CompletedCategory, Long> {
-	boolean existsByUserRecord_UserRecordId(Long userRecordId);
+	List<CompletedCategory> findAllByUserRecord_User_UserId(Long userId);
 
 	void deleteByUserRecord_UserRecordIdAndCategory_CategoryId(Long userRecordId, Long categoryId);
 }

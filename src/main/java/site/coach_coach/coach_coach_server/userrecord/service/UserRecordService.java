@@ -7,6 +7,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -91,23 +92,11 @@ public class UserRecordService {
 			.map(record -> new RecordResponse(
 				record.getUserRecordId(),
 				record.getRecordDate(),
-				isCategoryCompleted(record.getUserRecordId())
+				isCategoryCompleted(userId, record.getUserRecordId())
 			))
 			.collect(Collectors.toList());
 
 		return new UserRecordResponse(records);
-	}
-
-	private LocalDate validateAndConvertToLocalDate(String date) {
-		try {
-			return LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-		} catch (DateTimeParseException e) {
-			throw new InvalidInputException(ErrorMessage.INVALID_VALUE);
-		}
-	}
-
-	private boolean isCategoryCompleted(Long recordId) {
-		return completedCategoryRepository.existsByUserRecord_UserRecordId(recordId);
 	}
 
 	public UserRecord getUserRecordForCompleteCategory(Long userId) {
@@ -121,5 +110,20 @@ public class UserRecordService {
 					.build();
 				return userRecordRepository.save(userRecord);
 			});
+	}
+
+	private LocalDate validateAndConvertToLocalDate(String date) {
+		try {
+			return LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+		} catch (DateTimeParseException e) {
+			throw new InvalidInputException(ErrorMessage.INVALID_VALUE);
+		}
+	}
+
+	private boolean isCategoryCompleted(Long userId, Long recordId) {
+		Set<Long> completedRecordIds = completedCategoryRepository.findAllByUserRecord_User_UserId(userId).stream()
+			.map(completedCategory -> completedCategory.getUserRecord().getUserRecordId())
+			.collect(Collectors.toSet());
+		return completedRecordIds.contains(recordId);
 	}
 }
