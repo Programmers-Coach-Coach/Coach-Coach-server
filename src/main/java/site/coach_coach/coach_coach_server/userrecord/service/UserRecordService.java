@@ -1,12 +1,9 @@
 package site.coach_coach.coach_coach_server.userrecord.service;
 
 import java.time.LocalDate;
-<<<<<<< HEAD
 import java.time.YearMonth;
-=======
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
->>>>>>> main
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
@@ -110,8 +107,7 @@ public class UserRecordService {
 	}
 
 	private boolean isCategoryCompleted(Long recordId) {
-		completedCategoryRepository.existsByUserRecordId(recordId);
-		return false;
+		return completedCategoryRepository.existsByUserRecord_UserRecordId(recordId);
 	}
 
 	public UserRecord getUserRecordForCompleteCategory(Long userId) {

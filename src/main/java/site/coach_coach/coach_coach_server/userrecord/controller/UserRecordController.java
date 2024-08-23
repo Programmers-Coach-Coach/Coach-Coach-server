@@ -53,11 +53,11 @@ public class UserRecordController {
 		return ResponseEntity.noContent().build();
 	}
 
-	@GetMapping("/records")
+	@GetMapping("/v1/records")
 	public ResponseEntity<UserRecordResponse> getRecords(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
-		@RequestParam @NotNull int year,
-		@RequestParam @NotNull @Min(1) @Max(12) int month
+		@RequestParam(name = "year") @NotNull int year,
+		@RequestParam(name = "month") @NotNull @Min(1) @Max(12) int month
 	) {
 		Long userId = userDetails.getUserId();
 		UserRecordResponse userRecordResponse = userRecordService.getUserRecords(userId, year, month);
