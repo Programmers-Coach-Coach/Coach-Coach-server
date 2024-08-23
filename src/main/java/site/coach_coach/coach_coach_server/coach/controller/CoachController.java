@@ -149,7 +149,7 @@ public class CoachController {
 	public ResponseEntity<List<MatchingCoachResponseDto>> getMatchingCoaches(
 		@AuthenticationPrincipal CustomUserDetails userDetails) {
 
-		Long userId = userDetails.getUser().getUserId();
+		Long userId = userDetails.getUserId();
 		List<MatchingCoachResponseDto> matchingCoaches = coachService.getMatchingCoachesByUserId(userId);
 
 		return ResponseEntity.ok(matchingCoaches);
