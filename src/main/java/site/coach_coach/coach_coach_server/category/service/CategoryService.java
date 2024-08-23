@@ -9,6 +9,8 @@ import site.coach_coach.coach_coach_server.category.dto.CreateCategoryRequest;
 import site.coach_coach.coach_coach_server.category.exception.NotFoundCategoryException;
 import site.coach_coach.coach_coach_server.category.repository.CategoryRepository;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
+import site.coach_coach.coach_coach_server.completedcategory.exception.DuplicateCompletedCategoryException;
+import site.coach_coach.coach_coach_server.completedcategory.exception.NotFoundCompletedCategoryException;
 import site.coach_coach.coach_coach_server.routine.domain.Routine;
 import site.coach_coach.coach_coach_server.routine.service.RoutineService;
 
@@ -44,9 +46,17 @@ public class CategoryService {
 	}
 
 	@Transactional
-	public Category changeIsCompleted(Long categoryId, Long routineId) {
+	public Category updateCategoryCompletionStatus(Long categoryId, Long routineId, Boolean inputIsCompleted) {
 		Category category = categoryRepository.findByCategoryIdAndRoutine_RoutineId(categoryId, routineId)
 			.orElseThrow(() -> new NotFoundCategoryException(ErrorMessage.NOT_FOUND_CATEGORY));
+
+		if (category.getIsCompleted().equals(inputIsCompleted)) {
+			if (inputIsCompleted) {
+				throw new DuplicateCompletedCategoryException(ErrorMessage.DUPLICATE_COMPLETED_CATEGORY);
+			} else {
+				throw new NotFoundCompletedCategoryException(ErrorMessage.NOT_FOUND_COMPLETED_CATEGORY);
+			}
+		}
 
 		// Dirty Checking
 		category.setIsCompleted(!category.getIsCompleted());

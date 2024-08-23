@@ -1,10 +1,14 @@
 package site.coach_coach.coach_coach_server.userrecord.service;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,12 +17,15 @@ import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.common.exception.AccessDeniedException;
 import site.coach_coach.coach_coach_server.common.exception.InvalidInputException;
+import site.coach_coach.coach_coach_server.completedcategory.repository.CompletedCategoryRepository;
 import site.coach_coach.coach_coach_server.notification.exception.NotFoundException;
 import site.coach_coach.coach_coach_server.user.domain.User;
 import site.coach_coach.coach_coach_server.user.exception.InvalidUserException;
 import site.coach_coach.coach_coach_server.user.repository.UserRepository;
 import site.coach_coach.coach_coach_server.userrecord.domain.UserRecord;
+import site.coach_coach.coach_coach_server.userrecord.dto.RecordResponse;
 import site.coach_coach.coach_coach_server.userrecord.dto.UserRecordCreateRequest;
+import site.coach_coach.coach_coach_server.userrecord.dto.UserRecordResponse;
 import site.coach_coach.coach_coach_server.userrecord.dto.UserRecordUpdateRequest;
 import site.coach_coach.coach_coach_server.userrecord.exception.DuplicateRecordException;
 import site.coach_coach.coach_coach_server.userrecord.repository.UserRecordRepository;
@@ -28,6 +35,7 @@ import site.coach_coach.coach_coach_server.userrecord.repository.UserRecordRepos
 public class UserRecordService {
 	private final UserRecordRepository userRecordRepository;
 	private final UserRepository userRepository;
+	private final CompletedCategoryRepository completedCategoryRepository;
 
 	@Transactional
 	public Long addBodyInfoToUserRecord(Long userId, UserRecordCreateRequest userRecordCreateRequest) {
@@ -71,12 +79,24 @@ public class UserRecordService {
 		);
 	}
 
-	private LocalDate validateAndConvertToLocalDate(String date) {
-		try {
-			return LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-		} catch (DateTimeParseException e) {
-			throw new InvalidInputException(ErrorMessage.INVALID_VALUE);
-		}
+	@Transactional(readOnly = true)
+	public UserRecordResponse getUserRecordsByUserAndPeriod(Long userId, Integer year, Integer month) {
+		LocalDate startDate = LocalDate.of(year, month, 1);
+		LocalDate endDate = YearMonth.of(year, month).atEndOfMonth();
+
+		List<UserRecord> userRecords = userRecordRepository.findByUser_UserIdAndRecordDateBetween(
+			userId, startDate, endDate
+		);
+
+		List<RecordResponse> records = userRecords.stream()
+			.map(record -> new RecordResponse(
+				record.getUserRecordId(),
+				record.getRecordDate(),
+				isCategoryCompleted(userId, record.getUserRecordId())
+			))
+			.collect(Collectors.toList());
+
+		return new UserRecordResponse(records);
 	}
 
 	public UserRecord getUserRecordForCompleteCategory(Long userId) {
@@ -90,5 +110,20 @@ public class UserRecordService {
 					.build();
 				return userRecordRepository.save(userRecord);
 			});
+	}
+
+	private LocalDate validateAndConvertToLocalDate(String date) {
+		try {
+			return LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+		} catch (DateTimeParseException e) {
+			throw new InvalidInputException(ErrorMessage.INVALID_VALUE);
+		}
+	}
+
+	private boolean isCategoryCompleted(Long userId, Long recordId) {
+		Set<Long> completedRecordIds = completedCategoryRepository.findAllByUserRecord_User_UserId(userId).stream()
+			.map(completedCategory -> completedCategory.getUserRecord().getUserRecordId())
+			.collect(Collectors.toSet());
+		return completedRecordIds.contains(recordId);
 	}
 }
