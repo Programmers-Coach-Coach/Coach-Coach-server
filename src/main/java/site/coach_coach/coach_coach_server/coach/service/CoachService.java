@@ -224,6 +224,16 @@ public class CoachService {
 		}
 	}
 
+	@Transactional
+	public void deleteCoachToFavorites(Long userId, Long coachId) {
+		coachRepository.findById(coachId)
+			.orElseThrow(() -> new NotFoundCoachException(ErrorMessage.NOT_FOUND_COACH));
+
+		if (userCoachLikeRepository.existsByUser_UserIdAndCoach_CoachId(userId, coachId)) {
+			userCoachLikeRepository.deleteByUser_UserIdAndCoach_CoachId(userId, coachId);
+		}
+	}
+
 	private List<Long> getExistingSportsList(List<Long> sportsList) {
 		if (sportsList == null || sportsList.isEmpty()) {
 			return List.of();
