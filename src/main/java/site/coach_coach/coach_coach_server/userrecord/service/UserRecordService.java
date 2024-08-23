@@ -52,7 +52,7 @@ public class UserRecordService {
 	}
 
 	@Transactional
-	public void updateBodyInfoToUserRecord(Long recordId, Long userId,
+	public void updateBodyInfoToUserRecord(Long userId, Long recordId,
 		UserRecordUpdateRequest userRecordUpdateRequest) {
 		UserRecord userRecord = userRecordRepository.findById(recordId)
 			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_RECORD));
@@ -60,7 +60,7 @@ public class UserRecordService {
 		if (!userRecord.getUser().getUserId().equals(userId)) {
 			throw new AccessDeniedException();
 		}
-		
+
 		userRecord.updateBodyInfo(
 			userRecordUpdateRequest.weight(),
 			userRecordUpdateRequest.skeletalMuscle(),

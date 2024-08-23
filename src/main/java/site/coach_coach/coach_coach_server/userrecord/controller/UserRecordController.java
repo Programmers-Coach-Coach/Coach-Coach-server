@@ -43,7 +43,7 @@ public class UserRecordController {
 		@RequestBody @Valid UserRecordUpdateRequest userRecordUpdateRequest
 	) {
 		Long userId = userDetails.getUserId();
-		userRecordService.updateBodyInfoToUserRecord(recordId, userId, userRecordUpdateRequest);
+		userRecordService.updateBodyInfoToUserRecord(userId, recordId, userRecordUpdateRequest);
 		return ResponseEntity.noContent().build();
 	}
 }
