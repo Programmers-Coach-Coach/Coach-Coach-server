@@ -34,7 +34,7 @@ public class ActionService {
 	}
 
 	@Transactional
-	public void deleteAction(Long routineId, Long categoryId, Long actionId, Long userIdByJwt) {
+	public void deleteAction(Long actionId, Long userIdByJwt) {
 		Action action = actionRepository.findById(actionId)
 			.orElseThrow(() -> new NotFoundActionException(ErrorMessage.NOT_FOUND_ACTION));
 

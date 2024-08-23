@@ -34,7 +34,7 @@ public class CategoryService {
 	}
 
 	@Transactional
-	public void deleteCategory(Long routineId, Long categoryId, Long userIdByJwt) {
+	public void deleteCategory(Long categoryId, Long userIdByJwt) {
 
 		Category category = categoryRepository.findById(categoryId)
 			.orElseThrow(() -> new NotFoundCategoryException(ErrorMessage.NOT_FOUND_CATEGORY));

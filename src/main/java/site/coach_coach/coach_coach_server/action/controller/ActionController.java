@@ -39,12 +39,10 @@ public class ActionController {
 	@DeleteMapping("/v1/routines/{routineId}/{categoryId}/{actionId}")
 	public ResponseEntity<Void> deleteActionInCategory(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
-		@PathVariable(name = "routineId") Long routineId,
-		@PathVariable(name = "categoryId") Long categoryId,
 		@PathVariable(name = "actionId") Long actionId
 	) {
 		Long userIdByJwt = userDetails.getUserId();
-		actionService.deleteAction(routineId, categoryId, actionId, userIdByJwt);
+		actionService.deleteAction(actionId, userIdByJwt);
 		return ResponseEntity.noContent().build();
 	}
 }
