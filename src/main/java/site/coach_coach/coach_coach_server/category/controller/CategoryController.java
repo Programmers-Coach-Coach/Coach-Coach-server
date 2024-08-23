@@ -37,7 +37,7 @@ public class CategoryController {
 			.body(new CreateCategoryResponse(HttpStatus.CREATED.value(), newCategoryId));
 	}
 
-	@DeleteMapping("/v1/routines/{routineId}/{categoryId}")
+	@DeleteMapping("/v1/categories{categoryId}")
 	public ResponseEntity<SuccessResponse> deleteCategory(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
 		@PathVariable(name = "routineId") Long routineId,

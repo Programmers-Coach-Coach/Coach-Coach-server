@@ -36,7 +36,7 @@ public class ActionController {
 			.body(new SuccessIdResponse(actionId));
 	}
 
-	@DeleteMapping("/v1/routines/{routineId}/{categoryId}/{actionId}")
+	@DeleteMapping("/v1/actions/{actionId}")
 	public ResponseEntity<Void> deleteActionInCategory(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
 		@PathVariable(name = "actionId") Long actionId
