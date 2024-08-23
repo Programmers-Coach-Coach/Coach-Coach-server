@@ -1,6 +1,5 @@
 package site.coach_coach.coach_coach_server.userrecord.controller;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,8 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
-import site.coach_coach.coach_coach_server.common.response.SuccessResponse;
-import site.coach_coach.coach_coach_server.userrecord.domain.UserRecord;
+import site.coach_coach.coach_coach_server.common.response.SuccessIdResponse;
 import site.coach_coach.coach_coach_server.userrecord.dto.UserRecordCreateRequest;
 import site.coach_coach.coach_coach_server.userrecord.service.UserRecordService;
 
@@ -23,14 +21,14 @@ public class UserRecordController {
 	private final UserRecordService userRecordService;
 
 	@PostMapping("/v1/records")
-	public ResponseEntity<SuccessResponse> addBodyInfoToUserRecord(
+	public ResponseEntity<SuccessIdResponse> addBodyInfoToUserRecord(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
 		@RequestBody @Valid UserRecordCreateRequest userRecordCreateRequest
 	) {
 		Long userId = userDetails.getUserId();
 		Long recordId = userRecordService.addBodyInfoToUserRecord(userId, userRecordCreateRequest);
 		return ResponseEntity.ok(
-			new SuccessResponse(HttpStatus.OK.value(), recordId);
+			new SuccessIdResponse(recordId)
 		);
 	}
 }
