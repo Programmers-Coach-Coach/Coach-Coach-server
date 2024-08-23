@@ -12,6 +12,8 @@ import site.coach_coach.coach_coach_server.sport.dto.CoachingSportDto;
 @Builder
 public record CoachDetailDto(
 	@NotNull
+	Long coachId,
+	@NotNull
 	String coachName,
 	@NotNull
 	GenderEnum coachGender,

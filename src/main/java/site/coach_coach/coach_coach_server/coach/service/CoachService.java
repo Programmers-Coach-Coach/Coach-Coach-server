@@ -182,6 +182,7 @@ public class CoachService {
 		List<CoachingSportDto> coachingSports = getCoachingSports(coach);
 
 		return CoachDetailDto.builder()
+			.coachId(coach.getCoachId())
 			.coachName(coach.getUser().getNickname())
 			.coachGender(coach.getUser().getGender())
 			.localAddress(coach.getUser().getLocalAddress())
