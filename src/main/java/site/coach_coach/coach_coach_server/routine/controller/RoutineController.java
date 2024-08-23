@@ -76,7 +76,7 @@ public class RoutineController {
 	@DeleteMapping("/v1/routines/{routineId}")
 	public ResponseEntity<SuccessResponse> deleteRoutine(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
-		@PathVariable(name = "routineId") @Valid Long routineId
+		@PathVariable(name = "routineId") Long routineId
 	) {
 		Long userIdByJwt = userDetails.getUserId();
 		routineService.validateAndDeleteRoutine(routineId, userIdByJwt);
@@ -87,7 +87,7 @@ public class RoutineController {
 	@GetMapping("/v1/routines/{routineId}")
 	public ResponseEntity<RoutineResponse> getRoutine(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
-		@PathVariable(name = "routineId") @Valid Long routineId,
+		@PathVariable(name = "routineId") Long routineId,
 		@RequestParam(name = "userId", required = false) Long userIdParam
 	) {
 		Long userIdByJwt = userDetails.getUserId();
