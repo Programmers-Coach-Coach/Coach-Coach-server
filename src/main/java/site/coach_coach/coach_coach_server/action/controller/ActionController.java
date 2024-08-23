@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.action.dto.CreateActionRequest;
-import site.coach_coach.coach_coach_server.action.dto.CreateActionResponse;
 import site.coach_coach.coach_coach_server.action.service.ActionService;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
+import site.coach_coach.coach_coach_server.common.response.SuccessIdResponse;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,7 +23,7 @@ public class ActionController {
 	private final ActionService actionService;
 
 	@PostMapping("/v1/routines/{routineId}/{categoryId}")
-	public ResponseEntity<CreateActionResponse> createAction(
+	public ResponseEntity<SuccessIdResponse> createAction(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
 		@PathVariable(name = "routineId") Long routineId,
 		@PathVariable(name = "categoryId") Long categoryId,
@@ -32,6 +32,6 @@ public class ActionController {
 		Long userIdByJwt = userDetails.getUserId();
 		Long actionId = actionService.createAction(routineId, categoryId, userIdByJwt, createActionRequest);
 		return ResponseEntity.status(HttpStatus.CREATED)
-			.body(new CreateActionResponse(actionId));
+			.body(new SuccessIdResponse(actionId));
 	}
 }

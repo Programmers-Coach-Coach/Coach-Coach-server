@@ -13,7 +13,7 @@ public record ActionDto(
 	@NotBlank(message = ErrorMessage.INVALID_VALUE)
 	String actionName,
 
-	int sets,
+	Integer sets,
 
 	String countOrMinutes,
 

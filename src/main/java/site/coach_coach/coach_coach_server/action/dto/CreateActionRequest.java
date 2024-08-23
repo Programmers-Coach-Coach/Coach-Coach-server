@@ -7,7 +7,7 @@ public record CreateActionRequest(
 	@NotBlank(message = ErrorMessage.INVALID_VALUE)
 	String actionName,
 
-	int sets,
+	Integer sets,
 
 	String countOrMinutes,
 
