@@ -55,4 +55,17 @@ public class UserRecordService {
 			throw new InvalidInputException(ErrorMessage.INVALID_VALUE);
 		}
 	}
+
+	public UserRecord getUserRecordForCompleteCategory(Long userId, LocalDate recordDate) {
+		if (userRecordRepository.existsByRecordDateAndUser_UserId(recordDate, userId)) {
+			return userRecordRepository.findByRecordDateAndUser_UserId(recordDate, userId);
+		} else {
+			User user = userRepository.findById(userId).orElseThrow(InvalidUserException::new);
+			UserRecord userRecord = UserRecord.builder()
+				.user(user)
+				.recordDate(recordDate)
+				.build();
+			return userRecordRepository.save(userRecord);
+		}
+	}
 }

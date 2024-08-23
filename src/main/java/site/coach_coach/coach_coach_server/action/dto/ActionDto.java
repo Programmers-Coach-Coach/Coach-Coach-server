@@ -11,7 +11,7 @@ public record ActionDto(
 	@NotNull
 	String actionName,
 
-	String sets,
+	int sets,
 
 	String countOrMinutes,
 

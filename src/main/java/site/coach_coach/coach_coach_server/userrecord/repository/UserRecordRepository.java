@@ -10,4 +10,6 @@ import site.coach_coach.coach_coach_server.userrecord.domain.UserRecord;
 @Repository
 public interface UserRecordRepository extends JpaRepository<UserRecord, Long> {
 	boolean existsByRecordDateAndUser_UserId(LocalDate recordDate, Long userId);
+
+	UserRecord findByRecordDateAndUser_UserId(LocalDate recordDate, Long userId);
 }
