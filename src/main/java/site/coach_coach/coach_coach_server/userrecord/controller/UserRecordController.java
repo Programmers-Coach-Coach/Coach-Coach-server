@@ -1,5 +1,6 @@
 package site.coach_coach.coach_coach_server.userrecord.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,8 +28,7 @@ public class UserRecordController {
 	) {
 		Long userId = userDetails.getUserId();
 		Long recordId = userRecordService.addBodyInfoToUserRecord(userId, userRecordCreateRequest);
-		return ResponseEntity.ok(
-			new SuccessIdResponse(recordId)
-		);
+		return ResponseEntity.status(HttpStatus.CREATED)
+			.body(new SuccessIdResponse(recordId));
 	}
 }

@@ -1,6 +1,6 @@
 package site.coach_coach.coach_coach_server.userrecord.domain;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,8 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -48,14 +47,7 @@ public class UserRecord extends DateEntity {
 	@Column(name = "bmi")
 	private Double bmi;
 
-	@Temporal(TemporalType.DATE)
+	@NotNull
 	@Column(name = "record_date")
-	private Date recordDate;
-
-	public void updateRecordData(Double weight, Double skeletalMuscle, Double fatPercentage, Double bmi) {
-		this.weight = weight;
-		this.skeletalMuscle = skeletalMuscle;
-		this.fatPercentage = fatPercentage;
-		this.bmi = bmi;
-	}
+	private LocalDate recordDate;
 }
