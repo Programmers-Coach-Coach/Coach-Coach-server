@@ -23,6 +23,7 @@ import site.coach_coach.coach_coach_server.routine.dto.CreateRoutineRequest;
 import site.coach_coach.coach_coach_server.routine.dto.CreateRoutineResponse;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineForListDto;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineListRequest;
+import site.coach_coach.coach_coach_server.routine.dto.RoutineResponse;
 import site.coach_coach.coach_coach_server.routine.dto.UserInfoForRoutineList;
 import site.coach_coach.coach_coach_server.routine.service.RoutineService;
 
@@ -78,9 +79,22 @@ public class RoutineController {
 		@PathVariable(name = "routineId") @Valid Long routineId
 	) {
 		Long userIdByJwt = userDetails.getUserId();
-		routineService.validateRoutineDelete(routineId, userIdByJwt);
+		routineService.validateAndDeleteRoutine(routineId, userIdByJwt);
 		return ResponseEntity.ok(
 			new SuccessResponse(HttpStatus.OK.value(), SuccessMessage.DELETE_ROUTINE_SUCCESS.getMessage()));
+	}
+
+	@GetMapping("/v1/routines/{routineId}")
+	public ResponseEntity<RoutineResponse> getRoutine(
+		@AuthenticationPrincipal CustomUserDetails userDetails,
+		@PathVariable(name = "routineId") @Valid Long routineId,
+		@RequestParam(name = "userId", required = false) Long userIdParam
+	) {
+		Long userIdByJwt = userDetails.getUserId();
+
+		RoutineResponse routineResponse = routineService.getRoutineWithCategoriesAndActions(routineId,
+			userIdByJwt, userIdParam);
+		return ResponseEntity.ok(routineResponse);
 	}
 
 	@GetMapping("/v1/test")

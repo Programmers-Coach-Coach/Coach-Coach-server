@@ -16,18 +16,33 @@ import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.coach.dto.CoachDetailDto;
 import site.coach_coach.coach_coach_server.coach.dto.CoachListDto;
 import site.coach_coach.coach_coach_server.coach.dto.CoachListResponse;
+import site.coach_coach.coach_coach_server.coach.dto.CoachRequest;
+import site.coach_coach.coach_coach_server.coach.exception.AlreadyMatchedException;
+import site.coach_coach.coach_coach_server.coach.exception.DuplicateContactException;
 import site.coach_coach.coach_coach_server.coach.exception.NotFoundCoachException;
+import site.coach_coach.coach_coach_server.coach.exception.NotFoundMatchingException;
 import site.coach_coach.coach_coach_server.coach.exception.NotFoundPageException;
+import site.coach_coach.coach_coach_server.coach.exception.NotFoundSportException;
 import site.coach_coach.coach_coach_server.coach.repository.CoachRepository;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
+import site.coach_coach.coach_coach_server.common.domain.RelationFunctionEnum;
+import site.coach_coach.coach_coach_server.common.exception.AccessDeniedException;
+import site.coach_coach.coach_coach_server.like.domain.UserCoachLike;
 import site.coach_coach.coach_coach_server.like.repository.UserCoachLikeRepository;
+import site.coach_coach.coach_coach_server.matching.domain.Matching;
+import site.coach_coach.coach_coach_server.matching.repository.MatchingRepository;
+import site.coach_coach.coach_coach_server.notification.service.NotificationService;
 import site.coach_coach.coach_coach_server.review.domain.Review;
 import site.coach_coach.coach_coach_server.review.dto.ReviewDto;
 import site.coach_coach.coach_coach_server.review.repository.ReviewRepository;
 import site.coach_coach.coach_coach_server.sport.domain.CoachingSport;
+import site.coach_coach.coach_coach_server.sport.domain.Sport;
 import site.coach_coach.coach_coach_server.sport.dto.CoachingSportDto;
 import site.coach_coach.coach_coach_server.sport.repository.CoachingSportRepository;
+import site.coach_coach.coach_coach_server.sport.repository.SportRepository;
 import site.coach_coach.coach_coach_server.user.domain.User;
+import site.coach_coach.coach_coach_server.user.exception.InvalidUserException;
+import site.coach_coach.coach_coach_server.user.repository.UserRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -37,33 +52,109 @@ public class CoachService {
 	private final ReviewRepository reviewRepository;
 	private final UserCoachLikeRepository userCoachLikeRepository;
 	private final CoachingSportRepository coachingSportRepository;
+	private final MatchingRepository matchingRepository;
+	private final NotificationService notificationService;
+	private final SportRepository sportRepository;
+	private final UserRepository userRepository;
 
 	@Transactional(readOnly = true)
-	public CoachDetailDto getCoachDetail(User user, Long coachId) {
+	public Coach getCoachByUserId(Long userId) {
+		User user = userRepository.findById(userId).orElseThrow(InvalidUserException::new);
+		return coachRepository.findByUser(user)
+			.orElseThrow(() -> new NotFoundCoachException(ErrorMessage.NOT_FOUND_COACH));
+	}
+
+	@Transactional
+	public Coach createCoachForUser(Long userId) {
+		User user = userRepository.findById(userId).orElseThrow(InvalidUserException::new);
+		return coachRepository.save(new Coach(user));
+	}
+
+	@Transactional
+	public void updateCoachInfo(Coach coach, CoachRequest coachRequest) {
+		coach.update(
+			coachRequest.coachIntroduction(),
+			coachRequest.activeCenter() != null ? coachRequest.activeCenter() : coach.getActiveCenter(),
+			coachRequest.activeCenterDetail() != null ? coachRequest.activeCenterDetail() :
+				coach.getActiveCenterDetail(),
+			coachRequest.activeHours(),
+			coachRequest.chattingUrl(),
+			coachRequest.isOpen() != null ? coachRequest.isOpen() : coach.getIsOpen()
+		);
+
+		coachRepository.save(coach);
+	}
+
+	@Transactional
+	public void addNewCoachingSports(Coach coach, List<CoachingSportDto> coachingSports) {
+		List<Sport> sports = coachingSports.stream()
+			.map(coachingSportDto -> sportRepository.findBySportName(coachingSportDto.sportName())
+				.orElseThrow(() -> new NotFoundSportException(ErrorMessage.NOT_FOUND_SPORTS)))
+			.toList();
+
+		List<CoachingSport> coachingSportsEntities = sports.stream()
+			.map(sport -> new CoachingSport(coach, sport))
+			.collect(Collectors.toList());
+
+		coachingSportRepository.saveAll(coachingSportsEntities);
+	}
+
+	@Transactional
+	public void saveOrUpdateCoach(Long userId, CoachRequest coachRequest) {
+		Coach coach;
+		try {
+			coach = getCoachByUserId(userId);
+		} catch (NotFoundCoachException e) {
+			coach = createCoachForUser(userId);
+		}
+		updateCoachInfo(coach, coachRequest);
+		removeExistingCoachingSports(coach);
+		addNewCoachingSports(coach, coachRequest.coachingSports());
+	}
+
+	@Transactional
+	public void removeExistingCoachingSports(Coach coach) {
+		coachingSportRepository.deleteByCoach(coach);
+	}
+
+	@Transactional
+	public void contactCoach(User user, Long coachId) {
 		Coach coach = coachRepository.findById(coachId)
 			.orElseThrow(() -> new NotFoundCoachException(ErrorMessage.NOT_FOUND_COACH));
 
-		List<ReviewDto> reviews = reviewRepository.findByCoach_CoachId(coach.getCoachId()).stream()
-			.map(review -> new ReviewDto(
-				review.getUser().getUserId(),
-				review.getUser().getNickname(),
-				review.getContents(),
-				review.getStars(),
-				review.getCreatedAt().toString()
-			))
-			.collect(Collectors.toList());
+		if (matchingRepository.existsByUserUserIdAndCoachCoachId(user.getUserId(), coachId)) {
+			throw new DuplicateContactException(ErrorMessage.DUPLICATE_CONTACT);
+		}
 
-		double averageRating = reviews.stream().mapToInt(ReviewDto::stars).average().orElse(0.0);
+		Matching newMatching = new Matching(null, user, coach, false);
+		matchingRepository.save(newMatching);
+
+		notificationService.createNotification(user.getUserId(), coachId, RelationFunctionEnum.ask);
+	}
+
+	@Transactional(readOnly = true)
+	public Coach getCoachById(Long coachId) {
+		return coachRepository.findById(coachId)
+			.orElseThrow(() -> new NotFoundCoachException(ErrorMessage.NOT_FOUND_COACH));
+	}
+
+	@Transactional(readOnly = true)
+	public Coach getCoachByUserId(User user) {
+		return coachRepository.findByUser_UserId(user.getUserId())
+			.orElseThrow(AccessDeniedException::new);
+	}
+
+	@Transactional(readOnly = true)
+	public CoachDetailDto getCoachDetail(User user, Long coachId) {
+		Coach coach = (coachId != null) ? getCoachById(coachId) : getCoachByUserId(user);
+
+		List<ReviewDto> reviews = getReviews(coach);
+		double averageRating = calculateAverageRating(reviews);
 
 		boolean isLiked = isLikedByUser(user, coach);
 		int countOfLikes = getCountOfLikes(coach);
 
-		List<CoachingSportDto> coachingSports = coach.getCoachingSports().stream()
-			.map(cs -> new CoachingSportDto(
-				cs.getSport().getSportId(),
-				cs.getSport().getSportName()
-			))
-			.collect(Collectors.toList());
+		List<CoachingSportDto> coachingSports = getCoachingSports(coach);
 
 		return CoachDetailDto.builder()
 			.coachName(coach.getUser().getNickname())
@@ -117,6 +208,30 @@ public class CoachService {
 			.collect(Collectors.toList());
 
 		return new CoachListResponse(coaches, (int)coachesPage.getTotalElements(), page);
+	}
+
+	@Transactional
+	public void addCoachToFavorites(Long userId, Long coachId) {
+		User user = userRepository.findById(userId)
+			.orElseThrow(InvalidUserException::new);
+
+		Coach coach = coachRepository.findById(coachId)
+			.orElseThrow(() -> new NotFoundCoachException(ErrorMessage.NOT_FOUND_COACH));
+
+		if (!userCoachLikeRepository.existsByUser_UserIdAndCoach_CoachId(userId, coachId)) {
+			userCoachLikeRepository.save(new UserCoachLike(null, user, coach));
+			notificationService.createNotification(user.getUserId(), coachId, RelationFunctionEnum.like);
+		}
+	}
+
+	@Transactional
+	public void deleteCoachToFavorites(Long userId, Long coachId) {
+		coachRepository.findById(coachId)
+			.orElseThrow(() -> new NotFoundCoachException(ErrorMessage.NOT_FOUND_COACH));
+
+		if (userCoachLikeRepository.existsByUser_UserIdAndCoach_CoachId(userId, coachId)) {
+			userCoachLikeRepository.deleteByUser_UserIdAndCoach_CoachId(userId, coachId);
+		}
 	}
 
 	private List<Long> getExistingSportsList(List<Long> sportsList) {
@@ -175,6 +290,32 @@ public class CoachService {
 			.build();
 	}
 
+	@Transactional(readOnly = true)
+	public List<ReviewDto> getReviews(Coach coach) {
+		return reviewRepository.findByCoach_CoachId(coach.getCoachId()).stream()
+			.map(review -> new ReviewDto(
+				review.getUserId(),
+				review.getUserNickname(),
+				review.getContents(),
+				review.getStars(),
+				review.getCreatedAt().toString()
+			))
+			.collect(Collectors.toList());
+	}
+
+	public List<CoachingSportDto> getCoachingSports(Coach coach) {
+		return coach.getCoachingSports().stream()
+			.map(cs -> new CoachingSportDto(
+				cs.getSportId(),
+				cs.getSportName()
+			))
+			.collect(Collectors.toList());
+	}
+
+	public double calculateAverageRating(List<ReviewDto> reviews) {
+		return reviews.stream().mapToInt(ReviewDto::stars).average().orElse(0.0);
+	}
+
 	private int getCountOfLikes(Coach coach) {
 		return userCoachLikeRepository.countByCoach_CoachId(coach.getCoachId());
 	}
@@ -187,5 +328,20 @@ public class CoachService {
 		return Stream.of(sports.split(","))
 			.map(Long::parseLong)
 			.collect(Collectors.toList());
+	}
+
+	@Transactional
+	public void updateMatchingStatus(Long coachUserId, Long userId) {
+		Coach coach = coachRepository.findByUser_UserId(coachUserId)
+			.orElseThrow(() -> new NotFoundCoachException(ErrorMessage.NOT_FOUND_COACH));
+
+		Matching matching = matchingRepository.findByUser_UserIdAndCoach_CoachId(userId, coach.getCoachId())
+			.orElseThrow(() -> new NotFoundMatchingException(ErrorMessage.NOT_FOUND_MATCHING));
+
+		if (Boolean.TRUE.equals(matching.getIsMatching())) {
+			throw new AlreadyMatchedException(ErrorMessage.DUPLICATE_MATCHING);
+		}
+
+		matching.markAsMatched();
 	}
 }

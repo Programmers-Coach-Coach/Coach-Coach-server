@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import site.coach_coach.coach_coach_server.coach.repository.CoachRepository;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
+import site.coach_coach.coach_coach_server.common.exception.AccessDeniedException;
 import site.coach_coach.coach_coach_server.common.exception.UserNotFoundException;
 import site.coach_coach.coach_coach_server.matching.domain.Matching;
 import site.coach_coach.coach_coach_server.matching.repository.MatchingRepository;
@@ -15,6 +18,7 @@ import site.coach_coach.coach_coach_server.routine.domain.Routine;
 import site.coach_coach.coach_coach_server.routine.dto.CreateRoutineRequest;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineForListDto;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineListRequest;
+import site.coach_coach.coach_coach_server.routine.dto.RoutineResponse;
 import site.coach_coach.coach_coach_server.routine.dto.UserInfoForRoutineList;
 import site.coach_coach.coach_coach_server.routine.exception.NoExistRoutineException;
 import site.coach_coach.coach_coach_server.routine.exception.NotMatchingException;
@@ -24,6 +28,7 @@ import site.coach_coach.coach_coach_server.user.domain.User;
 import site.coach_coach.coach_coach_server.user.repository.UserRepository;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class RoutineService {
 	private final RoutineRepository routineRepository;
@@ -32,7 +37,7 @@ public class RoutineService {
 	private final UserRepository userRepository;
 
 	public void checkIsMatching(Long userId, Long coachId) {
-		matchingRepository.findByUserUserIdAndCoachCoachId(userId, coachId)
+		matchingRepository.findByUser_UserIdAndCoach_CoachId(userId, coachId)
 			.map(Matching::getIsMatching)
 			.filter(isMatching -> isMatching) // isMatching이 true일 때만 통과
 			.orElseThrow(() -> new NotMatchingException(ErrorMessage.NOT_MATCHING));
@@ -119,21 +124,59 @@ public class RoutineService {
 		return routineRepository.save(routineBuilder.build()).getRoutineId();
 	}
 
-	public void validateRoutineDelete(Long routineId, Long userIdByJwt) {
+	public RoutineResponse getRoutineWithCategoriesAndActions(Long routineId, Long userIdByJwt, Long userIdParam) {
+		Routine routine = routineRepository.findById(routineId)
+			.orElseThrow(() -> new NoExistRoutineException(ErrorMessage.NOT_FOUND_ROUTINE));
+
+		validateGetRoutine(routine, userIdParam, userIdByJwt);
+		return RoutineResponse.from(routine);
+	}
+
+	public void validateGetRoutine(Routine routine, Long userIdParam, Long userIdByJwt) {
+		if (userIdParam == null) {
+			if (!routine.getUserId().equals(userIdByJwt)) {
+				throw new AccessDeniedException();
+			}
+		} else {
+			Long coachId = getCoachId(userIdByJwt);
+			if (routine.getCoachId() != coachId || !routine.getUserId().equals(userIdParam)) {
+				throw new AccessDeniedException();
+			}
+		}
+	}
+
+	public void validateAndDeleteRoutine(Long routineId, Long userIdByJwt) {
 		Routine routine = routineRepository.findById(routineId)
 			.orElseThrow(() -> new NoExistRoutineException(ErrorMessage.NOT_FOUND_ROUTINE));
 
 		if (routine.getCoachId() == null) {
 			if (!routine.getUserId().equals(userIdByJwt)) {
-				throw new NoExistRoutineException(ErrorMessage.NOT_MY_ROUTINE);
+				throw new AccessDeniedException();
 			}
 		} else {
 			Long coachId = getCoachId(userIdByJwt);
 			if (!routine.getCoachId().equals(coachId)) {
-				throw new NoExistRoutineException(ErrorMessage.NOT_MY_ROUTINE);
+				throw new AccessDeniedException();
 			}
 		}
 
 		routineRepository.deleteById(routineId);
+	}
+
+	@Transactional
+	public Routine validateAccessToRoutine(Long routineId, Long userIdByJwt) {
+		Routine routine = routineRepository.findById(routineId)
+			.orElseThrow(() -> new NoExistRoutineException(ErrorMessage.NOT_FOUND_ROUTINE));
+
+		if (!routine.getUserId().equals(userIdByJwt)) {
+			Long coachId = getCoachId(userIdByJwt);
+			if (routine.getCoachId() != coachId) {
+				throw new AccessDeniedException();
+			}
+		} else if (routine.getCoachId() != null) {
+			throw new AccessDeniedException();
+		}
+
+		return routine;
 	}
 }
