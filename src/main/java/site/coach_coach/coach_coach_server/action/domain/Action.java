@@ -15,6 +15,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import site.coach_coach.coach_coach_server.action.dto.CreateActionRequest;
 import site.coach_coach.coach_coach_server.category.domain.Category;
 import site.coach_coach.coach_coach_server.common.domain.DateEntity;
 
@@ -36,7 +37,7 @@ public class Action extends DateEntity {
 	private String actionName;
 
 	@Column(name = "sets")
-	private int sets;
+	private Integer sets;
 
 	@Size(max = 45)
 	@Column(name = "count_or_minutes")
@@ -49,4 +50,14 @@ public class Action extends DateEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "routine_category_id")
 	private Category category;
+
+	public static Action of(CreateActionRequest createActionRequest, Category category) {
+		return Action.builder()
+			.actionName(createActionRequest.actionName())
+			.sets(createActionRequest.sets())
+			.countOrMinutes(createActionRequest.countOrMinutes())
+			.description(createActionRequest.description())
+			.category(category)
+			.build();
+	}
 }

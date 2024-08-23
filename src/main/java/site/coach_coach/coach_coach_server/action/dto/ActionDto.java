@@ -1,17 +1,19 @@
 package site.coach_coach.coach_coach_server.action.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import site.coach_coach.coach_coach_server.action.domain.Action;
+import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 
 public record ActionDto(
 	@NotNull
 	Long actionId,
 
-	@NotNull
+	@NotBlank(message = ErrorMessage.INVALID_VALUE)
 	String actionName,
 
-	int sets,
+	Integer sets,
 
 	String countOrMinutes,
 
