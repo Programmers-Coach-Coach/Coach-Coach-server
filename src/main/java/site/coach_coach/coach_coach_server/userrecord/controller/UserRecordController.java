@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
@@ -54,13 +53,13 @@ public class UserRecordController {
 	}
 
 	@GetMapping("/v1/records")
-	public ResponseEntity<UserRecordResponse> getRecords(
+	public ResponseEntity<UserRecordResponse> getUserRecords(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
-		@RequestParam(name = "year") @NotNull int year,
-		@RequestParam(name = "month") @NotNull @Min(1) @Max(12) int month
+		@RequestParam(name = "year") int year,
+		@RequestParam(name = "month") @Min(1) @Max(12) int month
 	) {
 		Long userId = userDetails.getUserId();
-		UserRecordResponse userRecordResponse = userRecordService.getUserRecords(userId, year, month);
+		UserRecordResponse userRecordResponse = userRecordService.getUserRecordsByUserAndPeriod(userId, year, month);
 		return ResponseEntity.ok(userRecordResponse);
 	}
 }

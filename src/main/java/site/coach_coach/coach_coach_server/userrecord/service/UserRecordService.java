@@ -80,7 +80,7 @@ public class UserRecordService {
 	}
 
 	@Transactional(readOnly = true)
-	public UserRecordResponse getUserRecords(Long userId, int year, int month) {
+	public UserRecordResponse getUserRecordsByUserAndPeriod(Long userId, int year, int month) {
 		LocalDate startDate = LocalDate.of(year, month, 1);
 		LocalDate endDate = YearMonth.of(year, month).atEndOfMonth();
 
