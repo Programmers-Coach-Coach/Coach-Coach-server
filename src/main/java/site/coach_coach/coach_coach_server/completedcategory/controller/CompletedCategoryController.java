@@ -29,7 +29,7 @@ public class CompletedCategoryController {
 		@PathVariable(name = "categoryId") Long categoryId
 	) {
 		Long userIdByJwt = userDetails.getUserId();
-		routineService.validateBeforeCompleteCategory(routineId, userIdByJwt, categoryId);
+		routineService.validateBeforeCompleteCategory(routineId, userIdByJwt);
 		Long completedCategoryId = completedCategoryService.createCompletedCategory(routineId, categoryId, userIdByJwt);
 		return ResponseEntity.status(HttpStatus.CREATED).body(new SuccessIdResponse(completedCategoryId));
 
@@ -42,7 +42,7 @@ public class CompletedCategoryController {
 		@PathVariable(name = "categoryId") Long categoryId
 	) {
 		Long userIdByJwt = userDetails.getUserId();
-		routineService.validateBeforeCompleteCategory(routineId, userIdByJwt, categoryId);
+		routineService.validateBeforeCompleteCategory(routineId, userIdByJwt);
 		completedCategoryService.deleteCompletedCategory(routineId, categoryId, userIdByJwt);
 		return ResponseEntity.noContent().build();
 	}
