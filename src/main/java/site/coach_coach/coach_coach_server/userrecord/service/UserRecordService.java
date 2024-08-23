@@ -1,6 +1,8 @@
 package site.coach_coach.coach_coach_server.userrecord.service;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
@@ -78,7 +80,7 @@ public class UserRecordService {
 	}
 
 	public UserRecord getUserRecordForCompleteCategory(Long userId) {
-		LocalDate recordDate = LocalDate.now();
+		LocalDate recordDate = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDate();
 		return userRecordRepository.findByRecordDateAndUser_UserId(recordDate, userId)
 			.orElseGet(() -> {
 				User user = userRepository.findById(userId).orElseThrow(InvalidUserException::new);
