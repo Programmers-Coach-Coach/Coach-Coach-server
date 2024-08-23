@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,6 +25,7 @@ import site.coach_coach.coach_coach_server.routine.dto.CreateRoutineResponse;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineForListDto;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineListRequest;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineResponse;
+import site.coach_coach.coach_coach_server.routine.dto.UpdateRoutineInfoRequest;
 import site.coach_coach.coach_coach_server.routine.dto.UserInfoForRoutineList;
 import site.coach_coach.coach_coach_server.routine.service.RoutineService;
 
@@ -79,7 +81,7 @@ public class RoutineController {
 		@PathVariable(name = "routineId") Long routineId
 	) {
 		Long userIdByJwt = userDetails.getUserId();
-		routineService.validateAndDeleteRoutine(routineId, userIdByJwt);
+		routineService.deleteRoutine(routineId, userIdByJwt);
 		return ResponseEntity.ok(
 			new SuccessResponse(HttpStatus.OK.value(), SuccessMessage.DELETE_ROUTINE_SUCCESS.getMessage()));
 	}
@@ -92,9 +94,20 @@ public class RoutineController {
 	) {
 		Long userIdByJwt = userDetails.getUserId();
 
-		RoutineResponse routineResponse = routineService.getRoutineWithCategoriesAndActions(routineId,
+		RoutineResponse routineResponse = routineService.getRoutineDetail(routineId,
 			userIdByJwt, userIdParam);
 		return ResponseEntity.ok(routineResponse);
+	}
+
+	@PatchMapping("v1/routines/{routineId}")
+	public ResponseEntity<Void> updateRoutineInfo(
+		@AuthenticationPrincipal CustomUserDetails userDetails,
+		@PathVariable(name = "routineId") Long routineId,
+		@RequestBody UpdateRoutineInfoRequest updateRoutineInfoRequest
+	) {
+		Long userIdByJwt = userDetails.getUserId();
+		routineService.updateRoutine(updateRoutineInfoRequest, routineId, userIdByJwt);
+		return ResponseEntity.noContent().build();
 	}
 
 	@GetMapping("/v1/test")

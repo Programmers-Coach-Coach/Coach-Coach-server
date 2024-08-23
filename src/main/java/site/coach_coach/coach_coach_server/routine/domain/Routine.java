@@ -54,6 +54,10 @@ public class Routine extends DateEntity {
 	@OneToMany(mappedBy = "routine")
 	private List<Category> categoryList;
 
+	public void updateRoutineInfo(String routineName, Sport sport) {
+		this.routineName = routineName;
+		this.sport = sport;
+	}
 }
 
 
