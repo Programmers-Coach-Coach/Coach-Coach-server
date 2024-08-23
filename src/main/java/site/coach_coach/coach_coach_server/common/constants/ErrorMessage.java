@@ -48,8 +48,6 @@ public final class ErrorMessage {
 	public static final String INVALID_QUERY_PARAMETER = "잘못된 쿼리 파라미터입니다.";
 	public static final String DUPLICATE_CONTACT = "이미 해당 코치에 대한 문의 요청이 존재합니다.";
 	public static final String DUPLICATE_RECORD = "입력하신 날짜에 대한 기록이 이미 존재합니다.";
-	public static final String DUPLICATE_COMPLETED_CATEGORY = "이미 완료한 카테고리입니다.";
-	public static final String NOT_FOUND_COMPLETED_CATEGORY = "존재하지 않는 카테고리 완료입니다.";
 
 	public static final String CONVERT_FAIL = "파일 변환에 실패했습니다.";
 	public static final String INVALID_FILE_EXTENSION = "허용된 파일 확장자가 아닙니다.";
