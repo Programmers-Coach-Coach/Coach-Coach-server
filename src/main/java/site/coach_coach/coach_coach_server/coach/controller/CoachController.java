@@ -21,6 +21,7 @@ import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
 import site.coach_coach.coach_coach_server.coach.dto.CoachDetailDto;
 import site.coach_coach.coach_coach_server.coach.dto.CoachListResponse;
 import site.coach_coach.coach_coach_server.coach.dto.CoachRequest;
+import site.coach_coach.coach_coach_server.coach.dto.MatchingCoachResponseDto;
 import site.coach_coach.coach_coach_server.coach.dto.MatchingUserResponseDto;
 import site.coach_coach.coach_coach_server.coach.service.CoachService;
 import site.coach_coach.coach_coach_server.common.constants.SuccessMessage;
@@ -142,5 +143,15 @@ public class CoachController {
 		List<MatchingUserResponseDto> matchingUsers = coachService.getMatchingUsersByCoachId(coachUserId);
 
 		return ResponseEntity.ok(matchingUsers);
+	}
+
+	@GetMapping("/v1/users/matches")
+	public ResponseEntity<List<MatchingCoachResponseDto>> getMatchingCoaches(
+		@AuthenticationPrincipal CustomUserDetails userDetails) {
+
+		Long userId = userDetails.getUser().getUserId();
+		List<MatchingCoachResponseDto> matchingCoaches = coachService.getMatchingCoachesByUserId(userId);
+
+		return ResponseEntity.ok(matchingCoaches);
 	}
 }
