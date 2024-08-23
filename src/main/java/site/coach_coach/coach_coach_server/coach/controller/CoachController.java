@@ -139,8 +139,8 @@ public class CoachController {
 		@AuthenticationPrincipal CustomUserDetails userDetails) {
 
 		Long coachUserId = userDetails.getUser().getUserId();
-		List<MatchingUserResponseDto> MatchingUsers = coachService.getMatchingUsersByCoachId(coachUserId);
+		List<MatchingUserResponseDto> matchingUsers = coachService.getMatchingUsersByCoachId(coachUserId);
 
-		return ResponseEntity.ok(MatchingUsers);
+		return ResponseEntity.ok(matchingUsers);
 	}
 }
