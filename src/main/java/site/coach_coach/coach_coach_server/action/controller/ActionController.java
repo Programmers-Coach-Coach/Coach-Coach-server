@@ -31,7 +31,7 @@ public class ActionController {
 		@RequestBody @Valid CreateActionRequest createActionRequest
 	) {
 		Long userIdByJwt = userDetails.getUserId();
-		Long actionId = actionService.createAction(routineId, categoryId, userIdByJwt, createActionRequest);
+		Long actionId = actionService.createAction(categoryId, userIdByJwt, createActionRequest);
 		return ResponseEntity.status(HttpStatus.CREATED)
 			.body(new SuccessIdResponse(actionId));
 	}
