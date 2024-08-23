@@ -20,7 +20,7 @@ public class CompletedCategoryService {
 
 	@Transactional
 	public Long createCompletedCategory(Long routineId, Long categoryId, Long userIdByJwt) {
-		Category category = categoryService.changeIsCompleted(categoryId, routineId);
+		Category category = categoryService.changeIsCompleted(categoryId, routineId, true);
 		UserRecord userRecord = userRecordService.getUserRecordForCompleteCategory(userIdByJwt);
 		CompletedCategory completedCategory = CompletedCategory.builder()
 			.userRecord(userRecord)
@@ -33,7 +33,7 @@ public class CompletedCategoryService {
 
 	@Transactional
 	public void deleteCompletedCategory(Long routineId, Long categoryId, Long userIdByJwt) {
-		Category category = categoryService.changeIsCompleted(categoryId, routineId);
+		Category category = categoryService.changeIsCompleted(categoryId, routineId, false);
 		UserRecord userRecord = userRecordService.getUserRecordForCompleteCategory(userIdByJwt);
 		completedCategoryRepository.deleteByUserRecord_UserRecordIdAndCategory_CategoryId(
 			userRecord.getUserRecordId(), category.getCategoryId());
