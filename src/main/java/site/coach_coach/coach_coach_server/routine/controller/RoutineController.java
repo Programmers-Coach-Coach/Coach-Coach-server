@@ -79,7 +79,7 @@ public class RoutineController {
 		@PathVariable(name = "routineId") Long routineId
 	) {
 		Long userIdByJwt = userDetails.getUserId();
-		routineService.validateAndDeleteRoutine(routineId, userIdByJwt);
+		routineService.deleteRoutine(routineId, userIdByJwt);
 		return ResponseEntity.ok(
 			new SuccessResponse(HttpStatus.OK.value(), SuccessMessage.DELETE_ROUTINE_SUCCESS.getMessage()));
 	}
@@ -92,7 +92,7 @@ public class RoutineController {
 	) {
 		Long userIdByJwt = userDetails.getUserId();
 
-		RoutineResponse routineResponse = routineService.getRoutineWithCategoriesAndActions(routineId,
+		RoutineResponse routineResponse = routineService.getRoutineDetail(routineId,
 			userIdByJwt, userIdParam);
 		return ResponseEntity.ok(routineResponse);
 	}

@@ -212,7 +212,7 @@ public class RoutineControllerTest {
 	@DisplayName("루틴 삭제 성공 테스트")
 	public void deleteRoutineSuccessTest() throws Exception {
 
-		doNothing().when(routineService).validateAndDeleteRoutine(1L, userIdByJwt);
+		doNothing().when(routineService).deleteRoutine(1L, userIdByJwt);
 
 		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/routines/1").with(csrf()))
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -228,7 +228,7 @@ public class RoutineControllerTest {
 		// Given
 		Long routineId = 0L;
 		doThrow(new NoExistRoutineException(ErrorMessage.NOT_FOUND_ROUTINE)).when(routineService)
-			.validateAndDeleteRoutine(anyLong(), anyLong());
+			.deleteRoutine(anyLong(), anyLong());
 
 		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/routines/" + routineId).with(csrf()))
 			.andExpect(MockMvcResultMatchers.status().isNotFound())
@@ -245,7 +245,7 @@ public class RoutineControllerTest {
 		Long routineId = 0L;
 
 		doThrow(new AccessDeniedException()).when(routineService)
-			.validateAndDeleteRoutine(routineId, userIdByJwt);
+			.deleteRoutine(routineId, userIdByJwt);
 
 		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/routines/" + routineId).with(csrf()))
 			.andExpect(MockMvcResultMatchers.status().isForbidden())
@@ -268,7 +268,7 @@ public class RoutineControllerTest {
 		categoryList.add(categoryDto);
 		RoutineResponse routineResponse = new RoutineResponse("routineName", categoryList);
 
-		when(routineService.getRoutineWithCategoriesAndActions(anyLong(), anyLong(), anyLong())).thenReturn(
+		when(routineService.getRoutineDetail(anyLong(), anyLong(), anyLong())).thenReturn(
 			routineResponse);
 
 		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/routines/" + routine.routineId())

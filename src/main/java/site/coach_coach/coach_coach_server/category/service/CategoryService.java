@@ -22,7 +22,7 @@ public class CategoryService {
 
 	@Transactional
 	public Long createCategory(CreateCategoryRequest createCategoryRequest, Long routineId, Long userIdByJwt) {
-		Routine routine = routineService.validateAccessToRoutine(routineId, userIdByJwt);
+		Routine routine = routineService.validateBeforeModifyRoutineDetail(routineId, userIdByJwt);
 
 		Category category = Category.builder()
 			.routine(routine)
@@ -35,7 +35,7 @@ public class CategoryService {
 
 	@Transactional
 	public void deleteCategory(Long routineId, Long categoryId, Long userIdByJwt) {
-		routineService.validateAccessToRoutine(routineId, userIdByJwt);
+		routineService.validateBeforeModifyRoutineDetail(routineId, userIdByJwt);
 
 		Boolean isExistCategory = categoryRepository.existsById(categoryId);
 		if (isExistCategory) {
