@@ -211,7 +211,7 @@ public class CoachService {
 	}
 
 	@Transactional
-	public void likeCoach(Long userId, Long coachId) {
+	public void addCoachToFavorites(Long userId, Long coachId) {
 		User user = userRepository.findById(userId)
 			.orElseThrow(InvalidUserException::new);
 
@@ -220,8 +220,8 @@ public class CoachService {
 
 		if (!userCoachLikeRepository.existsByUser_UserIdAndCoach_CoachId(userId, coachId)) {
 			userCoachLikeRepository.save(new UserCoachLike(null, user, coach));
+			notificationService.createNotification(user.getUserId(), coachId, RelationFunctionEnum.like);
 		}
-		notificationService.createNotification(user.getUserId(), coachId, RelationFunctionEnum.like);
 	}
 
 	private List<Long> getExistingSportsList(List<Long> sportsList) {
