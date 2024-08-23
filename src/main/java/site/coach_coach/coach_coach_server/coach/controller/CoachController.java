@@ -98,12 +98,12 @@ public class CoachController {
 	}
 
 	@DeleteMapping("/v1/coaches/{coachId}/likes")
-	public ResponseEntity<SuccessResponse> cancelLikeCoach(
+	public ResponseEntity<SuccessResponse> deleteCoachToFavorites(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
 		@PathVariable Long coachId) {
 
 		Long userId = userDetails.getUserId();
-		coachService.cancelLikeCoach(userId, coachId);
+		coachService.deleteCoachToFavorites(userId, coachId);
 		return ResponseEntity.ok()
 			.body(new SuccessResponse(HttpStatus.OK.value(), SuccessMessage.DELETE_LIKE_SUCCESS.getMessage()));
 	}
