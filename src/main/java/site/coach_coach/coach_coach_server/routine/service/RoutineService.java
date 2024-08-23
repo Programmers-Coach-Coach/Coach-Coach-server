@@ -24,6 +24,7 @@ import site.coach_coach.coach_coach_server.routine.exception.NoExistRoutineExcep
 import site.coach_coach.coach_coach_server.routine.exception.NotMatchingException;
 import site.coach_coach.coach_coach_server.routine.repository.RoutineRepository;
 import site.coach_coach.coach_coach_server.sport.domain.Sport;
+import site.coach_coach.coach_coach_server.sport.repository.SportRepository;
 import site.coach_coach.coach_coach_server.user.domain.User;
 import site.coach_coach.coach_coach_server.user.repository.UserRepository;
 
@@ -35,7 +36,9 @@ public class RoutineService {
 	private final MatchingRepository matchingRepository;
 	private final CoachRepository coachRepository;
 	private final UserRepository userRepository;
+	private final SportRepository sportRepository;
 
+	@Transactional(readOnly = true)
 	public void checkIsMatching(Long userId, Long coachId) {
 		matchingRepository.findByUser_UserIdAndCoach_CoachId(userId, coachId)
 			.map(Matching::getIsMatching)
@@ -43,7 +46,7 @@ public class RoutineService {
 			.orElseThrow(() -> new NotMatchingException(ErrorMessage.NOT_MATCHING));
 	}
 
-	public RoutineListRequest createRoutineListRequest(Long userIdParam, Long coachIdParam, Long userIdByJwt) {
+	private RoutineListRequest createRoutineListRequest(Long userIdParam, Long coachIdParam, Long userIdByJwt) {
 		if (coachIdParam == null) {
 			Long coachId = getCoachId(userIdByJwt);
 			return new RoutineListRequest(userIdParam, coachId);
@@ -62,11 +65,13 @@ public class RoutineService {
 		}
 	}
 
+	@Transactional(readOnly = true)
 	public Long getCoachId(Long userIdByJwt) {
 		return coachRepository.findCoachIdByUserId(userIdByJwt)
 			.orElseThrow(() -> new UserNotFoundException(ErrorMessage.NOT_FOUND_COACH));
 	}
 
+	@Transactional(readOnly = true)
 	public List<RoutineForListDto> getRoutineForList(RoutineListRequest routineListRequest) {
 		List<RoutineForListDto> routineListResponse = new ArrayList<>();
 		List<Routine> routines;
@@ -90,6 +95,7 @@ public class RoutineService {
 		return routineListResponse;
 	}
 
+	@Transactional(readOnly = true)
 	public UserInfoForRoutineList getUserInfoForRoutineList(Long userIdParam, Long coachIdParam) {
 		if (userIdParam == null) {
 			User userInfo = coachRepository.findById(coachIdParam)
@@ -105,6 +111,7 @@ public class RoutineService {
 		}
 	}
 
+	@Transactional
 	public Long createRoutine(CreateRoutineRequest createRoutineRequest, Long userIdByJwt) {
 		Sport sportInfo = Sport.builder()
 			.sportId(createRoutineRequest.sportId())
@@ -124,15 +131,16 @@ public class RoutineService {
 		return routineRepository.save(routineBuilder.build()).getRoutineId();
 	}
 
-	public RoutineResponse getRoutineWithCategoriesAndActions(Long routineId, Long userIdByJwt, Long userIdParam) {
+	@Transactional(readOnly = true)
+	public RoutineResponse getRoutineDetail(Long routineId, Long userIdByJwt, Long userIdParam) {
 		Routine routine = routineRepository.findById(routineId)
 			.orElseThrow(() -> new NoExistRoutineException(ErrorMessage.NOT_FOUND_ROUTINE));
 
-		validateGetRoutine(routine, userIdParam, userIdByJwt);
+		validateBeforeGetRoutine(routine, userIdParam, userIdByJwt);
 		return RoutineResponse.from(routine);
 	}
 
-	public void validateGetRoutine(Routine routine, Long userIdParam, Long userIdByJwt) {
+	private void validateBeforeGetRoutine(Routine routine, Long userIdParam, Long userIdByJwt) {
 		if (userIdParam == null) {
 			if (!routine.getUserId().equals(userIdByJwt)) {
 				throw new AccessDeniedException();
@@ -145,7 +153,14 @@ public class RoutineService {
 		}
 	}
 
-	public void validateAndDeleteRoutine(Long routineId, Long userIdByJwt) {
+	@Transactional
+	public void deleteRoutine(Long routineId, Long userIdByJwt) {
+		validateBeforeModifyRoutineDetail(routineId, userIdByJwt);
+		routineRepository.deleteById(routineId);
+	}
+
+	@Transactional
+	public Routine validateBeforeModifyRoutineDetail(Long routineId, Long userIdByJwt) {
 		Routine routine = routineRepository.findById(routineId)
 			.orElseThrow(() -> new NoExistRoutineException(ErrorMessage.NOT_FOUND_ROUTINE));
 
@@ -159,27 +174,10 @@ public class RoutineService {
 				throw new AccessDeniedException();
 			}
 		}
-
-		routineRepository.deleteById(routineId);
-	}
-
-	@Transactional
-	public Routine validateAccessToRoutine(Long routineId, Long userIdByJwt) {
-		Routine routine = routineRepository.findById(routineId)
-			.orElseThrow(() -> new NoExistRoutineException(ErrorMessage.NOT_FOUND_ROUTINE));
-
-		if (!routine.getUserId().equals(userIdByJwt)) {
-			Long coachId = getCoachId(userIdByJwt);
-			if (routine.getCoachId() != coachId) {
-				throw new AccessDeniedException();
-			}
-		} else if (routine.getCoachId() != null) {
-			throw new AccessDeniedException();
-		}
-
 		return routine;
 	}
 
+	@Transactional(readOnly = true)
 	public void validateBeforeCompleteCategory(Long routineId, Long userIdByJwt) {
 		Routine routine = routineRepository.findById(routineId)
 			.orElseThrow(() -> new NoExistRoutineException(ErrorMessage.NOT_FOUND_ROUTINE));
