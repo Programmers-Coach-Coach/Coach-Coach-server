@@ -17,6 +17,7 @@ import site.coach_coach.coach_coach_server.coach.dto.CoachDetailDto;
 import site.coach_coach.coach_coach_server.coach.dto.CoachListDto;
 import site.coach_coach.coach_coach_server.coach.dto.CoachListResponse;
 import site.coach_coach.coach_coach_server.coach.dto.CoachRequest;
+import site.coach_coach.coach_coach_server.coach.dto.MatchingUserResponseDto;
 import site.coach_coach.coach_coach_server.coach.exception.AlreadyMatchedException;
 import site.coach_coach.coach_coach_server.coach.exception.DuplicateContactException;
 import site.coach_coach.coach_coach_server.coach.exception.NotFoundCoachException;
@@ -247,6 +248,28 @@ public class CoachService {
 		if (userCoachLikeRepository.existsByUser_UserIdAndCoach_CoachId(userId, coachId)) {
 			userCoachLikeRepository.deleteByUser_UserIdAndCoach_CoachId(userId, coachId);
 		}
+	}
+
+	public List<MatchingUserResponseDto> getMatchingUsersByCoachId(Long coachUserId) {
+		Long coachId = coachRepository.findCoachIdByUserId(coachUserId)
+			.orElseThrow(() -> new NotFoundCoachException(ErrorMessage.NOT_FOUND_COACH));
+
+		List<Matching> matchings = matchingRepository.findByCoach_CoachId(coachId);
+
+		return matchings.stream()
+			.map(this::buildMatchingUserResponseDto)
+			.collect(Collectors.toList());
+	}
+
+	private MatchingUserResponseDto buildMatchingUserResponseDto(Matching matching) {
+		User user = matching.getUser();
+
+		return new MatchingUserResponseDto(
+			user.getUserId(),
+			user.getNickname(),
+			user.getProfileImageUrl(),
+			matching.getIsMatching()
+		);
 	}
 
 	private List<Long> getExistingSportsList(List<Long> sportsList) {
