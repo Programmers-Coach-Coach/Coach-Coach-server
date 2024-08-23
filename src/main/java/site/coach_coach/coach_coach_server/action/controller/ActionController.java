@@ -54,7 +54,7 @@ public class ActionController {
 	public ResponseEntity<Void> updateActionInfo(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
 		@PathVariable(name = "actionId") Long actionId,
-		@RequestBody UpdateActionInfoRequest updateActionInfoRequest
+		@RequestBody @Valid UpdateActionInfoRequest updateActionInfoRequest
 	) {
 		Long userIdByJwt = userDetails.getUserId();
 		actionService.updateActionInfo(updateActionInfoRequest, actionId, userIdByJwt);
