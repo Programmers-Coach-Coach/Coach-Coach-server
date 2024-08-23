@@ -2,6 +2,8 @@ package site.coach_coach.coach_coach_server.category.domain;
 
 import java.util.List;
 
+import org.hibernate.annotations.DynamicUpdate;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -19,6 +21,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import site.coach_coach.coach_coach_server.action.domain.Action;
 import site.coach_coach.coach_coach_server.common.domain.DateEntity;
 import site.coach_coach.coach_coach_server.completedcategory.domain.CompletedCategory;
@@ -27,6 +30,8 @@ import site.coach_coach.coach_coach_server.routine.domain.Routine;
 @Table(name = "routine_categories")
 @Entity
 @Getter
+@Setter
+@DynamicUpdate
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

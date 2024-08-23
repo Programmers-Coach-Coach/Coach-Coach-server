@@ -17,7 +17,10 @@ public enum SuccessMessage {
 	UPDATE_COACH_PROFILE_SUCCESS("업로드 성공"),
 	DELETE_NOTIFICATION_SUCCESS("알림 삭제 성공"),
 	MATCH_MEMBER_SUCCESS("관리 회원에 등록되었습니다."),
-	CREATE_CONTACT_SUCCESS("문의 회원으로 등록되었습니다.");
+	CREATE_CONTACT_SUCCESS("문의 회원으로 등록되었습니다."),
+	CREATE_LIKE_SUCCESS("관심 코치에 등록되었습니다."),
+	DELETE_LIKE_SUCCESS("관심 코치 취소 되었습니다."),
+	DELETE_MATCHING("매칭 삭제 성공");
 
 	private final String message;
 

@@ -1,8 +1,11 @@
 package site.coach_coach.coach_coach_server.coach.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +21,7 @@ import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
 import site.coach_coach.coach_coach_server.coach.dto.CoachDetailDto;
 import site.coach_coach.coach_coach_server.coach.dto.CoachListResponse;
 import site.coach_coach.coach_coach_server.coach.dto.CoachRequest;
+import site.coach_coach.coach_coach_server.coach.dto.MatchingUserResponseDto;
 import site.coach_coach.coach_coach_server.coach.service.CoachService;
 import site.coach_coach.coach_coach_server.common.constants.SuccessMessage;
 import site.coach_coach.coach_coach_server.common.response.SuccessResponse;
@@ -92,7 +96,51 @@ public class CoachController {
 	) {
 		User user = userDetails.getUser();
 		coachService.contactCoach(user, coachId);
-		return ResponseEntity.ok(
-			new SuccessResponse(HttpStatus.OK.value(), SuccessMessage.CREATE_CONTACT_SUCCESS.getMessage()));
+		return ResponseEntity.status(HttpStatus.CREATED)
+			.body(new SuccessResponse(HttpStatus.CREATED.value(), SuccessMessage.CREATE_CONTACT_SUCCESS.getMessage()));
+	}
+
+	@DeleteMapping("/v1/coaches/matches/{userId}")
+	public ResponseEntity<SuccessResponse> deleteMatching(
+		@AuthenticationPrincipal CustomUserDetails userDetails,
+		@PathVariable Long userId) {
+
+		Long coachUserId = userDetails.getUser().getUserId();
+		coachService.deleteMatching(coachUserId, userId);
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(new SuccessResponse(HttpStatus.OK.value(), SuccessMessage.DELETE_MATCHING.getMessage()));
+	}
+
+	@PostMapping("/v1/coaches/{coachId}/likes")
+	public ResponseEntity<SuccessResponse> addCoachToFavorites(
+		@AuthenticationPrincipal CustomUserDetails userDetails,
+		@PathVariable Long coachId) {
+
+		Long userId = userDetails.getUserId();
+		coachService.addCoachToFavorites(userId, coachId);
+
+		return ResponseEntity.status(HttpStatus.CREATED)
+			.body(new SuccessResponse(HttpStatus.CREATED.value(), SuccessMessage.CREATE_LIKE_SUCCESS.getMessage()));
+	}
+
+	@DeleteMapping("/v1/coaches/{coachId}/likes")
+	public ResponseEntity<SuccessResponse> deleteCoachToFavorites(
+		@AuthenticationPrincipal CustomUserDetails userDetails,
+		@PathVariable Long coachId) {
+
+		Long userId = userDetails.getUserId();
+		coachService.deleteCoachToFavorites(userId, coachId);
+		return ResponseEntity.ok()
+			.body(new SuccessResponse(HttpStatus.OK.value(), SuccessMessage.DELETE_LIKE_SUCCESS.getMessage()));
+	}
+
+	@GetMapping("/v1/coaches/matches")
+	public ResponseEntity<List<MatchingUserResponseDto>> getMatchingUsers(
+		@AuthenticationPrincipal CustomUserDetails userDetails) {
+
+		Long coachUserId = userDetails.getUser().getUserId();
+		List<MatchingUserResponseDto> matchingUsers = coachService.getMatchingUsersByCoachId(coachUserId);
+
+		return ResponseEntity.ok(matchingUsers);
 	}
 }
