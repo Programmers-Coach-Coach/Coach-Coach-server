@@ -23,7 +23,7 @@ import site.coach_coach.coach_coach_server.common.response.SuccessIdResponse;
 public class ActionController {
 	private final ActionService actionService;
 
-	@PostMapping("/v1/routines/{routineId}/{categoryId}")
+	@PostMapping("/v1/categories/{categoryId}")
 	public ResponseEntity<SuccessIdResponse> createActionIntoCategory(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
 		@PathVariable(name = "routineId") Long routineId,
