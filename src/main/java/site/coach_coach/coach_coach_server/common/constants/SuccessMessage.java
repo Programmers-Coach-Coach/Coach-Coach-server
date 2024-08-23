@@ -21,7 +21,8 @@ public enum SuccessMessage {
 	CREATE_CONTACT_SUCCESS("문의 회원으로 등록되었습니다."),
 	CREATE_LIKE_SUCCESS("관심 코치에 등록되었습니다."),
 	DELETE_LIKE_SUCCESS("관심 코치 취소 되었습니다."),
-	DELETE_MATCHING("매칭 삭제 성공");
+	DELETE_MATCHING("매칭 삭제 성공"),
+	CREATE_REVIEW_SUCCESS("리뷰가 등록되었습니다.");
 
 	private final String message;
 

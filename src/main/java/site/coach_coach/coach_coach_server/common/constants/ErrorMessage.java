@@ -51,7 +51,7 @@ public final class ErrorMessage {
 	public static final String INVALID_QUERY_PARAMETER = "잘못된 쿼리 파라미터입니다.";
 	public static final String DUPLICATE_CONTACT = "이미 해당 코치에 대한 문의 요청이 존재합니다.";
 	public static final String DUPLICATE_RECORD = "입력하신 날짜에 대한 기록이 이미 존재합니다.";
-
+	public static final String ALREADY_EXISTS_REVIEW = "이미 해당 코치에 대한 리뷰가 존재합니다.";
 	public static final String CONVERT_FAIL = "파일 변환에 실패했습니다.";
 	public static final String INVALID_FILE_EXTENSION = "허용된 파일 확장자가 아닙니다.";
 	public static final String INVALID_FILE_NAME = "유효하지 않은 파일 이름입니다.";
