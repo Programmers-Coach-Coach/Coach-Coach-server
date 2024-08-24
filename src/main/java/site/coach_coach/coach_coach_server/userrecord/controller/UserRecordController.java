@@ -56,13 +56,14 @@ public class UserRecordController {
 	}
 
 	@GetMapping("/v1/records")
-	public ResponseEntity<UserRecordResponse> getUserRecords(
+	public ResponseEntity<UserRecordResponse> getUserRecordsWithCompletionStatus(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
 		@RequestParam(name = "year") @NotNull Integer year,
 		@RequestParam(name = "month") @NotNull @Min(1) @Max(12) Integer month
 	) {
 		Long userId = userDetails.getUserId();
-		UserRecordResponse userRecordResponse = userRecordService.getUserRecordsByUserAndPeriod(userId, year, month);
+		UserRecordResponse userRecordResponse = userRecordService.getUserRecordsByUserAndPeriod(userId, year,
+			month);
 		return ResponseEntity.ok(userRecordResponse);
 	}
 }

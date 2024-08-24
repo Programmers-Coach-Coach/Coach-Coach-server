@@ -1,6 +1,7 @@
 package site.coach_coach.coach_coach_server.userrecord.domain;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -17,6 +19,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import site.coach_coach.coach_coach_server.common.domain.DateEntity;
+import site.coach_coach.coach_coach_server.completedcategory.domain.CompletedCategory;
 import site.coach_coach.coach_coach_server.user.domain.User;
 
 @Table(name = "user_records")
@@ -50,6 +53,9 @@ public class UserRecord extends DateEntity {
 	@NotNull
 	@Column(name = "record_date")
 	private LocalDate recordDate;
+
+	@OneToMany(mappedBy = "userRecord", fetch = FetchType.LAZY)
+	private List<CompletedCategory> completedCategories;
 
 	public void updateBodyInfo(Double weight, Double skeletalMuscle, Double fatPercentage, Double bmi) {
 		this.weight = weight;

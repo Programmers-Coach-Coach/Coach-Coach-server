@@ -7,7 +7,6 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -84,15 +83,16 @@ public class UserRecordService {
 		LocalDate startDate = LocalDate.of(year, month, 1);
 		LocalDate endDate = YearMonth.of(year, month).atEndOfMonth();
 
-		List<UserRecord> userRecords = userRecordRepository.findByUser_UserIdAndRecordDateBetween(
-			userId, startDate, endDate
-		);
+		List<UserRecord> userRecords =
+			userRecordRepository.findByUser_UserIdAndRecordDateBetweenWithCompletedCategories(
+				userId, startDate, endDate
+			);
 
 		List<RecordResponse> records = userRecords.stream()
 			.map(record -> new RecordResponse(
 				record.getUserRecordId(),
 				record.getRecordDate(),
-				isCategoryCompleted(userId, record.getUserRecordId())
+				!record.getCompletedCategories().isEmpty()
 			))
 			.collect(Collectors.toList());
 
@@ -118,12 +118,5 @@ public class UserRecordService {
 		} catch (DateTimeParseException e) {
 			throw new InvalidInputException(ErrorMessage.INVALID_VALUE);
 		}
-	}
-
-	private boolean isCategoryCompleted(Long userId, Long recordId) {
-		Set<Long> completedRecordIds = completedCategoryRepository.findAllByUserRecord_User_UserId(userId).stream()
-			.map(completedCategory -> completedCategory.getUserRecord().getUserRecordId())
-			.collect(Collectors.toSet());
-		return completedRecordIds.contains(recordId);
 	}
 }
