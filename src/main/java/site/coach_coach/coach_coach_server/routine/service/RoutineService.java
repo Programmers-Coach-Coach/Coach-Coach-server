@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import site.coach_coach.coach_coach_server.coach.exception.NotFoundSportException;
 import site.coach_coach.coach_coach_server.coach.repository.CoachRepository;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.common.exception.AccessDeniedException;
@@ -164,7 +165,8 @@ public class RoutineService {
 	public void updateRoutine(UpdateRoutineInfoRequest updateRoutineInfoRequest, Long routineId, Long userIdByJwt) {
 		Routine routine = validateIsMyRoutine(routineId, userIdByJwt);
 
-		Sport sport = sportRepository.getReferenceById(updateRoutineInfoRequest.sportId());
+		Sport sport = sportRepository.findById(updateRoutineInfoRequest.sportId())
+			.orElseThrow(() -> new NotFoundSportException(ErrorMessage.NOT_FOUND_SPORTS));
 		routine.updateRoutineInfo(updateRoutineInfoRequest.routineName(), sport);
 	}
 
