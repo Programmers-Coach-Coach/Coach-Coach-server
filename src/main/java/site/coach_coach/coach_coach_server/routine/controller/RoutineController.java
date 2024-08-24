@@ -23,7 +23,6 @@ import site.coach_coach.coach_coach_server.common.response.SuccessResponse;
 import site.coach_coach.coach_coach_server.routine.dto.CreateRoutineRequest;
 import site.coach_coach.coach_coach_server.routine.dto.CreateRoutineResponse;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineForListDto;
-import site.coach_coach.coach_coach_server.routine.dto.RoutineListRequest;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineResponse;
 import site.coach_coach.coach_coach_server.routine.dto.UpdateRoutineInfoRequest;
 import site.coach_coach.coach_coach_server.routine.dto.UserInfoForRoutineList;
@@ -42,10 +41,9 @@ public class RoutineController {
 		@RequestParam(name = "coachId", required = false) Long coachIdParam) {
 
 		Long userIdByJwt = userDetails.getUserId();
-		RoutineListRequest routineListRequest = routineService.confirmIsMatching(userIdParam, coachIdParam,
-			userIdByJwt);
 
-		List<RoutineForListDto> routineListResponse = routineService.getRoutineForList(routineListRequest);
+		List<RoutineForListDto> routineListResponse = routineService.getRoutineForList(userIdParam, coachIdParam,
+			userIdByJwt);
 		return ResponseEntity.ok(routineListResponse);
 	}
 
@@ -56,8 +54,8 @@ public class RoutineController {
 		@RequestParam(name = "coachId", required = false) Long coachIdParam) {
 
 		Long userIdByJwt = userDetails.getUserId();
-		routineService.confirmIsMatching(userIdParam, coachIdParam, userIdByJwt);
 
+		routineService.confirmIsMatching(userIdParam, coachIdParam, userIdByJwt);
 		UserInfoForRoutineList userInfoForRoutineList = routineService.getUserInfoForRoutineList(userIdParam,
 			coachIdParam);
 

@@ -78,15 +78,12 @@ public class RoutineControllerTest {
 	@DisplayName("자신이 만든 루틴 목록 조회 테스트")
 	public void getRoutineListByMyselfTest() throws Exception {
 		// Given
-		Long userIdParam = null;
-		Long coachIdParam = null;
 		Long userIdByJwt = 1L;
 
 		// Set the SecurityContext with mockUserDetails
 		setSecurityContextWithMockUserDetails(userIdByJwt);
 
-		when(routineService.confirmIsMatching(userIdParam, coachIdParam, userIdByJwt)).thenReturn(routineListRequest);
-		when(routineService.getRoutineForList(routineListRequest)).thenReturn(routineList);
+		when(routineService.getRoutineForList(null, null, userIdByJwt)).thenReturn(routineList);
 
 		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/routines"))
 			.andExpect(MockMvcResultMatchers.status().isOk())
@@ -99,20 +96,17 @@ public class RoutineControllerTest {
 	@DisplayName("코치가 만들어준 루틴 목록 조회 테스트")
 	public void getRoutineListByCoachTest() throws Exception {
 		// Given
-		Long userIdParam = 2L;
-		Long coachParam = 2L;
+		Long coachIdParam = 2L;
 		Long userIdByJwt = 1L;
-		RoutineListRequest request = new RoutineListRequest(userIdParam, coachParam);
 
 		// Set the SecurityContext with mockUserDetails
 		setSecurityContextWithMockUserDetails(userIdByJwt);
 
-		when(routineService.getCoachId(userIdByJwt)).thenReturn(2L);
+		when(routineService.getRoutineForList(null, coachIdParam, userIdByJwt)).thenReturn(routineList);
 
-		when(routineService.confirmIsMatching(userIdParam, coachParam, userIdByJwt)).thenReturn(request);
-		when(routineService.getRoutineForList(routineListRequest)).thenReturn(routineList);
-
-		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/routines"))
+		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/routines")
+				.contentType(MediaType.APPLICATION_JSON)
+				.queryParam("coachId", coachIdParam.toString()))
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn();
 
@@ -128,8 +122,8 @@ public class RoutineControllerTest {
 		// Set the SecurityContext with mockUserDetails
 		setSecurityContextWithMockUserDetails(userIdByJwt);
 
-		when(routineService.confirmIsMatching(null, null, userIdByJwt)).thenReturn(routineListRequest);
-		when(routineService.getRoutineForList(routineListRequest)).thenReturn(new ArrayList<>()); // Empty list
+		when(routineService.getRoutineForList(null, null, userIdByJwt))
+			.thenReturn(new ArrayList<>());
 
 		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/routines"))
 			.andExpect(MockMvcResultMatchers.status().isOk())
