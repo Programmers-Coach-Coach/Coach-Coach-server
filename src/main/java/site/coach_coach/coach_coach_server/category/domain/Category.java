@@ -63,4 +63,8 @@ public class Category extends DateEntity {
 	public void updateCategoryInfo(String categoryName) {
 		this.categoryName = categoryName;
 	}
+
+	public void changeIsCompleted() {
+		this.isCompleted = !this.isCompleted;
+	}
 }

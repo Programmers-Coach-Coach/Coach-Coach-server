@@ -34,7 +34,7 @@ public final class ErrorMessage {
 	public static final String NOT_FOUND_ACTION = "존재하지 않는 운동입니다.";
 	public static final String NOT_FOUND_RECORD = "존재하지 않는 기록입니다.";
 	public static final String NOT_FOUND_NOTIFICATION = "해당 알림을 찾을 수 없습니다.";
-	public static final String NOT_FOUND_COMPLETED_CATEGORY = "존재하지 않는 카테고리입니다.";
+	public static final String NOT_FOUND_COMPLETED_CATEGORY = "아직 완료되지 않은 카테고리입니다.";
 
 	public static final String EXPIRED_TOKEN = "만료된 토큰입니다.";
 	public static final String INVALID_TOKEN = "유효하지 않은 토큰입니다.";

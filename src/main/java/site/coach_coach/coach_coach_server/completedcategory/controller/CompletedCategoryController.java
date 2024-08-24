@@ -22,28 +22,24 @@ public class CompletedCategoryController {
 	private final CompletedCategoryService completedCategoryService;
 	private final RoutineService routineService;
 
-	@PostMapping("/v1/routines/{routineId}/{categoryId}/completed")
+	@PostMapping("/v1/categories/{categoryId}/completed")
 	public ResponseEntity<SuccessIdResponse> createCategoryCompletion(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
-		@PathVariable(name = "routineId") Long routineId,
 		@PathVariable(name = "categoryId") Long categoryId
 	) {
 		Long userIdByJwt = userDetails.getUserId();
-		routineService.validateBeforeCompleteCategory(routineId, userIdByJwt);
-		Long completedCategoryId = completedCategoryService.createCompletedCategory(routineId, categoryId, userIdByJwt);
+		Long completedCategoryId = completedCategoryService.createCompletedCategory(categoryId, userIdByJwt);
 		return ResponseEntity.status(HttpStatus.CREATED).body(new SuccessIdResponse(completedCategoryId));
 
 	}
 
-	@DeleteMapping("/v1/routines/{routineId}/{categoryId}/completed")
+	@DeleteMapping("/v1/categories/{categoryId}/completed")
 	public ResponseEntity<Void> deleteCategoryCompletion(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
-		@PathVariable(name = "routineId") Long routineId,
 		@PathVariable(name = "categoryId") Long categoryId
 	) {
 		Long userIdByJwt = userDetails.getUserId();
-		routineService.validateBeforeCompleteCategory(routineId, userIdByJwt);
-		completedCategoryService.deleteCompletedCategory(routineId, categoryId, userIdByJwt);
+		completedCategoryService.deleteCompletedCategory(categoryId, userIdByJwt);
 		return ResponseEntity.noContent().build();
 	}
 
