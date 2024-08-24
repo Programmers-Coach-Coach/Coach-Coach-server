@@ -22,7 +22,7 @@ public class CategoryService {
 
 	@Transactional
 	public Long createCategory(CreateCategoryRequest createCategoryRequest, Long routineId, Long userIdByJwt) {
-		Routine routine = routineService.validateBeforeModifyRoutineDetail(routineId, userIdByJwt);
+		Routine routine = routineService.validateIsMyRoutine(routineId, userIdByJwt);
 
 		Category category = Category.builder()
 			.routine(routine)
@@ -34,15 +34,15 @@ public class CategoryService {
 	}
 
 	@Transactional
-	public void deleteCategory(Long routineId, Long categoryId, Long userIdByJwt) {
-		routineService.validateBeforeModifyRoutineDetail(routineId, userIdByJwt);
+	public void deleteCategory(Long categoryId, Long userIdByJwt) {
 
-		Boolean isExistCategory = categoryRepository.existsById(categoryId);
-		if (isExistCategory) {
-			categoryRepository.deleteById(categoryId);
-		} else {
-			throw new NotFoundCategoryException(ErrorMessage.NOT_FOUND_CATEGORY);
-		}
+		Category category = categoryRepository.findById(categoryId)
+			.orElseThrow(() -> new NotFoundCategoryException(ErrorMessage.NOT_FOUND_CATEGORY));
+
+		routineService.validateIsMyRoutine(category.getRoutine().getRoutineId(), userIdByJwt);
+
+		categoryRepository.deleteById(categoryId);
+
 	}
 
 	@Transactional
@@ -58,7 +58,6 @@ public class CategoryService {
 			}
 		}
 
-		// Dirty Checking
 		category.setIsCompleted(!category.getIsCompleted());
 		return category;
 	}
