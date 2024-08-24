@@ -194,14 +194,4 @@ public class RoutineService {
 		}
 		return routine;
 	}
-
-	@Transactional(readOnly = true)
-	public void validateBeforeCompleteCategory(Long routineId, Long userIdByJwt) {
-		Routine routine = routineRepository.findById(routineId)
-			.orElseThrow(() -> new NoExistRoutineException(ErrorMessage.NOT_FOUND_ROUTINE));
-
-		if (!routine.getUser().getUserId().equals(userIdByJwt)) {
-			throw new AccessDeniedException();
-		}
-	}
 }
