@@ -81,9 +81,9 @@ public class RoutineService {
 		List<Routine> routines;
 
 		if (routineListRequest.coachId() == null) {
-			routines = routineRepository.findByUserIdAndCoachIdIsNull(routineListRequest.userId());
+			routines = routineRepository.findByUser_UserIdAndCoach_CoachIdIsNull(routineListRequest.userId());
 		} else {
-			routines = routineRepository.findByUserIdAndCoachId(routineListRequest.userId(),
+			routines = routineRepository.findByUser_UserIdAndCoach_CoachId(routineListRequest.userId(),
 				routineListRequest.coachId());
 		}
 
