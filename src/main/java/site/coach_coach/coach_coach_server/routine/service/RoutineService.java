@@ -57,6 +57,12 @@ public class RoutineService {
 		}
 	}
 
+	@Transactional(readOnly = true)
+	public Long getCoachId(Long userIdByJwt) {
+		return coachRepository.findCoachIdByUserId(userIdByJwt)
+			.orElseThrow(() -> new UserNotFoundException(ErrorMessage.NOT_FOUND_COACH));
+	}
+
 	public RoutineListRequest confirmIsMatching(Long userIdParam, Long coachIdParam, Long userIdByJwt) {
 		if (coachIdParam == null && userIdParam == null) {
 			return new RoutineListRequest(userIdByJwt, null);
@@ -68,13 +74,9 @@ public class RoutineService {
 	}
 
 	@Transactional(readOnly = true)
-	public Long getCoachId(Long userIdByJwt) {
-		return coachRepository.findCoachIdByUserId(userIdByJwt)
-			.orElseThrow(() -> new UserNotFoundException(ErrorMessage.NOT_FOUND_COACH));
-	}
+	public List<RoutineForListDto> getRoutineForList(Long userIdParam, Long coachIdParam, Long userIdByJwt) {
+		RoutineListRequest routineListRequest = confirmIsMatching(userIdParam, coachIdParam, userIdByJwt);
 
-	@Transactional(readOnly = true)
-	public List<RoutineForListDto> getRoutineForList(RoutineListRequest routineListRequest) {
 		List<RoutineForListDto> routineListResponse = new ArrayList<>();
 		List<Routine> routines;
 
