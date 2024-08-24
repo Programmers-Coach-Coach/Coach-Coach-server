@@ -62,8 +62,7 @@ public class UserRecordController {
 		@RequestParam(name = "month") @NotNull @Min(1) @Max(12) Integer month
 	) {
 		Long userId = userDetails.getUserId();
-		UserRecordResponse userRecordResponse = userRecordService.getUserRecordsByUserAndPeriod(userId, year,
-			month);
+		UserRecordResponse userRecordResponse = userRecordService.getUserRecordsByUserAndPeriod(userId, year, month);
 		return ResponseEntity.ok(userRecordResponse);
 	}
 }
