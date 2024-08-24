@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import site.coach_coach.coach_coach_server.coach.exception.NotFoundSportException;
 import site.coach_coach.coach_coach_server.coach.repository.CoachRepository;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.common.exception.AccessDeniedException;
@@ -19,6 +20,7 @@ import site.coach_coach.coach_coach_server.routine.dto.CreateRoutineRequest;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineForListDto;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineListRequest;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineResponse;
+import site.coach_coach.coach_coach_server.routine.dto.UpdateRoutineInfoRequest;
 import site.coach_coach.coach_coach_server.routine.dto.UserInfoForRoutineList;
 import site.coach_coach.coach_coach_server.routine.exception.NoExistRoutineException;
 import site.coach_coach.coach_coach_server.routine.exception.NotMatchingException;
@@ -157,6 +159,15 @@ public class RoutineService {
 	public void deleteRoutine(Long routineId, Long userIdByJwt) {
 		validateIsMyRoutine(routineId, userIdByJwt);
 		routineRepository.deleteById(routineId);
+	}
+
+	@Transactional
+	public void updateRoutine(UpdateRoutineInfoRequest updateRoutineInfoRequest, Long routineId, Long userIdByJwt) {
+		Routine routine = validateIsMyRoutine(routineId, userIdByJwt);
+
+		Sport sport = sportRepository.findById(updateRoutineInfoRequest.sportId())
+			.orElseThrow(() -> new NotFoundSportException(ErrorMessage.NOT_FOUND_SPORTS));
+		routine.updateRoutineInfo(updateRoutineInfoRequest.routineName(), sport);
 	}
 
 	@Transactional
