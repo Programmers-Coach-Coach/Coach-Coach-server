@@ -9,6 +9,8 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +24,7 @@ import site.coach_coach.coach_coach_server.user.domain.User;
 import site.coach_coach.coach_coach_server.user.exception.InvalidUserException;
 import site.coach_coach.coach_coach_server.user.repository.UserRepository;
 import site.coach_coach.coach_coach_server.userrecord.domain.UserRecord;
+import site.coach_coach.coach_coach_server.userrecord.dto.BodyInfoChartResponse;
 import site.coach_coach.coach_coach_server.userrecord.dto.RecordResponse;
 import site.coach_coach.coach_coach_server.userrecord.dto.UserRecordCreateRequest;
 import site.coach_coach.coach_coach_server.userrecord.dto.UserRecordResponse;
@@ -97,6 +100,31 @@ public class UserRecordService {
 			.collect(Collectors.toList());
 
 		return new UserRecordResponse(records);
+	}
+
+	@Transactional(readOnly = true)
+	public List<BodyInfoChartResponse> getBodyInfoChart(Long userId, String type) {
+		List<String> validTypes = List.of("weight", "skeletalMuscle", "fatPercentage", "bmi");
+		if (!validTypes.contains(type)) {
+			throw new InvalidInputException(ErrorMessage.INVALID_VALUE);
+		}
+		Pageable pageable = PageRequest.of(0, 100);
+		List<UserRecord> userRecords = userRecordRepository.findUserRecordByTypeAndUserId(
+			userId, type, pageable
+		);
+
+		return userRecords.stream()
+			.map(record -> {
+				Double value = switch (type) {
+					case "weight" -> record.getWeight();
+					case "skeletalMuscle" -> record.getSkeletalMuscle();
+					case "fatPercentage" -> record.getFatPercentage();
+					case "bmi" -> record.getBmi();
+					default -> throw new InvalidInputException(ErrorMessage.INVALID_VALUE);
+				};
+				return new BodyInfoChartResponse(record.getRecordDate(), value);
+			})
+			.collect(Collectors.toList());
 	}
 
 	public UserRecord getUserRecordForCompleteCategory(Long userId) {

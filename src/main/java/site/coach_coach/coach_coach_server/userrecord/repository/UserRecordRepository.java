@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -24,4 +25,19 @@ public interface UserRecordRepository extends JpaRepository<UserRecord, Long> {
 		@Param("endDate") LocalDate endDate);
 
 	Optional<UserRecord> findByRecordDateAndUser_UserId(LocalDate recordDate, Long userId);
+
+	@Query("SELECT ur FROM UserRecord ur "
+		+ "WHERE ur.user.userId = :userId "
+		+ "AND ("
+		+ "(:type = 'weight' AND ur.weight IS NOT NULL) OR "
+		+ "(:type = 'skeletalMuscle' AND ur.skeletalMuscle IS NOT NULL) OR "
+		+ "(:type = 'fatPercentage' AND ur.fatPercentage IS NOT NULL) OR "
+		+ "(:type = 'bmi' AND ur.bmi IS NOT NULL)"
+		+ ") "
+		+ "ORDER BY ur.recordDate DESC")
+	List<UserRecord> findUserRecordByTypeAndUserId(
+		@Param("userId") Long userId,
+		@Param("type") String type,
+		Pageable pageable
+	);
 }
