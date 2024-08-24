@@ -25,7 +25,7 @@ public class CompletedCategoryService {
 	private final UserRecordService userRecordService;
 	private final CategoryRepository categoryRepository;
 
-	private Category validateBeforeCompleteCategory(Long categoryId, Long userIdByJwt) {
+	private Category validateAccessToCategory(Long categoryId, Long userIdByJwt) {
 		Category category = categoryRepository.findById(categoryId)
 			.orElseThrow(() -> new NotFoundCategoryException(ErrorMessage.NOT_FOUND_CATEGORY));
 
@@ -37,7 +37,7 @@ public class CompletedCategoryService {
 
 	@Transactional
 	public Long createCompletedCategory(Long categoryId, Long userIdByJwt) {
-		Category category = validateBeforeCompleteCategory(categoryId, userIdByJwt);
+		Category category = validateAccessToCategory(categoryId, userIdByJwt);
 
 		UserRecord userRecord = userRecordService.getUserRecordForCompleteCategory(userIdByJwt);
 		completedCategoryRepository.findByUserRecord_RecordDateAndCategory_CategoryId(
@@ -59,7 +59,7 @@ public class CompletedCategoryService {
 
 	@Transactional
 	public void deleteCompletedCategory(Long categoryId, Long userIdByJwt) {
-		Category category = validateBeforeCompleteCategory(categoryId, userIdByJwt);
+		Category category = validateAccessToCategory(categoryId, userIdByJwt);
 		UserRecord userRecord = userRecordService.getUserRecordForCompleteCategory(userIdByJwt);
 
 		int deletedCount = completedCategoryRepository.deleteByUserRecord_UserRecordIdAndCategory_CategoryId(
