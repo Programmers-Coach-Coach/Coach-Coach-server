@@ -7,6 +7,8 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.PageRequest;
@@ -113,17 +115,18 @@ public class UserRecordService {
 			userId, type, pageable
 		);
 
+		Map<String, Function<UserRecord, Double>> typeToValueExtractor = Map.of(
+			"weight", UserRecord::getWeight,
+			"skeletalMuscle", UserRecord::getSkeletalMuscle,
+			"fatPercentage", UserRecord::getFatPercentage,
+			"bmi", UserRecord::getBmi
+		);
+
+		Function<UserRecord, Double> valueExtractor = typeToValueExtractor.get(type);
+
 		return userRecords.stream()
-			.map(record -> {
-				Double value = switch (type) {
-					case "weight" -> record.getWeight();
-					case "skeletalMuscle" -> record.getSkeletalMuscle();
-					case "fatPercentage" -> record.getFatPercentage();
-					case "bmi" -> record.getBmi();
-					default -> throw new InvalidInputException(ErrorMessage.INVALID_VALUE);
-				};
-				return new BodyInfoChartResponse(record.getRecordDate(), value);
-			})
+			.map(record ->
+				new BodyInfoChartResponse(record.getRecordDate(), valueExtractor.apply(record)))
 			.collect(Collectors.toList());
 	}
 
