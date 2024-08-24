@@ -22,14 +22,14 @@ public class ActionService {
 	private final ActionRepository actionRepository;
 
 	@Transactional
-	public Long createAction(Long routineId, Long categoryId, Long userIdByJwt,
+	public Long createAction(Long categoryId, Long userIdByJwt,
 		CreateActionRequest createActionRequest) {
-		routineService.validateIsMyRoutine(routineId, userIdByJwt);
-		Category category = categoryRepository.findByCategoryIdAndRoutine_RoutineId(categoryId, routineId)
+		Category category = categoryRepository.findById(categoryId)
 			.orElseThrow(() -> new NotFoundCategoryException(ErrorMessage.NOT_FOUND_CATEGORY));
 
-		Action action = Action.of(createActionRequest, category);
+		routineService.validateIsMyRoutine(category.getRoutine().getRoutineId(), userIdByJwt);
 
+		Action action = Action.of(createActionRequest, category);
 		return actionRepository.save(action).getActionId();
 	}
 

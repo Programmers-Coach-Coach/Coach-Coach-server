@@ -40,7 +40,6 @@ public class CategoryController {
 	@DeleteMapping("/v1/categories{categoryId}")
 	public ResponseEntity<SuccessResponse> deleteCategory(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
-		@PathVariable(name = "routineId") Long routineId,
 		@PathVariable(name = "categoryId") Long categoryId
 	) {
 		Long userIdByJwt = userDetails.getUserId();

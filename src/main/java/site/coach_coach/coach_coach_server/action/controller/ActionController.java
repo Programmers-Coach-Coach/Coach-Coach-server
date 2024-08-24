@@ -23,15 +23,14 @@ import site.coach_coach.coach_coach_server.common.response.SuccessIdResponse;
 public class ActionController {
 	private final ActionService actionService;
 
-	@PostMapping("/v1/routines/{routineId}/{categoryId}")
+	@PostMapping("/v1/categories/{categoryId}")
 	public ResponseEntity<SuccessIdResponse> createActionIntoCategory(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
-		@PathVariable(name = "routineId") Long routineId,
 		@PathVariable(name = "categoryId") Long categoryId,
 		@RequestBody @Valid CreateActionRequest createActionRequest
 	) {
 		Long userIdByJwt = userDetails.getUserId();
-		Long actionId = actionService.createAction(routineId, categoryId, userIdByJwt, createActionRequest);
+		Long actionId = actionService.createAction(categoryId, userIdByJwt, createActionRequest);
 		return ResponseEntity.status(HttpStatus.CREATED)
 			.body(new SuccessIdResponse(actionId));
 	}
