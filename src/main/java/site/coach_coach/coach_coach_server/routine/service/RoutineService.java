@@ -44,7 +44,7 @@ public class RoutineService {
 	public void checkIsMatching(Long userId, Long coachId) {
 		matchingRepository.findByUser_UserIdAndCoach_CoachId(userId, coachId)
 			.map(Matching::getIsMatching)
-			.filter(isMatching -> isMatching) // isMatching이 true일 때만 통과
+			.filter(isMatching -> isMatching)
 			.orElseThrow(() -> new NotMatchingException(ErrorMessage.NOT_MATCHING));
 	}
 

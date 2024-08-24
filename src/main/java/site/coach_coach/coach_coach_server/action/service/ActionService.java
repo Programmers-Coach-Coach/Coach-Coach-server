@@ -49,7 +49,7 @@ public class ActionService {
 		Action action = actionRepository.findById(actionId)
 			.orElseThrow(() -> new NotFoundActionException(ErrorMessage.NOT_FOUND_ACTION));
 
-		routineService.validateBeforeModifyRoutineDetail(action.getCategory().getRoutine().getRoutineId(), userIdByJwt);
+		routineService.validateIsMyRoutine(action.getCategory().getRoutine().getRoutineId(), userIdByJwt);
 		action.updateActionInfo(updateActionInfoRequest);
 	}
 }

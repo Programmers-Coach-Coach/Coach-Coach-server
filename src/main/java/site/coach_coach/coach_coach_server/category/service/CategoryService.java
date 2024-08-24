@@ -68,7 +68,7 @@ public class CategoryService {
 		Category category = categoryRepository.findById(categoryId)
 			.orElseThrow(() -> new NotFoundCategoryException(ErrorMessage.NOT_FOUND_CATEGORY));
 
-		routineService.validateBeforeModifyRoutineDetail(category.getRoutine().getRoutineId(), userIdByJwt);
+		routineService.validateIsMyRoutine(category.getRoutine().getRoutineId(), userIdByJwt);
 
 		category.updateCategoryInfo(updateCategoryInfoRequest.categoryName());
 	}
