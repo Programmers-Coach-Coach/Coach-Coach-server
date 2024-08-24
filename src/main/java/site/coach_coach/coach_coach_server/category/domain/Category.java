@@ -60,4 +60,7 @@ public class Category extends DateEntity {
 	@OneToOne(mappedBy = "category")
 	private CompletedCategory completedCategory;
 
+	public void updateCategoryInfo(String categoryName) {
+		this.categoryName = categoryName;
+	}
 }
