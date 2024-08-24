@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import site.coach_coach.coach_coach_server.category.domain.Category;
 import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.common.exception.AccessDeniedException;
@@ -148,23 +147,7 @@ public class UserRecordService {
 		List<CompletedCategory> completedCategories = completedCategoryRepository.findAllByUserRecord_UserRecordId(
 			recordId);
 
-		List<RecordsDto> records = completedCategories.stream()
-			.map(completedCategory -> {
-				Category category = completedCategory.getCategory();
-				Routine routine = category.getRoutine();
-				Coach coach = routine.getCoach();
-
-				CompletedCategoryDto completedCategoryDto = CompletedCategoryDto.from(completedCategory);
-
-				return new RecordsDto(
-					coach != null ? coach.getCoachId() : null,
-					coach != null ? coach.getUser().getNickname() : null,
-					coach != null ? coach.getUser().getProfileImageUrl() : null,
-					routine.getRoutineName(),
-					completedCategoryDto
-				);
-			})
-			.toList();
+		List<RecordsDto> records = mapToRecordsDto(completedCategories);
 
 		return new UserRecordDetailResponse(
 			userRecord.getWeight(),
@@ -194,5 +177,25 @@ public class UserRecordService {
 		} catch (DateTimeParseException e) {
 			throw new InvalidInputException(ErrorMessage.INVALID_VALUE);
 		}
+	}
+
+	private List<RecordsDto> mapToRecordsDto(List<CompletedCategory> completedCategories) {
+		Map<Routine, List<CompletedCategoryDto>> routineToCategoriesMap = completedCategories.stream()
+			.collect(Collectors.groupingBy(
+				c -> c.getCategory().getRoutine(),
+				Collectors.mapping(
+					CompletedCategoryDto::from,
+					Collectors.toList()
+				)
+			));
+
+		return routineToCategoriesMap.entrySet().stream()
+			.map(entry -> {
+				Routine routine = entry.getKey();
+				List<CompletedCategoryDto> completedCategoryDtos = entry.getValue();
+				Coach coach = routine.getCoach();
+				return RecordsDto.from(routine, coach, completedCategoryDtos);
+			})
+			.collect(Collectors.toList());
 	}
 }

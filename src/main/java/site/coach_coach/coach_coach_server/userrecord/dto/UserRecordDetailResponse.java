@@ -9,5 +9,4 @@ public record UserRecordDetailResponse(
 	Double bmi,
 	List<RecordsDto> records
 ) {
-
 }

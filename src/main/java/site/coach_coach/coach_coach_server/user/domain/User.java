@@ -25,7 +25,6 @@ import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.common.domain.DateEntity;
 import site.coach_coach.coach_coach_server.common.domain.GenderEnum;
 import site.coach_coach.coach_coach_server.notification.domain.Notification;
-import site.coach_coach.coach_coach_server.routine.domain.Routine;
 import site.coach_coach.coach_coach_server.sport.domain.InterestedSport;
 import site.coach_coach.coach_coach_server.userrecord.domain.UserRecord;
 
@@ -79,9 +78,6 @@ public class User extends DateEntity {
 
 	@OneToOne(mappedBy = "user")
 	private Coach coach;
-
-	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-	private List<Routine> routines;
 
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
 	private List<InterestedSport> interestedSports;
