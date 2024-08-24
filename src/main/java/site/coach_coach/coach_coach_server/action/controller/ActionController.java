@@ -26,7 +26,6 @@ public class ActionController {
 	@PostMapping("/v1/categories/{categoryId}")
 	public ResponseEntity<SuccessIdResponse> createActionIntoCategory(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
-		@PathVariable(name = "routineId") Long routineId,
 		@PathVariable(name = "categoryId") Long categoryId,
 		@RequestBody @Valid CreateActionRequest createActionRequest
 	) {
