@@ -24,9 +24,10 @@ public class ActionService {
 	@Transactional
 	public Long createAction(Long categoryId, Long userIdByJwt,
 		CreateActionRequest createActionRequest) {
-		routineService.validateIsMyRoutine(routineId, userIdByJwt);
-		Category category = categoryRepository.findByCategoryIdAndRoutine_RoutineId(categoryId, routineId)
+		Category category = categoryRepository.findById(categoryId)
 			.orElseThrow(() -> new NotFoundCategoryException(ErrorMessage.NOT_FOUND_CATEGORY));
+
+		routineService.validateIsMyRoutine(category.getRoutine().getRoutineId(), userIdByJwt);
 
 		Action action = Action.of(createActionRequest, category);
 		return actionRepository.save(action).getActionId();
