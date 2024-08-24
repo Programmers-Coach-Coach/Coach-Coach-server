@@ -19,8 +19,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import site.coach_coach.coach_coach_server.category.domain.Category;
+import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.common.domain.DateEntity;
 import site.coach_coach.coach_coach_server.sport.domain.Sport;
+import site.coach_coach.coach_coach_server.user.domain.User;
 
 @Table(name = "routines")
 @Entity
@@ -35,11 +37,13 @@ public class Routine extends DateEntity {
 	private Long routineId;
 
 	@NotNull
-	@Column(name = "user_id")
-	private Long userId;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id")
+	private User user;
 
-	@Column(name = "coach_id")
-	private Long coachId;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "coach_id")
+	private Coach coach;
 
 	@NotNull
 	@Size(max = 45)
