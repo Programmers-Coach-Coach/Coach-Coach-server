@@ -56,7 +56,7 @@ public class UserRecordController {
 	}
 
 	@GetMapping("/v1/records")
-	public ResponseEntity<UserRecordResponse> getUserRecords(
+	public ResponseEntity<UserRecordResponse> getUserRecordsWithCompletionStatus(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
 		@RequestParam(name = "year") @NotNull Integer year,
 		@RequestParam(name = "month") @NotNull @Min(1) @Max(12) Integer month
