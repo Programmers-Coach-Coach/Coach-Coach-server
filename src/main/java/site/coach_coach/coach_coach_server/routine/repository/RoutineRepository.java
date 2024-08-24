@@ -9,7 +9,7 @@ import site.coach_coach.coach_coach_server.routine.domain.Routine;
 
 @Repository
 public interface RoutineRepository extends JpaRepository<Routine, Long> {
-	List<Routine> findByUserIdAndCoachIdIsNull(Long userId);
+	List<Routine> findByUser_UserIdAndCoach_CoachIdIsNull(Long userId);
 
-	List<Routine> findByUserIdAndCoachId(Long userId, Long coachId);
+	List<Routine> findByUser_UserIdAndCoach_CoachId(Long userId, Long coachId);
 }
