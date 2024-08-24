@@ -21,7 +21,12 @@ public record ActionDto(
 	String description
 ) {
 	public static ActionDto from(Action action) {
-		return new ActionDto(action.getActionId(), action.getActionName(), action.getSets(), action.getCountOrMinutes(),
-			action.getDescription());
+		return new ActionDto(
+			action.getActionId(),
+			action.getActionName(),
+			action.getSets(),
+			action.getCountOrMinutes(),
+			action.getDescription()
+		);
 	}
 }
