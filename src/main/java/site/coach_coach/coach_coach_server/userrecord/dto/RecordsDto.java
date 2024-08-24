@@ -11,4 +11,13 @@ public record RecordsDto(
 	String routineName,
 	List<CompletedCategoryDto> completedCategories
 ) {
+	public RecordsDto(
+		Long coachId,
+		String coachName,
+		String coachProfileImageUrl,
+		String routineName,
+		CompletedCategoryDto completedCategoryDto
+	) {
+		this(coachId, coachName, coachProfileImageUrl, routineName, List.of(completedCategoryDto));
+	}
 }

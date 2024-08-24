@@ -9,15 +9,5 @@ public record UserRecordDetailResponse(
 	Double bmi,
 	List<RecordsDto> records
 ) {
-	// public static UserRecordDetailResponse from(
-	// 	UserRecord userRecord,
-	// 	List<Routine> routines
-	// ) {
-	// 	List<RecordsDto> records = routines.stream()
-	// 		.map(routine -> new RecordsDto(
-	// 			routine.getCoachId(),
-	// 			routine.getCoa
-	// 		))
-	// 		.collect(Collectors.toList());
-	// }
+
 }
