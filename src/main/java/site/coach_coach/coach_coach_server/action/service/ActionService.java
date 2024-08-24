@@ -24,7 +24,7 @@ public class ActionService {
 	@Transactional
 	public Long createAction(Long routineId, Long categoryId, Long userIdByJwt,
 		CreateActionRequest createActionRequest) {
-		routineService.validateBeforeModifyRoutineDetail(routineId, userIdByJwt);
+		routineService.validateIsMyRoutine(routineId, userIdByJwt);
 		Category category = categoryRepository.findByCategoryIdAndRoutine_RoutineId(categoryId, routineId)
 			.orElseThrow(() -> new NotFoundCategoryException(ErrorMessage.NOT_FOUND_CATEGORY));
 
@@ -34,15 +34,12 @@ public class ActionService {
 	}
 
 	@Transactional
-	public void deleteAction(Long routineId, Long categoryId, Long actionId, Long userIdByJwt) {
-		routineService.validateBeforeModifyRoutineDetail(routineId, userIdByJwt);
-		categoryRepository.findByCategoryIdAndRoutine_RoutineId(categoryId, routineId)
-			.orElseThrow(() -> new NotFoundCategoryException(ErrorMessage.NOT_FOUND_CATEGORY));
+	public void deleteAction(Long actionId, Long userIdByJwt) {
+		Action action = actionRepository.findById(actionId)
+			.orElseThrow(() -> new NotFoundActionException(ErrorMessage.NOT_FOUND_ACTION));
 
-		if (actionRepository.existsById(actionId)) {
-			actionRepository.deleteById(actionId);
-		} else {
-			throw new NotFoundActionException(ErrorMessage.NOT_FOUND_ACTION);
-		}
+		routineService.validateIsMyRoutine(action.getCategory().getRoutine().getRoutineId(), userIdByJwt);
+
+		actionRepository.deleteById(actionId);
 	}
 }
