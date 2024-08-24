@@ -1,5 +1,7 @@
 package site.coach_coach.coach_coach_server.userrecord.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,11 +18,13 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
 import site.coach_coach.coach_coach_server.common.response.SuccessIdResponse;
+import site.coach_coach.coach_coach_server.userrecord.dto.BodyInfoChartResponse;
 import site.coach_coach.coach_coach_server.userrecord.dto.UserRecordCreateRequest;
 import site.coach_coach.coach_coach_server.userrecord.dto.UserRecordResponse;
 import site.coach_coach.coach_coach_server.userrecord.dto.UserRecordUpdateRequest;
@@ -64,5 +68,15 @@ public class UserRecordController {
 		Long userId = userDetails.getUserId();
 		UserRecordResponse userRecordResponse = userRecordService.getUserRecordsByUserAndPeriod(userId, year, month);
 		return ResponseEntity.ok(userRecordResponse);
+	}
+
+	@GetMapping("/v1/records/charts")
+	public ResponseEntity<List<BodyInfoChartResponse>> getBodyInfoCharts(
+		@AuthenticationPrincipal CustomUserDetails userDetails,
+		@RequestParam(name = "type") @NotBlank String type
+	) {
+		Long userId = userDetails.getUserId();
+		List<BodyInfoChartResponse> response = userRecordService.getBodyInfoChart(userId, type);
+		return ResponseEntity.ok(response);
 	}
 }
