@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import site.coach_coach.coach_coach_server.completedcategory.domain.CompletedCategory;
 
 public interface CompletedCategoryRepository extends JpaRepository<CompletedCategory, Long> {
-	List<CompletedCategory> findAllByUserRecord_User_UserId(Long userId);
+	List<CompletedCategory> findAllByUserRecord_UserRecordId(Long recordId);
 
 	Optional<CompletedCategory> findByUserRecord_RecordDateAndCategory_CategoryId(LocalDate recordDate,
 		Long categoryId);

@@ -26,6 +26,7 @@ import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
 import site.coach_coach.coach_coach_server.common.response.SuccessIdResponse;
 import site.coach_coach.coach_coach_server.userrecord.dto.BodyInfoChartResponse;
 import site.coach_coach.coach_coach_server.userrecord.dto.UserRecordCreateRequest;
+import site.coach_coach.coach_coach_server.userrecord.dto.UserRecordDetailResponse;
 import site.coach_coach.coach_coach_server.userrecord.dto.UserRecordResponse;
 import site.coach_coach.coach_coach_server.userrecord.dto.UserRecordUpdateRequest;
 import site.coach_coach.coach_coach_server.userrecord.service.UserRecordService;
@@ -68,6 +69,16 @@ public class UserRecordController {
 		Long userId = userDetails.getUserId();
 		UserRecordResponse userRecordResponse = userRecordService.getUserRecordsByUserAndPeriod(userId, year, month);
 		return ResponseEntity.ok(userRecordResponse);
+	}
+
+	@GetMapping("/v1/records/{recordId}")
+	public ResponseEntity<UserRecordDetailResponse> getUserRecordDetail(
+		@AuthenticationPrincipal CustomUserDetails userDetails,
+		@PathVariable("recordId") @Positive Long recordId
+	) {
+		Long userId = userDetails.getUserId();
+		UserRecordDetailResponse detailResponse = userRecordService.getUserRecordDetail(userId, recordId);
+		return ResponseEntity.ok(detailResponse);
 	}
 
 	@GetMapping("/v1/records/charts")

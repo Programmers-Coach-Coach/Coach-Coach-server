@@ -17,18 +17,24 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.common.exception.AccessDeniedException;
 import site.coach_coach.coach_coach_server.common.exception.InvalidInputException;
+import site.coach_coach.coach_coach_server.completedcategory.domain.CompletedCategory;
+import site.coach_coach.coach_coach_server.completedcategory.dto.CompletedCategoryDto;
 import site.coach_coach.coach_coach_server.completedcategory.repository.CompletedCategoryRepository;
 import site.coach_coach.coach_coach_server.notification.exception.NotFoundException;
+import site.coach_coach.coach_coach_server.routine.domain.Routine;
 import site.coach_coach.coach_coach_server.user.domain.User;
 import site.coach_coach.coach_coach_server.user.exception.InvalidUserException;
 import site.coach_coach.coach_coach_server.user.repository.UserRepository;
 import site.coach_coach.coach_coach_server.userrecord.domain.UserRecord;
 import site.coach_coach.coach_coach_server.userrecord.dto.BodyInfoChartResponse;
 import site.coach_coach.coach_coach_server.userrecord.dto.RecordResponse;
+import site.coach_coach.coach_coach_server.userrecord.dto.RecordsDto;
 import site.coach_coach.coach_coach_server.userrecord.dto.UserRecordCreateRequest;
+import site.coach_coach.coach_coach_server.userrecord.dto.UserRecordDetailResponse;
 import site.coach_coach.coach_coach_server.userrecord.dto.UserRecordResponse;
 import site.coach_coach.coach_coach_server.userrecord.dto.UserRecordUpdateRequest;
 import site.coach_coach.coach_coach_server.userrecord.exception.DuplicateRecordException;
@@ -130,6 +136,28 @@ public class UserRecordService {
 			.collect(Collectors.toList());
 	}
 
+	@Transactional(readOnly = true)
+	public UserRecordDetailResponse getUserRecordDetail(Long userId, Long recordId) {
+		UserRecord userRecord = userRecordRepository.findById(recordId)
+			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_RECORD));
+
+		if (!userRecord.getUser().getUserId().equals(userId)) {
+			throw new AccessDeniedException();
+		}
+		List<CompletedCategory> completedCategories = completedCategoryRepository.findAllByUserRecord_UserRecordId(
+			recordId);
+
+		List<RecordsDto> records = mapToRecordsDto(completedCategories);
+
+		return new UserRecordDetailResponse(
+			userRecord.getWeight(),
+			userRecord.getSkeletalMuscle(),
+			userRecord.getFatPercentage(),
+			userRecord.getBmi(),
+			records
+		);
+	}
+
 	public UserRecord getUserRecordForCompleteCategory(Long userId) {
 		LocalDate recordDate = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDate();
 		return userRecordRepository.findByRecordDateAndUser_UserId(recordDate, userId)
@@ -149,5 +177,25 @@ public class UserRecordService {
 		} catch (DateTimeParseException e) {
 			throw new InvalidInputException(ErrorMessage.INVALID_VALUE);
 		}
+	}
+
+	private List<RecordsDto> mapToRecordsDto(List<CompletedCategory> completedCategories) {
+		Map<Routine, List<CompletedCategoryDto>> routineToCategoriesMap = completedCategories.stream()
+			.collect(Collectors.groupingBy(
+				c -> c.getCategory().getRoutine(),
+				Collectors.mapping(
+					CompletedCategoryDto::from,
+					Collectors.toList()
+				)
+			));
+
+		return routineToCategoriesMap.entrySet().stream()
+			.map(entry -> {
+				Routine routine = entry.getKey();
+				List<CompletedCategoryDto> completedCategoryDtos = entry.getValue();
+				Coach coach = routine.getCoach();
+				return RecordsDto.from(routine, coach, completedCategoryDtos);
+			})
+			.collect(Collectors.toList());
 	}
 }
