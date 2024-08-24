@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.coach.exception.NotFoundSportException;
 import site.coach_coach.coach_coach_server.coach.repository.CoachRepository;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
@@ -15,6 +15,7 @@ import site.coach_coach.coach_coach_server.common.exception.AccessDeniedExceptio
 import site.coach_coach.coach_coach_server.common.exception.UserNotFoundException;
 import site.coach_coach.coach_coach_server.matching.domain.Matching;
 import site.coach_coach.coach_coach_server.matching.repository.MatchingRepository;
+import site.coach_coach.coach_coach_server.notification.exception.NotFoundException;
 import site.coach_coach.coach_coach_server.routine.domain.Routine;
 import site.coach_coach.coach_coach_server.routine.dto.CreateRoutineRequest;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineForListDto;
@@ -31,7 +32,6 @@ import site.coach_coach.coach_coach_server.user.domain.User;
 import site.coach_coach.coach_coach_server.user.repository.UserRepository;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
 public class RoutineService {
 	private final RoutineRepository routineRepository;
@@ -40,7 +40,6 @@ public class RoutineService {
 	private final UserRepository userRepository;
 	private final SportRepository sportRepository;
 
-	@Transactional(readOnly = true)
 	public void checkIsMatching(Long userId, Long coachId) {
 		matchingRepository.findByUser_UserIdAndCoach_CoachId(userId, coachId)
 			.map(Matching::getIsMatching)
@@ -57,7 +56,6 @@ public class RoutineService {
 		}
 	}
 
-	@Transactional(readOnly = true)
 	public Long getCoachId(Long userIdByJwt) {
 		return coachRepository.findCoachIdByUserId(userIdByJwt)
 			.orElseThrow(() -> new UserNotFoundException(ErrorMessage.NOT_FOUND_COACH));
@@ -81,9 +79,9 @@ public class RoutineService {
 		List<Routine> routines;
 
 		if (routineListRequest.coachId() == null) {
-			routines = routineRepository.findByUserIdAndCoachIdIsNull(routineListRequest.userId());
+			routines = routineRepository.findByUser_UserIdAndCoach_CoachIdIsNull(routineListRequest.userId());
 		} else {
-			routines = routineRepository.findByUserIdAndCoachId(routineListRequest.userId(),
+			routines = routineRepository.findByUser_UserIdAndCoach_CoachId(routineListRequest.userId(),
 				routineListRequest.coachId());
 		}
 
@@ -121,15 +119,21 @@ public class RoutineService {
 			.sportId(createRoutineRequest.sportId())
 			.build();
 
+		User user = userRepository.findById(
+				createRoutineRequest.userId() == null ? userIdByJwt : createRoutineRequest.userId())
+			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_USER));
+
 		Routine.RoutineBuilder routineBuilder = Routine.builder()
-			.userId(createRoutineRequest.userId() == null ? userIdByJwt : createRoutineRequest.userId())
+			.user(user)
 			.routineName(createRoutineRequest.routineName())
 			.sport(sportInfo);
 
 		if (createRoutineRequest.userId() != null) {
 			Long coachId = getCoachId(userIdByJwt);
 			checkIsMatching(createRoutineRequest.userId(), coachId);
-			routineBuilder.coachId(coachId);
+			Coach coach = coachRepository.findById(coachId)
+				.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_COACH));
+			routineBuilder.coach(coach);
 		}
 
 		return routineRepository.save(routineBuilder.build()).getRoutineId();
@@ -146,12 +150,13 @@ public class RoutineService {
 
 	private void validateBeforeGetRoutine(Routine routine, Long userIdParam, Long userIdByJwt) {
 		if (userIdParam == null) {
-			if (!routine.getUserId().equals(userIdByJwt)) {
+			if (!routine.getUser().getUserId().equals(userIdByJwt)) {
 				throw new AccessDeniedException();
 			}
 		} else {
 			Long coachId = getCoachId(userIdByJwt);
-			if (routine.getCoachId() != coachId || !routine.getUserId().equals(userIdParam)) {
+			if (routine.getCoach() == null || !routine.getCoach().getCoachId().equals(coachId)
+				|| !routine.getUser().getUserId().equals(userIdParam)) {
 				throw new AccessDeniedException();
 			}
 		}
@@ -177,13 +182,13 @@ public class RoutineService {
 		Routine routine = routineRepository.findById(routineId)
 			.orElseThrow(() -> new NoExistRoutineException(ErrorMessage.NOT_FOUND_ROUTINE));
 
-		if (routine.getCoachId() == null) {
-			if (!routine.getUserId().equals(userIdByJwt)) {
+		if (routine.getCoach() == null) {
+			if (!routine.getUser().getUserId().equals(userIdByJwt)) {
 				throw new AccessDeniedException();
 			}
 		} else {
 			Long coachId = getCoachId(userIdByJwt);
-			if (!routine.getCoachId().equals(coachId)) {
+			if (!routine.getCoach().getCoachId().equals(coachId)) {
 				throw new AccessDeniedException();
 			}
 		}
