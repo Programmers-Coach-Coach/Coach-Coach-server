@@ -156,20 +156,20 @@ public class RoutineService {
 
 	@Transactional
 	public void deleteRoutine(Long routineId, Long userIdByJwt) {
-		validateBeforeModifyRoutineDetail(routineId, userIdByJwt);
+		validateIsMyRoutine(routineId, userIdByJwt);
 		routineRepository.deleteById(routineId);
 	}
 
 	@Transactional
 	public void updateRoutine(UpdateRoutineInfoRequest updateRoutineInfoRequest, Long routineId, Long userIdByJwt) {
-		Routine routine = validateBeforeModifyRoutineDetail(routineId, userIdByJwt);
+		Routine routine = validateIsMyRoutine(routineId, userIdByJwt);
 
 		Sport sport = sportRepository.getReferenceById(updateRoutineInfoRequest.sportId());
 		routine.updateRoutineInfo(updateRoutineInfoRequest.routineName(), sport);
 	}
 
 	@Transactional
-	public Routine validateBeforeModifyRoutineDetail(Long routineId, Long userIdByJwt) {
+	public Routine validateIsMyRoutine(Long routineId, Long userIdByJwt) {
 		Routine routine = routineRepository.findById(routineId)
 			.orElseThrow(() -> new NoExistRoutineException(ErrorMessage.NOT_FOUND_ROUTINE));
 

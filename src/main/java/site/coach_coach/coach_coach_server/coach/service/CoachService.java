@@ -19,8 +19,10 @@ import site.coach_coach.coach_coach_server.coach.dto.CoachListResponse;
 import site.coach_coach.coach_coach_server.coach.dto.CoachRequest;
 import site.coach_coach.coach_coach_server.coach.dto.MatchingCoachResponseDto;
 import site.coach_coach.coach_coach_server.coach.dto.MatchingUserResponseDto;
+import site.coach_coach.coach_coach_server.coach.dto.ReviewRequestDto;
 import site.coach_coach.coach_coach_server.coach.exception.AlreadyMatchedException;
 import site.coach_coach.coach_coach_server.coach.exception.DuplicateContactException;
+import site.coach_coach.coach_coach_server.coach.exception.DuplicateReviewException;
 import site.coach_coach.coach_coach_server.coach.exception.NotFoundCoachException;
 import site.coach_coach.coach_coach_server.coach.exception.NotFoundMatchingException;
 import site.coach_coach.coach_coach_server.coach.exception.NotFoundPageException;
@@ -150,6 +152,12 @@ public class CoachService {
 	}
 
 	@Transactional(readOnly = true)
+	public User getUserById(Long userId) {
+		return userRepository.findById(userId)
+			.orElseThrow(InvalidUserException::new);
+	}
+
+	@Transactional(readOnly = true)
 	public Coach getCoachById(Long coachId) {
 		return coachRepository.findById(coachId)
 			.orElseThrow(() -> new NotFoundCoachException(ErrorMessage.NOT_FOUND_COACH));
@@ -174,6 +182,7 @@ public class CoachService {
 		List<CoachingSportDto> coachingSports = getCoachingSports(coach);
 
 		return CoachDetailDto.builder()
+			.coachId(coach.getCoachId())
 			.coachName(coach.getUser().getNickname())
 			.coachGender(coach.getUser().getGender())
 			.localAddress(coach.getUser().getLocalAddress())
@@ -271,6 +280,22 @@ public class CoachService {
 			user.getProfileImageUrl(),
 			matching.getIsMatching()
 		);
+	}
+
+	@Transactional
+	public void addReview(Long userId, Long coachId, ReviewRequestDto requestDto) {
+		User user = getUserById(userId);
+		Coach coach = getCoachById(coachId);
+
+		reviewRepository.findByUser_UserIdAndCoach_CoachId(userId, coachId)
+			.ifPresent(review -> {
+				throw new DuplicateReviewException(ErrorMessage.ALREADY_EXISTS_REVIEW);
+			});
+
+		Review review = new Review(null, coach, user, requestDto.contents(), requestDto.stars());
+
+		reviewRepository.save(review);
+		notificationService.createNotification(user.getUserId(), coachId, RelationFunctionEnum.review);
 	}
 
 	public List<MatchingCoachResponseDto> getMatchingCoachesByUserId(Long userId) {
