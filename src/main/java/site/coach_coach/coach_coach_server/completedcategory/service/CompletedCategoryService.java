@@ -29,7 +29,7 @@ public class CompletedCategoryService {
 		Category category = categoryRepository.findById(categoryId)
 			.orElseThrow(() -> new NotFoundCategoryException(ErrorMessage.NOT_FOUND_CATEGORY));
 
-		if (!category.getRoutine().getUserId().equals(userIdByJwt)) {
+		if (!category.getRoutine().getUser().getUserId().equals(userIdByJwt)) {
 			throw new AccessDeniedException();
 		}
 		return category;
