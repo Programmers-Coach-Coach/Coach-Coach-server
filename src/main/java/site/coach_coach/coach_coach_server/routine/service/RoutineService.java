@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.coach.exception.NotFoundSportException;
 import site.coach_coach.coach_coach_server.coach.repository.CoachRepository;
@@ -33,7 +32,6 @@ import site.coach_coach.coach_coach_server.user.domain.User;
 import site.coach_coach.coach_coach_server.user.repository.UserRepository;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
 public class RoutineService {
 	private final RoutineRepository routineRepository;
@@ -158,7 +156,7 @@ public class RoutineService {
 		} else {
 			Long coachId = getCoachId(userIdByJwt);
 			if (routine.getCoach() == null || !routine.getCoach().getCoachId().equals(coachId)
-				|| !routine.getUser().getUserId().equals(userIdParam)) {  // 수정된 부분
+				|| !routine.getUser().getUserId().equals(userIdParam)) {
 				throw new AccessDeniedException();
 			}
 		}
