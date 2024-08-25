@@ -154,6 +154,14 @@ public class UserController {
 		);
 	}
 
+	@DeleteMapping("/v1/users/me")
+	public ResponseEntity<Void> deleteUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
+		Long userId = userDetails.getUserId();
+		userService.deleteUser(userId);
+		SecurityContextHolder.clearContext();
+		return ResponseEntity.noContent().build();
+	}
+
 	@GetMapping("/v1/auth/reissue")
 	public ResponseEntity<Void> reissue(HttpServletRequest request, HttpServletResponse response) {
 		String refreshToken = tokenProvider.getCookieValue(request, "refresh_token");

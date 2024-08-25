@@ -36,7 +36,6 @@ import site.coach_coach.coach_coach_server.user.repository.UserRepository;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class UserService {
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
@@ -58,6 +57,7 @@ public class UserService {
 		}
 	}
 
+	@Transactional
 	public void signup(SignUpRequest signUpRequest) {
 		checkNicknameDuplicate(signUpRequest.nickname());
 		checkEmailDuplicate(signUpRequest.email());
@@ -65,6 +65,7 @@ public class UserService {
 		userRepository.save(user);
 	}
 
+	@Transactional
 	public User validateUser(LoginRequest loginRequest) {
 		String email = loginRequest.email();
 		String password = loginRequest.password();
@@ -102,24 +103,6 @@ public class UserService {
 		}
 	}
 
-	private AuthResponse getLoggedInUserAuthStatus(User user) {
-		String nickname = user.getNickname();
-		int countOfNotifications = notificationRepository.countByUser_UserId(user.getUserId());
-		return AuthResponse.builder()
-			.isLogin(true)
-			.nickname(nickname)
-			.countOfNotifications(countOfNotifications)
-			.build();
-	}
-
-	private AuthResponse getAnonymousUserAuthStatus() {
-		return AuthResponse.builder()
-			.isLogin(false)
-			.nickname(null)
-			.countOfNotifications(0)
-			.build();
-	}
-
 	@Transactional
 	public void updateUserProfile(Long userId, MultipartFile profileImage, UserProfileRequest userProfileRequest) throws
 		IOException {
@@ -140,6 +123,18 @@ public class UserService {
 		);
 
 		userRepository.save(user);
+	}
+
+	public void deleteUser(Long userId) {
+		userRepository.deleteById(userId);
+	}
+
+	private User buildUserForSignUp(SignUpRequest signUpRequest) {
+		return User.builder()
+			.email(signUpRequest.email())
+			.password(passwordEncoder.encode(signUpRequest.password()))
+			.nickname(signUpRequest.nickname())
+			.build();
 	}
 
 	private String getUpdatedNickname(User user, UserProfileRequest userProfileRequest) {
@@ -180,11 +175,22 @@ public class UserService {
 		return user.getInterestedSports();
 	}
 
-	private User buildUserForSignUp(SignUpRequest signUpRequest) {
-		return User.builder()
-			.email(signUpRequest.email())
-			.password(passwordEncoder.encode(signUpRequest.password()))
-			.nickname(signUpRequest.nickname())
+	private AuthResponse getLoggedInUserAuthStatus(User user) {
+		String nickname = user.getNickname();
+		int countOfNotifications = notificationRepository.countByUser_UserId(user.getUserId());
+		return AuthResponse.builder()
+			.isLogin(true)
+			.nickname(nickname)
+			.countOfNotifications(countOfNotifications)
 			.build();
 	}
+
+	private AuthResponse getAnonymousUserAuthStatus() {
+		return AuthResponse.builder()
+			.isLogin(false)
+			.nickname(null)
+			.countOfNotifications(0)
+			.build();
+	}
+
 }
