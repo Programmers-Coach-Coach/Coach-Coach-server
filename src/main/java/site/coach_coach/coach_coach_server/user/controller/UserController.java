@@ -155,10 +155,17 @@ public class UserController {
 	}
 
 	@DeleteMapping("/v1/users/me")
-	public ResponseEntity<Void> deleteUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
+	public ResponseEntity<Void> deleteUser(@AuthenticationPrincipal CustomUserDetails userDetails,
+		HttpServletResponse response) {
 		Long userId = userDetails.getUserId();
 		userService.deleteUser(userId);
+
+		response.addHeader("Set-Cookie", tokenProvider.clearCookie("access_token", "localhost").toString());
+		response.addHeader("Set-Cookie", tokenProvider.clearCookie("refresh_token", "localhost").toString());
+		response.addHeader("Set-Cookie", tokenProvider.clearCookie("access_token", ".coach-coach.site").toString());
+		response.addHeader("Set-Cookie", tokenProvider.clearCookie("refresh_token", ".coach-coach.site").toString());
 		SecurityContextHolder.clearContext();
+
 		return ResponseEntity.noContent().build();
 	}
 
