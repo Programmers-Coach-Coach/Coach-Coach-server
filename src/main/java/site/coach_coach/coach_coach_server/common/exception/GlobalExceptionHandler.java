@@ -92,6 +92,12 @@ public class GlobalExceptionHandler {
 			.body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ErrorMessage.INVALID_VALUE));
 	}
 
+	@ExceptionHandler(SelfRequestNotAllowedException.class)
+	public ResponseEntity<ErrorResponse> handleSelfRequestNotAllowedException(SelfRequestNotAllowedException ex) {
+		return ResponseEntity.status(HttpStatus.FORBIDDEN)
+			.body(new ErrorResponse(HttpStatus.FORBIDDEN.value(), ex.getMessage()));
+	}
+
 	@ExceptionHandler(InvalidInputException.class)
 	public ResponseEntity<ErrorResponse> handleInvalidInputException(InvalidInputException ex) {
 		log.error("Handled exception: [{}] - {}", ex.getClass().getSimpleName(), ex.getMessage());
