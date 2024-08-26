@@ -20,13 +20,11 @@ import site.coach_coach.coach_coach_server.coach.dto.CoachRequest;
 import site.coach_coach.coach_coach_server.coach.dto.MatchingCoachResponseDto;
 import site.coach_coach.coach_coach_server.coach.dto.MatchingUserResponseDto;
 import site.coach_coach.coach_coach_server.coach.dto.ReviewRequestDto;
-import site.coach_coach.coach_coach_server.coach.exception.AlreadyMatchedException;
-import site.coach_coach.coach_coach_server.coach.exception.DuplicateContactException;
-import site.coach_coach.coach_coach_server.coach.exception.DuplicateReviewException;
 import site.coach_coach.coach_coach_server.coach.repository.CoachRepository;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.common.domain.RelationFunctionEnum;
 import site.coach_coach.coach_coach_server.common.exception.AccessDeniedException;
+import site.coach_coach.coach_coach_server.common.exception.DuplicateValueException;
 import site.coach_coach.coach_coach_server.common.exception.NotFoundException;
 import site.coach_coach.coach_coach_server.common.exception.UserNotFoundException;
 import site.coach_coach.coach_coach_server.like.domain.UserCoachLike;
@@ -124,7 +122,7 @@ public class CoachService {
 			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_COACH));
 
 		if (matchingRepository.existsByUserUserIdAndCoachCoachId(user.getUserId(), coachId)) {
-			throw new DuplicateContactException(ErrorMessage.DUPLICATE_CONTACT);
+			throw new DuplicateValueException(ErrorMessage.DUPLICATE_CONTACT);
 		}
 
 		Matching newMatching = new Matching(null, user, coach, false);
@@ -285,7 +283,7 @@ public class CoachService {
 
 		reviewRepository.findByUser_UserIdAndCoach_CoachId(userId, coachId)
 			.ifPresent(review -> {
-				throw new DuplicateReviewException(ErrorMessage.ALREADY_EXISTS_REVIEW);
+				throw new DuplicateValueException(ErrorMessage.ALREADY_EXISTS_REVIEW);
 			});
 
 		Review review = new Review(null, coach, user, requestDto.contents(), requestDto.stars());
@@ -418,7 +416,7 @@ public class CoachService {
 			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_CONTACT));
 
 		if (Boolean.TRUE.equals(matching.getIsMatching())) {
-			throw new AlreadyMatchedException(ErrorMessage.DUPLICATE_MATCHING);
+			throw new DuplicateValueException(ErrorMessage.DUPLICATE_MATCHING);
 		}
 
 		matching.markAsMatched();

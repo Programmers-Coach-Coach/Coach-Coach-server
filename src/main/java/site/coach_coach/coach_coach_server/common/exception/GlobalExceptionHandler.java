@@ -6,6 +6,7 @@ import java.util.Objects;
 
 import javax.naming.AuthenticationException;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -18,16 +19,10 @@ import org.springframework.web.method.annotation.HandlerMethodValidationExceptio
 
 import io.sentry.Sentry;
 import lombok.extern.slf4j.Slf4j;
-import site.coach_coach.coach_coach_server.coach.exception.AlreadyMatchedException;
-import site.coach_coach.coach_coach_server.coach.exception.DuplicateContactException;
-import site.coach_coach.coach_coach_server.coach.exception.DuplicateReviewException;
-import site.coach_coach.coach_coach_server.coach.exception.InvalidQueryParameterException;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.common.response.ErrorResponse;
 import site.coach_coach.coach_coach_server.user.exception.IncorrectPasswordException;
 import site.coach_coach.coach_coach_server.user.exception.InvalidUserException;
-import site.coach_coach.coach_coach_server.user.exception.UserAlreadyExistException;
-import site.coach_coach.coach_coach_server.userrecord.exception.DuplicateRecordException;
 
 @Slf4j
 @RestControllerAdvice
@@ -70,19 +65,18 @@ public class GlobalExceptionHandler {
 			.body(errorResponse);
 	}
 
-	@ExceptionHandler(UserNotFoundException.class)
-	public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException ex) {
-		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage());
-		log.error("Handled exception: [{}] - {}", ex.getClass().getSimpleName(), ex.getMessage());
-		return ResponseEntity.status(HttpStatus.NOT_FOUND)
-			.body(errorResponse);
-	}
-
 	@ExceptionHandler(NoSuchElementException.class)
 	public ResponseEntity<ErrorResponse> handleNoSuchElementException(NoSuchElementException ex) {
 		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage());
 
 		return ResponseEntity.status(HttpStatus.NOT_FOUND)
+			.body(errorResponse);
+	}
+
+	@ExceptionHandler(DuplicateKeyException.class)
+	public ResponseEntity<ErrorResponse> handleDuplicateKeyException(DuplicateKeyException ex) {
+		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.CONFLICT.value(), ex.getMessage());
+		return ResponseEntity.status(HttpStatus.CONFLICT)
 			.body(errorResponse);
 	}
 
@@ -96,13 +90,6 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 			.body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ErrorMessage.INVALID_VALUE));
-	}
-
-	@ExceptionHandler(UserAlreadyExistException.class)
-	public ResponseEntity<ErrorResponse> handleUserAlreadyExistException(UserAlreadyExistException ex) {
-		log.error("Handled exception: [{}] - {}", ex.getClass().getSimpleName(), ex.getMessage());
-		return ResponseEntity.status(HttpStatus.CONFLICT)
-			.body(new ErrorResponse(HttpStatus.CONFLICT.value(), ex.getMessage()));
 	}
 
 	@ExceptionHandler(InvalidInputException.class)
@@ -133,42 +120,11 @@ public class GlobalExceptionHandler {
 			.body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage()));
 	}
 
-	@ExceptionHandler(InvalidQueryParameterException.class)
-	public ResponseEntity<ErrorResponse> handleInvalidQueryParameterException(InvalidQueryParameterException ex) {
-		log.error("Handled exception: [{}] - {}", ex.getClass().getSimpleName(), ex.getMessage());
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-			.body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage()));
-	}
-
 	@ExceptionHandler(AccessDeniedException.class)
 	public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex) {
 		log.error("Handled exception: [{}] - {}", ex.getClass().getSimpleName(), ex.getMessage());
 		return ResponseEntity.status(HttpStatus.FORBIDDEN)
 			.body(new ErrorResponse(HttpStatus.FORBIDDEN.value(), ex.getMessage()));
-	}
-
-	@ExceptionHandler(AlreadyMatchedException.class)
-	public ResponseEntity<ErrorResponse> handleAlreadyMatchedException(AlreadyMatchedException ex) {
-		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.CONFLICT.value(), ex.getMessage());
-		return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
-	}
-
-	@ExceptionHandler(DuplicateContactException.class)
-	public ResponseEntity<ErrorResponse> handleDuplicateContactException(DuplicateContactException ex) {
-		return ResponseEntity.status(HttpStatus.CONFLICT)
-			.body(new ErrorResponse(HttpStatus.CONFLICT.value(), ex.getMessage()));
-	}
-
-	@ExceptionHandler(DuplicateReviewException.class)
-	public ResponseEntity<ErrorResponse> handleDuplicateReviewException(DuplicateReviewException ex) {
-		return ResponseEntity.status(HttpStatus.CONFLICT)
-			.body(new ErrorResponse(HttpStatus.CONFLICT.value(), ex.getMessage()));
-	}
-
-	@ExceptionHandler(DuplicateRecordException.class)
-	public ResponseEntity<ErrorResponse> handleDuplicateRecordException(DuplicateRecordException ex) {
-		return ResponseEntity.status(HttpStatus.CONFLICT)
-			.body(new ErrorResponse(HttpStatus.CONFLICT.value(), ex.getMessage()));
 	}
 
 	@ExceptionHandler(Exception.class)
