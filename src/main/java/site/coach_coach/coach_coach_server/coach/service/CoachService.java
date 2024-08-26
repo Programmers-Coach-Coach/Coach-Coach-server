@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -203,7 +204,7 @@ public class CoachService {
 	public CoachListResponse getAllCoaches(User user, int page, String sports, String search, Boolean latest,
 		Boolean review, Boolean liked, Boolean my) {
 
-		List<Long> allSportsIds = List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L);
+		List<Long> allSportsIds = sportRepository.findAllSportIds();
 
 		Sort sort = Sort.by("updatedAt").descending();
 		Pageable pageable = PageRequest.of(page - 1, 20, sort);
@@ -327,17 +328,26 @@ public class CoachService {
 
 	private Page<Coach> fetchCoachesPage(User user, List<Long> sportsList, String search, Pageable pageable,
 		Boolean review, Boolean liked, Boolean latest, Boolean my) {
+		Page<Coach> coachesPage;
+
 		if (Boolean.TRUE.equals(review)) {
-			return coachRepository.findAllWithReviewsSorted(sportsList, search, pageable);
+			coachesPage = coachRepository.findAllWithReviewsSorted(sportsList, search, pageable);
 		} else if (Boolean.TRUE.equals(liked)) {
-			return coachRepository.findAllWithLikesSorted(sportsList, search, pageable);
+			coachesPage = coachRepository.findAllWithLikesSorted(sportsList, search, pageable);
 		} else if (Boolean.TRUE.equals(latest)) {
-			return coachRepository.findAllWithLatestSorted(sportsList, search, pageable);
+			coachesPage = coachRepository.findAllWithLatestSorted(sportsList, search, pageable);
 		} else if (Boolean.TRUE.equals(my)) {
-			return coachRepository.findMyCoaches(user.getUserId(), sportsList, search, pageable);
+			coachesPage = coachRepository.findMyCoaches(user.getUserId(), sportsList, search, pageable);
 		} else {
-			return coachRepository.findAllWithLatestSorted(sportsList, search, pageable);
+			coachesPage = coachRepository.findAllWithLatestSorted(sportsList, search, pageable);
 		}
+
+		List<Coach> filteredCoaches = coachesPage.getContent().stream()
+			.filter(Coach::getIsOpen)
+			.collect(Collectors.toList());
+
+		return new PageImpl<>(filteredCoaches, pageable, coachesPage.getTotalElements());
+
 	}
 
 	private CoachListDto getCoachListDto(Coach coach, User user) {
