@@ -8,14 +8,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.coach.domain.Coach;
-import site.coach_coach.coach_coach_server.coach.exception.NotFoundSportException;
 import site.coach_coach.coach_coach_server.coach.repository.CoachRepository;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.common.exception.AccessDeniedException;
+import site.coach_coach.coach_coach_server.common.exception.NotFoundException;
 import site.coach_coach.coach_coach_server.common.exception.UserNotFoundException;
 import site.coach_coach.coach_coach_server.matching.domain.Matching;
 import site.coach_coach.coach_coach_server.matching.repository.MatchingRepository;
-import site.coach_coach.coach_coach_server.notification.exception.NotFoundException;
 import site.coach_coach.coach_coach_server.routine.domain.Routine;
 import site.coach_coach.coach_coach_server.routine.dto.CreateRoutineRequest;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineForListDto;
@@ -23,8 +22,6 @@ import site.coach_coach.coach_coach_server.routine.dto.RoutineListRequest;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineResponse;
 import site.coach_coach.coach_coach_server.routine.dto.UpdateRoutineInfoRequest;
 import site.coach_coach.coach_coach_server.routine.dto.UserInfoForRoutineList;
-import site.coach_coach.coach_coach_server.routine.exception.NoExistRoutineException;
-import site.coach_coach.coach_coach_server.routine.exception.NotMatchingException;
 import site.coach_coach.coach_coach_server.routine.repository.RoutineRepository;
 import site.coach_coach.coach_coach_server.sport.domain.Sport;
 import site.coach_coach.coach_coach_server.sport.repository.SportRepository;
@@ -44,7 +41,7 @@ public class RoutineService {
 		matchingRepository.findByUser_UserIdAndCoach_CoachId(userId, coachId)
 			.map(Matching::getIsMatching)
 			.filter(isMatching -> isMatching)
-			.orElseThrow(() -> new NotMatchingException(ErrorMessage.NOT_MATCHING));
+			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_MATCHING));
 	}
 
 	private RoutineListRequest createRoutineListRequest(Long userIdParam, Long coachIdParam, Long userIdByJwt) {
@@ -58,7 +55,7 @@ public class RoutineService {
 
 	public Long getCoachId(Long userIdByJwt) {
 		return coachRepository.findCoachIdByUserId(userIdByJwt)
-			.orElseThrow(() -> new UserNotFoundException(ErrorMessage.NOT_FOUND_COACH));
+			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_COACH));
 	}
 
 	public RoutineListRequest confirmIsMatching(Long userIdParam, Long coachIdParam, Long userIdByJwt) {
@@ -101,13 +98,13 @@ public class RoutineService {
 	public UserInfoForRoutineList getUserInfoForRoutineList(Long userIdParam, Long coachIdParam) {
 		if (userIdParam == null) {
 			User userInfo = coachRepository.findById(coachIdParam)
-				.orElseThrow(() -> new UserNotFoundException(ErrorMessage.NOT_FOUND_COACH))
+				.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_COACH))
 				.getUser();
 			return new UserInfoForRoutineList(userInfo.getUserId(), userInfo.getNickname(),
 				userInfo.getProfileImageUrl());
 		} else {
 			User userInfo = userRepository.findById(userIdParam)
-				.orElseThrow(() -> new UserNotFoundException(ErrorMessage.NOT_FOUND_USER));
+				.orElseThrow(UserNotFoundException::new);
 			return new UserInfoForRoutineList(userIdParam, userInfo.getNickname(),
 				userInfo.getProfileImageUrl());
 		}
@@ -142,7 +139,7 @@ public class RoutineService {
 	@Transactional(readOnly = true)
 	public RoutineResponse getRoutineDetail(Long routineId, Long userIdByJwt, Long userIdParam) {
 		Routine routine = routineRepository.findById(routineId)
-			.orElseThrow(() -> new NoExistRoutineException(ErrorMessage.NOT_FOUND_ROUTINE));
+			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_ROUTINE));
 
 		validateBeforeGetRoutine(routine, userIdParam, userIdByJwt);
 		return RoutineResponse.from(routine);
@@ -173,14 +170,14 @@ public class RoutineService {
 		Routine routine = validateIsMyRoutine(routineId, userIdByJwt);
 
 		Sport sport = sportRepository.findById(updateRoutineInfoRequest.sportId())
-			.orElseThrow(() -> new NotFoundSportException(ErrorMessage.NOT_FOUND_SPORTS));
+			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_SPORTS));
 		routine.updateRoutineInfo(updateRoutineInfoRequest.routineName(), sport);
 	}
 
 	@Transactional
 	public Routine validateIsMyRoutine(Long routineId, Long userIdByJwt) {
 		Routine routine = routineRepository.findById(routineId)
-			.orElseThrow(() -> new NoExistRoutineException(ErrorMessage.NOT_FOUND_ROUTINE));
+			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_ROUTINE));
 
 		if (routine.getCoach() == null) {
 			if (!routine.getUser().getUserId().equals(userIdByJwt)) {

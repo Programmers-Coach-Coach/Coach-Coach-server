@@ -7,9 +7,9 @@ import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.category.domain.Category;
 import site.coach_coach.coach_coach_server.category.dto.CreateCategoryRequest;
 import site.coach_coach.coach_coach_server.category.dto.UpdateCategoryInfoRequest;
-import site.coach_coach.coach_coach_server.category.exception.NotFoundCategoryException;
 import site.coach_coach.coach_coach_server.category.repository.CategoryRepository;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
+import site.coach_coach.coach_coach_server.common.exception.NotFoundException;
 import site.coach_coach.coach_coach_server.routine.domain.Routine;
 import site.coach_coach.coach_coach_server.routine.service.RoutineService;
 
@@ -36,7 +36,7 @@ public class CategoryService {
 	public void deleteCategory(Long categoryId, Long userIdByJwt) {
 
 		Category category = categoryRepository.findById(categoryId)
-			.orElseThrow(() -> new NotFoundCategoryException(ErrorMessage.NOT_FOUND_CATEGORY));
+			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_CATEGORY));
 
 		routineService.validateIsMyRoutine(category.getRoutine().getRoutineId(), userIdByJwt);
 
@@ -47,7 +47,7 @@ public class CategoryService {
 	@Transactional
 	public void updateCategory(UpdateCategoryInfoRequest updateCategoryInfoRequest, Long categoryId, Long userIdByJwt) {
 		Category category = categoryRepository.findById(categoryId)
-			.orElseThrow(() -> new NotFoundCategoryException(ErrorMessage.NOT_FOUND_CATEGORY));
+			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_CATEGORY));
 
 		routineService.validateIsMyRoutine(category.getRoutine().getRoutineId(), userIdByJwt);
 

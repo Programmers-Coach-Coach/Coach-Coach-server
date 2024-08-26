@@ -22,9 +22,6 @@ import site.coach_coach.coach_coach_server.coach.exception.AlreadyMatchedExcepti
 import site.coach_coach.coach_coach_server.coach.exception.DuplicateContactException;
 import site.coach_coach.coach_coach_server.coach.exception.DuplicateReviewException;
 import site.coach_coach.coach_coach_server.coach.exception.InvalidQueryParameterException;
-import site.coach_coach.coach_coach_server.coach.exception.NotFoundMatchingException;
-import site.coach_coach.coach_coach_server.coach.exception.NotFoundPageException;
-import site.coach_coach.coach_coach_server.coach.exception.NotFoundSportException;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.common.response.ErrorResponse;
 import site.coach_coach.coach_coach_server.user.exception.IncorrectPasswordException;
@@ -136,18 +133,6 @@ public class GlobalExceptionHandler {
 			.body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage()));
 	}
 
-	@ExceptionHandler(NotFoundSportException.class)
-	public ResponseEntity<Object> handleNotFoundSportException(NotFoundSportException ex) {
-		return ResponseEntity.status(HttpStatus.NOT_FOUND)
-			.body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage()));
-	}
-
-	@ExceptionHandler(NotFoundPageException.class)
-	public ResponseEntity<Object> handleNotFoundPageException(NotFoundPageException ex) {
-		return ResponseEntity.status(HttpStatus.NOT_FOUND)
-			.body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage()));
-	}
-
 	@ExceptionHandler(InvalidQueryParameterException.class)
 	public ResponseEntity<ErrorResponse> handleInvalidQueryParameterException(InvalidQueryParameterException ex) {
 		log.error("Handled exception: [{}] - {}", ex.getClass().getSimpleName(), ex.getMessage());
@@ -166,12 +151,6 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<ErrorResponse> handleAlreadyMatchedException(AlreadyMatchedException ex) {
 		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.CONFLICT.value(), ex.getMessage());
 		return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
-	}
-
-	@ExceptionHandler(NotFoundMatchingException.class)
-	public ResponseEntity<ErrorResponse> handleNotFoundMatchingException(NotFoundMatchingException ex) {
-		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.FORBIDDEN.value(), ex.getMessage());
-		return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
 	}
 
 	@ExceptionHandler(DuplicateContactException.class)

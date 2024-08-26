@@ -31,12 +31,12 @@ import site.coach_coach.coach_coach_server.category.dto.CategoryDto;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.common.constants.SuccessMessage;
 import site.coach_coach.coach_coach_server.common.exception.AccessDeniedException;
+import site.coach_coach.coach_coach_server.common.exception.NotFoundException;
 import site.coach_coach.coach_coach_server.routine.dto.CreateRoutineRequest;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineForListDto;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineListRequest;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineResponse;
 import site.coach_coach.coach_coach_server.routine.dto.UserInfoForRoutineList;
-import site.coach_coach.coach_coach_server.routine.exception.NoExistRoutineException;
 import site.coach_coach.coach_coach_server.routine.service.RoutineService;
 
 @WebMvcTest(RoutineController.class)
@@ -221,7 +221,7 @@ public class RoutineControllerTest {
 	public void deleteRoutineFailByNotExistTest() throws Exception {
 		// Given
 		Long routineId = 0L;
-		doThrow(new NoExistRoutineException(ErrorMessage.NOT_FOUND_ROUTINE)).when(routineService)
+		doThrow(new NotFoundException(ErrorMessage.NOT_FOUND_ROUTINE)).when(routineService)
 			.deleteRoutine(anyLong(), anyLong());
 
 		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/routines/" + routineId).with(csrf()))

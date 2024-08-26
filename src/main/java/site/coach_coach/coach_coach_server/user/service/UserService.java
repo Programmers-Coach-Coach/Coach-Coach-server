@@ -14,8 +14,9 @@ import org.springframework.web.multipart.MultipartFile;
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.auth.jwt.TokenProvider;
 import site.coach_coach.coach_coach_server.auth.jwt.dto.TokenDto;
-import site.coach_coach.coach_coach_server.coach.exception.NotFoundSportException;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
+import site.coach_coach.coach_coach_server.common.exception.NotFoundException;
+import site.coach_coach.coach_coach_server.common.exception.UserNotFoundException;
 import site.coach_coach.coach_coach_server.common.utils.AmazonS3Uploader;
 import site.coach_coach.coach_coach_server.notification.repository.NotificationRepository;
 import site.coach_coach.coach_coach_server.sport.domain.InterestedSport;
@@ -82,14 +83,14 @@ public class UserService {
 	}
 
 	public void validatePassword(Long userId, PasswordRequest passwordRequest) {
-		User user = userRepository.findById(userId).orElseThrow(InvalidUserException::new);
+		User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 		if (!passwordEncoder.matches(passwordRequest.password(), user.getPassword())) {
 			throw new IncorrectPasswordException();
 		}
 	}
 
 	public UserProfileResponse getUserProfile(Long userId) {
-		User user = userRepository.findById(userId).orElseThrow(InvalidUserException::new);
+		User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 		return UserProfileResponse.from(user);
 	}
 
@@ -123,7 +124,7 @@ public class UserService {
 	@Transactional
 	public void updateUserProfile(Long userId, MultipartFile profileImage, UserProfileRequest userProfileRequest) throws
 		IOException {
-		User user = userRepository.findById(userId).orElseThrow(InvalidUserException::new);
+		User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 		String nickname = getUpdatedNickname(user, userProfileRequest);
 		String profileImageUrl = getProfileImageToUrl(user, profileImage);
 		List<InterestedSport> interestedSports = getInterestedSports(user, userProfileRequest);
@@ -169,7 +170,7 @@ public class UserService {
 			List<InterestedSport> interestedSports = userProfileRequest.interestedSports().stream().map(
 				interestedSport -> {
 					Sport sport = sportRepository.findBySportName(interestedSport.sportName())
-						.orElseThrow(() -> new NotFoundSportException(ErrorMessage.NOT_FOUND_SPORTS));
+						.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_SPORTS));
 					return InterestedSport.builder()
 						.user(user)
 						.sport(sport)

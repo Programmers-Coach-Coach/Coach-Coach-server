@@ -7,12 +7,11 @@ import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.action.domain.Action;
 import site.coach_coach.coach_coach_server.action.dto.CreateActionRequest;
 import site.coach_coach.coach_coach_server.action.dto.UpdateActionInfoRequest;
-import site.coach_coach.coach_coach_server.action.exception.NotFoundActionException;
 import site.coach_coach.coach_coach_server.action.repository.ActionRepository;
 import site.coach_coach.coach_coach_server.category.domain.Category;
-import site.coach_coach.coach_coach_server.category.exception.NotFoundCategoryException;
 import site.coach_coach.coach_coach_server.category.repository.CategoryRepository;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
+import site.coach_coach.coach_coach_server.common.exception.NotFoundException;
 import site.coach_coach.coach_coach_server.routine.service.RoutineService;
 
 @Service
@@ -26,7 +25,7 @@ public class ActionService {
 	public Long createAction(Long categoryId, Long userIdByJwt,
 		CreateActionRequest createActionRequest) {
 		Category category = categoryRepository.findById(categoryId)
-			.orElseThrow(() -> new NotFoundCategoryException(ErrorMessage.NOT_FOUND_CATEGORY));
+			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_CATEGORY));
 
 		routineService.validateIsMyRoutine(category.getRoutine().getRoutineId(), userIdByJwt);
 
@@ -37,7 +36,7 @@ public class ActionService {
 	@Transactional
 	public void deleteAction(Long actionId, Long userIdByJwt) {
 		Action action = actionRepository.findById(actionId)
-			.orElseThrow(() -> new NotFoundActionException(ErrorMessage.NOT_FOUND_ACTION));
+			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_ACTION));
 
 		routineService.validateIsMyRoutine(action.getCategory().getRoutine().getRoutineId(), userIdByJwt);
 
@@ -47,7 +46,7 @@ public class ActionService {
 	@Transactional
 	public void updateActionInfo(UpdateActionInfoRequest updateActionInfoRequest, Long actionId, Long userIdByJwt) {
 		Action action = actionRepository.findById(actionId)
-			.orElseThrow(() -> new NotFoundActionException(ErrorMessage.NOT_FOUND_ACTION));
+			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_ACTION));
 
 		routineService.validateIsMyRoutine(action.getCategory().getRoutine().getRoutineId(), userIdByJwt);
 		action.updateActionInfo(updateActionInfoRequest);
