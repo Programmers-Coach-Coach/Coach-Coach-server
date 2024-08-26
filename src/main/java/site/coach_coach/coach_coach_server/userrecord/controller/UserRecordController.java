@@ -50,14 +50,14 @@ public class UserRecordController {
 	}
 
 	@PutMapping("/v1/records/{recordId}")
-	public ResponseEntity<Void> updateBodyInfoToUserRecord(
+	public ResponseEntity<SuccessIdResponse> updateBodyInfoToUserRecord(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
 		@PathVariable("recordId") @Positive Long recordId,
 		@RequestBody @Valid UserRecordUpdateRequest userRecordUpdateRequest
 	) {
 		Long userId = userDetails.getUserId();
 		userRecordService.updateBodyInfoToUserRecord(userId, recordId, userRecordUpdateRequest);
-		return ResponseEntity.noContent().build();
+		return ResponseEntity.ok(new SuccessIdResponse(recordId));
 	}
 
 	@GetMapping("/v1/records")

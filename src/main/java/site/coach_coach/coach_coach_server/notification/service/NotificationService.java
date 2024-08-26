@@ -13,14 +13,13 @@ import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.common.domain.RelationFunctionEnum;
 import site.coach_coach.coach_coach_server.common.exception.AccessDeniedException;
 import site.coach_coach.coach_coach_server.common.exception.InvalidInputException;
+import site.coach_coach.coach_coach_server.common.exception.NotFoundException;
 import site.coach_coach.coach_coach_server.common.exception.UserNotFoundException;
 import site.coach_coach.coach_coach_server.notification.constants.NotificationMessage;
 import site.coach_coach.coach_coach_server.notification.domain.Notification;
 import site.coach_coach.coach_coach_server.notification.dto.NotificationListResponse;
-import site.coach_coach.coach_coach_server.notification.exception.NotFoundException;
 import site.coach_coach.coach_coach_server.notification.repository.NotificationRepository;
 import site.coach_coach.coach_coach_server.user.domain.User;
-import site.coach_coach.coach_coach_server.user.exception.InvalidUserException;
 import site.coach_coach.coach_coach_server.user.repository.UserRepository;
 
 @Slf4j
@@ -34,7 +33,7 @@ public class NotificationService {
 
 	@Transactional(readOnly = true)
 	public List<NotificationListResponse> getAllNotifications(Long userId) {
-		User user = userRepository.findById(userId).orElseThrow(InvalidUserException::new);
+		User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
 		return user.getNotifications()
 			.stream()
@@ -45,9 +44,9 @@ public class NotificationService {
 	@Transactional
 	public void createNotification(Long userId, Long coachId, RelationFunctionEnum relationFunction) {
 		User user = userRepository.findById(userId)
-			.orElseThrow(InvalidUserException::new);
+			.orElseThrow(UserNotFoundException::new);
 		User coach = coachRepository.findUserByCoachId(coachId)
-			.orElseThrow(() -> new UserNotFoundException(ErrorMessage.NOT_FOUND_COACH));
+			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_COACH));
 
 		String message = createMessage(user, relationFunction);
 		if (message.isEmpty()) {
@@ -73,7 +72,7 @@ public class NotificationService {
 	}
 
 	public void deleteAllNotifications(Long userId) {
-		User user = userRepository.findById(userId).orElseThrow(InvalidUserException::new);
+		User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 		List<Notification> notifications = new ArrayList<>(user.getNotifications());
 		if (!notifications.isEmpty()) {
 			notificationRepository.deleteAll(notifications);

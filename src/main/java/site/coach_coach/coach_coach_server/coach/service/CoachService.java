@@ -23,14 +23,11 @@ import site.coach_coach.coach_coach_server.coach.dto.ReviewRequestDto;
 import site.coach_coach.coach_coach_server.coach.exception.AlreadyMatchedException;
 import site.coach_coach.coach_coach_server.coach.exception.DuplicateContactException;
 import site.coach_coach.coach_coach_server.coach.exception.DuplicateReviewException;
-import site.coach_coach.coach_coach_server.coach.exception.NotFoundCoachException;
-import site.coach_coach.coach_coach_server.coach.exception.NotFoundMatchingException;
-import site.coach_coach.coach_coach_server.coach.exception.NotFoundPageException;
-import site.coach_coach.coach_coach_server.coach.exception.NotFoundSportException;
 import site.coach_coach.coach_coach_server.coach.repository.CoachRepository;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.common.domain.RelationFunctionEnum;
 import site.coach_coach.coach_coach_server.common.exception.AccessDeniedException;
+import site.coach_coach.coach_coach_server.common.exception.NotFoundException;
 import site.coach_coach.coach_coach_server.common.exception.UserNotFoundException;
 import site.coach_coach.coach_coach_server.like.domain.UserCoachLike;
 import site.coach_coach.coach_coach_server.like.repository.UserCoachLikeRepository;
@@ -46,7 +43,6 @@ import site.coach_coach.coach_coach_server.sport.dto.CoachingSportDto;
 import site.coach_coach.coach_coach_server.sport.repository.CoachingSportRepository;
 import site.coach_coach.coach_coach_server.sport.repository.SportRepository;
 import site.coach_coach.coach_coach_server.user.domain.User;
-import site.coach_coach.coach_coach_server.user.exception.InvalidUserException;
 import site.coach_coach.coach_coach_server.user.repository.UserRepository;
 
 @Service
@@ -64,14 +60,14 @@ public class CoachService {
 
 	@Transactional(readOnly = true)
 	public Coach getCoachByUserId(Long userId) {
-		User user = userRepository.findById(userId).orElseThrow(InvalidUserException::new);
+		User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 		return coachRepository.findByUser(user)
-			.orElseThrow(() -> new NotFoundCoachException(ErrorMessage.NOT_FOUND_COACH));
+			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_COACH));
 	}
 
 	@Transactional
 	public Coach createCoachForUser(Long userId) {
-		User user = userRepository.findById(userId).orElseThrow(InvalidUserException::new);
+		User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 		return coachRepository.save(new Coach(user));
 	}
 
@@ -94,7 +90,7 @@ public class CoachService {
 	public void addNewCoachingSports(Coach coach, List<CoachingSportDto> coachingSports) {
 		List<Sport> sports = coachingSports.stream()
 			.map(coachingSportDto -> sportRepository.findBySportName(coachingSportDto.sportName())
-				.orElseThrow(() -> new NotFoundSportException(ErrorMessage.NOT_FOUND_SPORTS)))
+				.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_SPORTS)))
 			.toList();
 
 		List<CoachingSport> coachingSportsEntities = sports.stream()
@@ -109,7 +105,7 @@ public class CoachService {
 		Coach coach;
 		try {
 			coach = getCoachByUserId(userId);
-		} catch (NotFoundCoachException e) {
+		} catch (NotFoundException e) {
 			coach = createCoachForUser(userId);
 		}
 		updateCoachInfo(coach, coachRequest);
@@ -125,7 +121,7 @@ public class CoachService {
 	@Transactional
 	public void contactCoach(User user, Long coachId) {
 		Coach coach = coachRepository.findById(coachId)
-			.orElseThrow(() -> new NotFoundCoachException(ErrorMessage.NOT_FOUND_COACH));
+			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_COACH));
 
 		if (matchingRepository.existsByUserUserIdAndCoachCoachId(user.getUserId(), coachId)) {
 			throw new DuplicateContactException(ErrorMessage.DUPLICATE_CONTACT);
@@ -140,13 +136,13 @@ public class CoachService {
 	@Transactional
 	public void deleteMatching(Long coachUserId, Long userId) {
 		User user = userRepository.findById(userId)
-			.orElseThrow(() -> new UserNotFoundException(ErrorMessage.NOT_FOUND_USER));
+			.orElseThrow(UserNotFoundException::new);
 
 		Coach coach = coachRepository.findByUser_UserId(coachUserId)
-			.orElseThrow(() -> new NotFoundCoachException(ErrorMessage.NOT_FOUND_COACH));
+			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_COACH));
 
 		Matching matching = matchingRepository.findByUser_UserIdAndCoach_CoachId(user.getUserId(), coach.getCoachId())
-			.orElseThrow(() -> new NotFoundMatchingException(ErrorMessage.NOT_FOUND_MATCHING));
+			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_CONTACT));
 
 		matchingRepository.delete(matching);
 	}
@@ -154,13 +150,13 @@ public class CoachService {
 	@Transactional(readOnly = true)
 	public User getUserById(Long userId) {
 		return userRepository.findById(userId)
-			.orElseThrow(InvalidUserException::new);
+			.orElseThrow(UserNotFoundException::new);
 	}
 
 	@Transactional(readOnly = true)
 	public Coach getCoachById(Long coachId) {
 		return coachRepository.findById(coachId)
-			.orElseThrow(() -> new NotFoundCoachException(ErrorMessage.NOT_FOUND_COACH));
+			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_COACH));
 	}
 
 	@Transactional(readOnly = true)
@@ -226,7 +222,7 @@ public class CoachService {
 		}
 
 		if (page > coachesPage.getTotalPages()) {
-			throw new NotFoundPageException(ErrorMessage.NOT_FOUND_PAGE);
+			throw new NotFoundException(ErrorMessage.NOT_FOUND_PAGE);
 		}
 
 		List<CoachListDto> coaches = coachesPage.stream()
@@ -239,10 +235,10 @@ public class CoachService {
 	@Transactional
 	public void addCoachToFavorites(Long userId, Long coachId) {
 		User user = userRepository.findById(userId)
-			.orElseThrow(InvalidUserException::new);
+			.orElseThrow(UserNotFoundException::new);
 
 		Coach coach = coachRepository.findById(coachId)
-			.orElseThrow(() -> new NotFoundCoachException(ErrorMessage.NOT_FOUND_COACH));
+			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_COACH));
 
 		if (!userCoachLikeRepository.existsByUser_UserIdAndCoach_CoachId(userId, coachId)) {
 			userCoachLikeRepository.save(new UserCoachLike(null, user, coach));
@@ -253,7 +249,7 @@ public class CoachService {
 	@Transactional
 	public void deleteCoachToFavorites(Long userId, Long coachId) {
 		coachRepository.findById(coachId)
-			.orElseThrow(() -> new NotFoundCoachException(ErrorMessage.NOT_FOUND_COACH));
+			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_COACH));
 
 		if (userCoachLikeRepository.existsByUser_UserIdAndCoach_CoachId(userId, coachId)) {
 			userCoachLikeRepository.deleteByUser_UserIdAndCoach_CoachId(userId, coachId);
@@ -262,7 +258,7 @@ public class CoachService {
 
 	public List<MatchingUserResponseDto> getMatchingUsersByCoachId(Long coachUserId) {
 		Long coachId = coachRepository.findCoachIdByUserId(coachUserId)
-			.orElseThrow(() -> new NotFoundCoachException(ErrorMessage.NOT_FOUND_COACH));
+			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_COACH));
 
 		List<Matching> matchings = matchingRepository.findByCoach_CoachId(coachId);
 
@@ -416,10 +412,10 @@ public class CoachService {
 	@Transactional
 	public void updateMatchingStatus(Long coachUserId, Long userId) {
 		Coach coach = coachRepository.findByUser_UserId(coachUserId)
-			.orElseThrow(() -> new NotFoundCoachException(ErrorMessage.NOT_FOUND_COACH));
+			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_COACH));
 
 		Matching matching = matchingRepository.findByUser_UserIdAndCoach_CoachId(userId, coach.getCoachId())
-			.orElseThrow(() -> new NotFoundMatchingException(ErrorMessage.NOT_FOUND_MATCHING));
+			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_CONTACT));
 
 		if (Boolean.TRUE.equals(matching.getIsMatching())) {
 			throw new AlreadyMatchedException(ErrorMessage.DUPLICATE_MATCHING);

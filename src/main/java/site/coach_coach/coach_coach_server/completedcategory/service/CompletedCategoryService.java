@@ -5,14 +5,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.category.domain.Category;
-import site.coach_coach.coach_coach_server.category.exception.NotFoundCategoryException;
 import site.coach_coach.coach_coach_server.category.repository.CategoryRepository;
-import site.coach_coach.coach_coach_server.category.service.CategoryService;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.common.exception.AccessDeniedException;
+import site.coach_coach.coach_coach_server.common.exception.NotFoundException;
 import site.coach_coach.coach_coach_server.completedcategory.domain.CompletedCategory;
 import site.coach_coach.coach_coach_server.completedcategory.exception.DuplicateCompletedCategoryException;
-import site.coach_coach.coach_coach_server.completedcategory.exception.NotFoundCompletedCategoryException;
 import site.coach_coach.coach_coach_server.completedcategory.repository.CompletedCategoryRepository;
 import site.coach_coach.coach_coach_server.userrecord.domain.UserRecord;
 import site.coach_coach.coach_coach_server.userrecord.service.UserRecordService;
@@ -21,13 +19,12 @@ import site.coach_coach.coach_coach_server.userrecord.service.UserRecordService;
 @RequiredArgsConstructor
 public class CompletedCategoryService {
 	private final CompletedCategoryRepository completedCategoryRepository;
-	private final CategoryService categoryService;
 	private final UserRecordService userRecordService;
 	private final CategoryRepository categoryRepository;
 
 	private Category validateAccessToCategory(Long categoryId, Long userIdByJwt) {
 		Category category = categoryRepository.findById(categoryId)
-			.orElseThrow(() -> new NotFoundCategoryException(ErrorMessage.NOT_FOUND_CATEGORY));
+			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_CATEGORY));
 
 		if (!category.getRoutine().getUser().getUserId().equals(userIdByJwt)) {
 			throw new AccessDeniedException();
@@ -66,7 +63,7 @@ public class CompletedCategoryService {
 			userRecord.getUserRecordId(),
 			category.getCategoryId());
 		if (deletedCount == 0) {
-			throw new NotFoundCompletedCategoryException(ErrorMessage.NOT_FOUND_COMPLETED_CATEGORY);
+			throw new NotFoundException(ErrorMessage.NOT_FOUND_COMPLETED_CATEGORY);
 		} else {
 			category.changeIsCompleted();
 		}
