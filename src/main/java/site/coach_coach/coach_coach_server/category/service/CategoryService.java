@@ -1,9 +1,11 @@
 package site.coach_coach.coach_coach_server.category.service;
 
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import site.coach_coach.coach_coach_server.category.domain.Category;
 import site.coach_coach.coach_coach_server.category.dto.CreateCategoryRequest;
 import site.coach_coach.coach_coach_server.category.dto.UpdateCategoryInfoRequest;
@@ -14,6 +16,7 @@ import site.coach_coach.coach_coach_server.routine.domain.Routine;
 import site.coach_coach.coach_coach_server.routine.service.RoutineService;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class CategoryService {
 	private final CategoryRepository categoryRepository;
@@ -52,5 +55,12 @@ public class CategoryService {
 		routineService.validateIsMyRoutine(category.getRoutine().getRoutineId(), userIdByJwt);
 
 		category.updateCategoryInfo(updateCategoryInfoRequest.categoryName());
+	}
+
+	@Transactional
+	@Scheduled(cron = "0 0 15 * * *")
+	public void resetIsCompleted() {
+		log.info("All 'IsCompleted' has been reset.");
+		categoryRepository.resetIsCompleted(false);
 	}
 }
