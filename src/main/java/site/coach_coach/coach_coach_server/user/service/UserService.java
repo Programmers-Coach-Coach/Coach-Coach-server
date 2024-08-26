@@ -14,7 +14,9 @@ import org.springframework.web.multipart.MultipartFile;
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.auth.jwt.TokenProvider;
 import site.coach_coach.coach_coach_server.auth.jwt.dto.TokenDto;
+import site.coach_coach.coach_coach_server.coach.repository.CoachRepository;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
+import site.coach_coach.coach_coach_server.common.domain.GenderEnum;
 import site.coach_coach.coach_coach_server.common.exception.NotFoundException;
 import site.coach_coach.coach_coach_server.common.exception.UserNotFoundException;
 import site.coach_coach.coach_coach_server.common.utils.AmazonS3Uploader;
@@ -46,6 +48,7 @@ public class UserService {
 	private final AmazonS3Uploader amazonS3Uploader;
 	private final SportRepository sportRepository;
 	private final NotificationRepository notificationRepository;
+	private final CoachRepository coachRepository;
 
 	public void checkNicknameDuplicate(String nickname) {
 		if (userRepository.existsByNickname(nickname)) {
@@ -105,10 +108,16 @@ public class UserService {
 
 	private AuthResponse getLoggedInUserAuthStatus(User user) {
 		String nickname = user.getNickname();
+		GenderEnum gender = user.getGender();
+		String profileImageUrl = user.getProfileImageUrl();
+		boolean isCoach = coachRepository.existsByUser(user);
 		int countOfNotifications = notificationRepository.countByUser_UserId(user.getUserId());
 		return AuthResponse.builder()
 			.isLogin(true)
 			.nickname(nickname)
+			.gender(gender)
+			.profileImageUrl(profileImageUrl)
+			.isCoach(isCoach)
 			.countOfNotifications(countOfNotifications)
 			.build();
 	}
@@ -117,6 +126,9 @@ public class UserService {
 		return AuthResponse.builder()
 			.isLogin(false)
 			.nickname(null)
+			.gender(null)
+			.profileImageUrl(null)
+			.isCoach(false)
 			.countOfNotifications(0)
 			.build();
 	}
