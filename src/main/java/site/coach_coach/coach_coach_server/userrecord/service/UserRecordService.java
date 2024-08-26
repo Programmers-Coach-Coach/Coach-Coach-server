@@ -150,6 +150,7 @@ public class UserRecordService {
 		List<RecordsDto> records = mapToRecordsDto(completedCategories);
 
 		return new UserRecordDetailResponse(
+			userRecord.getUserRecordId(),
 			userRecord.getWeight(),
 			userRecord.getSkeletalMuscle(),
 			userRecord.getFatPercentage(),
