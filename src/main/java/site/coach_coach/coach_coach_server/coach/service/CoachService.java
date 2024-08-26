@@ -163,10 +163,12 @@ public class CoachService {
 	public CoachDetailDto getCoachDetail(User user, Long coachId) {
 		Coach coach = (coachId != null) ? getCoachById(coachId) : getCoachByUserId(user.getUserId());
 
-		if (!user.equals(coach.getUser()) && !coach.getIsOpen()) {
+		boolean isSelf = user.getUserId().equals(coach.getUser().getUserId());
+
+		if (!isSelf && !coach.getIsOpen()) {
 			throw new AccessDeniedException();
 		}
-		
+
 		List<ReviewDto> reviews = getReviews(coach);
 		double averageRating = calculateAverageRating(reviews);
 
