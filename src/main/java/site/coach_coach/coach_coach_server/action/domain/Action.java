@@ -42,9 +42,13 @@ public class Action extends DateEntity {
 	@Column(name = "sets")
 	private Integer sets;
 
-	@Size(max = 45)
-	@Column(name = "count_or_minutes")
-	private String countOrMinutes;
+	@Positive
+	@Column(name = "counts")
+	private Integer counts;
+
+	@Positive
+	@Column(name = "minutes")
+	private Integer minutes;
 
 	@Size(max = 200)
 	@Column(name = "description")
@@ -58,7 +62,8 @@ public class Action extends DateEntity {
 		return Action.builder()
 			.actionName(createActionRequest.actionName())
 			.sets(createActionRequest.sets())
-			.countOrMinutes(createActionRequest.countOrMinutes())
+			.counts(createActionRequest.counts())
+			.minutes(createActionRequest.minutes())
 			.description(createActionRequest.description())
 			.category(category)
 			.build();
@@ -67,7 +72,8 @@ public class Action extends DateEntity {
 	public void updateActionInfo(UpdateActionInfoRequest updateActionInfoRequest) {
 		this.actionName = updateActionInfoRequest.actionName();
 		this.sets = updateActionInfoRequest.sets();
-		this.countOrMinutes = updateActionInfoRequest.countOrMinutes();
+		this.counts = updateActionInfoRequest.counts();
+		this.minutes = updateActionInfoRequest.minutes();
 		this.description = updateActionInfoRequest.description();
 	}
 }
