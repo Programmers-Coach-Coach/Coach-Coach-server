@@ -5,8 +5,8 @@ import java.util.List;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import site.coach_coach.coach_coach_server.coach.exception.NotFoundSportException;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
+import site.coach_coach.coach_coach_server.common.exception.NotFoundException;
 import site.coach_coach.coach_coach_server.sport.domain.Sport;
 import site.coach_coach.coach_coach_server.sport.repository.SportRepository;
 
@@ -27,7 +27,7 @@ public class SportsValidator implements ConstraintValidator<Sports, Long[]> {
 		List<Sport> existingSports = sportRepository.findAllById(sportIds);
 
 		if (existingSports.size() != sportIds.size()) {
-			throw new NotFoundSportException(ErrorMessage.NOT_FOUND_SPORTS);
+			throw new NotFoundException(ErrorMessage.NOT_FOUND_SPORTS);
 		}
 
 		return true;

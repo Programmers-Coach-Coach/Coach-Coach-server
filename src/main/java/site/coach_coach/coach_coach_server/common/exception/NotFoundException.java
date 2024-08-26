@@ -1,4 +1,4 @@
-package site.coach_coach.coach_coach_server.notification.exception;
+package site.coach_coach.coach_coach_server.common.exception;
 
 import java.util.NoSuchElementException;
 

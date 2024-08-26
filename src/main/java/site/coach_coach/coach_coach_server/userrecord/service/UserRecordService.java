@@ -21,13 +21,13 @@ import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.common.exception.AccessDeniedException;
 import site.coach_coach.coach_coach_server.common.exception.InvalidInputException;
+import site.coach_coach.coach_coach_server.common.exception.NotFoundException;
+import site.coach_coach.coach_coach_server.common.exception.UserNotFoundException;
 import site.coach_coach.coach_coach_server.completedcategory.domain.CompletedCategory;
 import site.coach_coach.coach_coach_server.completedcategory.dto.CompletedCategoryDto;
 import site.coach_coach.coach_coach_server.completedcategory.repository.CompletedCategoryRepository;
-import site.coach_coach.coach_coach_server.notification.exception.NotFoundException;
 import site.coach_coach.coach_coach_server.routine.domain.Routine;
 import site.coach_coach.coach_coach_server.user.domain.User;
-import site.coach_coach.coach_coach_server.user.exception.InvalidUserException;
 import site.coach_coach.coach_coach_server.user.repository.UserRepository;
 import site.coach_coach.coach_coach_server.userrecord.domain.UserRecord;
 import site.coach_coach.coach_coach_server.userrecord.dto.BodyInfoChartResponse;
@@ -52,7 +52,7 @@ public class UserRecordService {
 		String date = userRecordCreateRequest.recordDate();
 
 		LocalDate recordDate = validateAndConvertToLocalDate(date);
-		User user = userRepository.findById(userId).orElseThrow(InvalidUserException::new);
+		User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
 		if (userRecordRepository.existsByRecordDateAndUser_UserId(recordDate, userId)) {
 			throw new DuplicateRecordException(ErrorMessage.DUPLICATE_RECORD);
@@ -162,7 +162,7 @@ public class UserRecordService {
 		LocalDate recordDate = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDate();
 		return userRecordRepository.findByRecordDateAndUser_UserId(recordDate, userId)
 			.orElseGet(() -> {
-				User user = userRepository.findById(userId).orElseThrow(InvalidUserException::new);
+				User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 				UserRecord userRecord = UserRecord.builder()
 					.user(user)
 					.recordDate(recordDate)
