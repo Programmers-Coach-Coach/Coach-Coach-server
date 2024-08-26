@@ -8,9 +8,9 @@ import site.coach_coach.coach_coach_server.category.domain.Category;
 import site.coach_coach.coach_coach_server.category.repository.CategoryRepository;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.common.exception.AccessDeniedException;
+import site.coach_coach.coach_coach_server.common.exception.DuplicateValueException;
 import site.coach_coach.coach_coach_server.common.exception.NotFoundException;
 import site.coach_coach.coach_coach_server.completedcategory.domain.CompletedCategory;
-import site.coach_coach.coach_coach_server.completedcategory.exception.DuplicateCompletedCategoryException;
 import site.coach_coach.coach_coach_server.completedcategory.repository.CompletedCategoryRepository;
 import site.coach_coach.coach_coach_server.userrecord.domain.UserRecord;
 import site.coach_coach.coach_coach_server.userrecord.service.UserRecordService;
@@ -40,7 +40,7 @@ public class CompletedCategoryService {
 		completedCategoryRepository.findByUserRecord_RecordDateAndCategory_CategoryId(
 				userRecord.getRecordDate(), category.getCategoryId())
 			.ifPresent(completedCategory -> {
-				throw new DuplicateCompletedCategoryException(ErrorMessage.DUPLICATE_COMPLETED_CATEGORY);
+				throw new DuplicateValueException(ErrorMessage.DUPLICATE_COMPLETED_CATEGORY);
 			});
 
 		category.changeIsCompleted();
@@ -51,7 +51,6 @@ public class CompletedCategoryService {
 			.recordDate(userRecord.getRecordDate())
 			.build();
 		return completedCategoryRepository.save(completedCategory).getCompletedCategoryId();
-
 	}
 
 	@Transactional
@@ -67,6 +66,5 @@ public class CompletedCategoryService {
 		} else {
 			category.changeIsCompleted();
 		}
-
 	}
 }
