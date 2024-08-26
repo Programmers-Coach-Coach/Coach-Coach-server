@@ -29,10 +29,10 @@ public interface UserRecordRepository extends JpaRepository<UserRecord, Long> {
 	@Query("SELECT ur FROM UserRecord ur "
 		+ "WHERE ur.user.userId = :userId "
 		+ "AND ("
-		+ "(:type = 'weight' AND ur.weight IS NOT NULL) OR "
-		+ "(:type = 'skeletalMuscle' AND ur.skeletalMuscle IS NOT NULL) OR "
-		+ "(:type = 'fatPercentage' AND ur.fatPercentage IS NOT NULL) OR "
-		+ "(:type = 'bmi' AND ur.bmi IS NOT NULL)"
+		+ "(:type = 'weight' AND ur.weight IS NOT NULL AND ur.weight <> 0) OR "
+		+ "(:type = 'skeletalMuscle' AND ur.skeletalMuscle IS NOT NULL AND ur.skeletalMuscle <> 0) OR "
+		+ "(:type = 'fatPercentage' AND ur.fatPercentage IS NOT NULL AND ur.fatPercentage <> 0) OR "
+		+ "(:type = 'bmi' AND ur.bmi IS NOT NULL AND ur.bmi <> 0)"
 		+ ") "
 		+ "ORDER BY ur.recordDate DESC")
 	List<UserRecord> findUserRecordByTypeAndUserId(
