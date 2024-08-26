@@ -1,4 +1,4 @@
-alter table `coachcoach`.`users`
+ALTER TABLE `coachcoach`.`users`
 ADD COLUMN `is_coach` TINYINT NOT NULL DEFAULT 0 AFTER `introduction`;
 
 ALTER TABLE `coachcoach`.`actions`
