@@ -68,6 +68,8 @@ public class CoachService {
 	@Transactional
 	public Coach createCoachForUser(Long userId) {
 		User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+		user.promoteToCoach();
+		userRepository.save(user);
 		return coachRepository.save(new Coach(user));
 	}
 
