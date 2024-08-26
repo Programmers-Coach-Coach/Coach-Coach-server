@@ -72,6 +72,9 @@ public class User extends DateEntity {
 	@Size(max = 100)
 	private String localAddressDetail;
 
+	@Column(name = "is_coach")
+	private Boolean isCoach;
+
 	@Lob
 	@Column(name = "introduction")
 	private String introduction;
@@ -97,5 +100,9 @@ public class User extends DateEntity {
 		this.localAddressDetail = localAddressDetail;
 		this.introduction = introduction;
 		this.interestedSports = interestedSports;
+	}
+
+	public void promoteToCoach() {
+		this.isCoach = true;
 	}
 }
