@@ -14,6 +14,8 @@ public interface MatchingRepository extends JpaRepository<Matching, Long> {
 
 	boolean existsByUserUserIdAndCoachCoachId(Long userId, Long coachId);
 
+	Optional<Matching> findByUser_UserIdAndCoach_CoachIdAndIsMatching(Long userId, Long coachId, boolean isMatching);
+
 	List<Matching> findByCoach_CoachId(Long coachId);
 
 	List<Matching> findByUser_UserId(Long userId);

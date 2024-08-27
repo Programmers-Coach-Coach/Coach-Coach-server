@@ -23,6 +23,7 @@ public enum SuccessMessage {
 	DELETE_LIKE_SUCCESS("관심 코치 취소 되었습니다."),
 	DELETE_MATCHING("매칭 삭제 성공"),
 	CREATE_REVIEW_SUCCESS("리뷰가 등록되었습니다."),
+	UPDATE_REVIEW_SUCCESS("리뷰가 수정되었습니다."),
 	DELETE_REVIEW_SUCCESS("리뷰 삭제 성공");
 
 	private final String message;
