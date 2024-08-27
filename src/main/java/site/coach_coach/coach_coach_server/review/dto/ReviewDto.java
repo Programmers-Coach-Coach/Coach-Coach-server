@@ -7,7 +7,7 @@ import lombok.Builder;
 @Builder
 public record ReviewDto(
 	@NotNull Long reviewId,
-	@NotNull Long userId,
+	Long userId,
 	@NotBlank String userName,
 	@NotNull String contents,
 	@NotNull int stars,
