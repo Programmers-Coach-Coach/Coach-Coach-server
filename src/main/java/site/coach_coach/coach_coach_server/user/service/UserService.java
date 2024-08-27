@@ -209,6 +209,7 @@ public class UserService {
 			.email(signUpRequest.email())
 			.password(passwordEncoder.encode(signUpRequest.password()))
 			.nickname(signUpRequest.nickname())
+			.isCoach(false)
 			.build();
 	}
 }
