@@ -1,7 +1,5 @@
 package site.coach_coach.coach_coach_server.coach.service;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -179,7 +177,7 @@ public class CoachService {
 		}
 
 		List<ReviewDto> reviews = getReviews(coach, user);
-		BigDecimal averageRating = calculateAverageRating(reviews);
+		double averageRating = calculateAverageRating(reviews);
 
 		boolean isLiked = isLikedByUser(user, coach);
 		boolean isContacted = matchingRepository.existsByUserUserIdAndCoachCoachId(user.getUserId(), coachId);
@@ -448,14 +446,8 @@ public class CoachService {
 			.collect(Collectors.toList());
 	}
 
-	public BigDecimal calculateAverageRating(List<ReviewDto> reviews) {
-		double average = reviews.stream()
-			.mapToInt(ReviewDto::stars)
-			.average()
-			.orElse(0.0);
-
-		return BigDecimal.valueOf(average)
-			.setScale(1, RoundingMode.HALF_UP);
+	public double calculateAverageRating(List<ReviewDto> reviews) {
+		return Math.round(reviews.stream().mapToInt(ReviewDto::stars).average().orElse(0.0) * 10) / 10.0;
 	}
 
 	private int getCountOfLikes(Coach coach) {
