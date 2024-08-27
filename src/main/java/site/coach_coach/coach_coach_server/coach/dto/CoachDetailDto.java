@@ -1,5 +1,6 @@
 package site.coach_coach.coach_coach_server.coach.dto;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import jakarta.validation.constraints.NotNull;
@@ -36,8 +37,9 @@ public record CoachDetailDto(
 	@NotNull
 	boolean isOpen,
 	boolean isContacted,
+	boolean isMatched,
 	int countOfReviews,
-	double reviewRating,
+	BigDecimal reviewRating,
 	boolean isLiked,
 	int countOfLikes
 ) {

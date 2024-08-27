@@ -1,5 +1,8 @@
 package site.coach_coach.coach_coach_server.coach.service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -175,8 +178,8 @@ public class CoachService {
 			throw new AccessDeniedException();
 		}
 
-		List<ReviewDto> reviews = getReviews(coach);
-		double averageRating = calculateAverageRating(reviews);
+		List<ReviewDto> reviews = getReviews(coach, user);
+		BigDecimal averageRating = calculateAverageRating(reviews);
 
 		boolean isLiked = isLikedByUser(user, coach);
 		boolean isContacted = matchingRepository.existsByUserUserIdAndCoachCoachId(user.getUserId(), coachId);
@@ -184,6 +187,7 @@ public class CoachService {
 		int countOfLikes = getCountOfLikes(coach);
 
 		List<CoachingSportDto> coachingSports = getCoachingSports(coach);
+		boolean isMatched = matchingRepository.existsByUserUserIdAndCoachCoachId(user.getUserId(), coach.getCoachId());
 
 		return CoachDetailDto.builder()
 			.coachId(coach.getCoachId())
@@ -201,6 +205,7 @@ public class CoachService {
 			.reviews(reviews)
 			.isOpen(coach.getIsOpen())
 			.isContacted(isContacted)
+			.isMatched(isMatched)
 			.countOfReviews(reviews.size())
 			.reviewRating(averageRating)
 			.isLiked(isLiked)
@@ -419,7 +424,7 @@ public class CoachService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<ReviewDto> getReviews(Coach coach) {
+	public List<ReviewDto> getReviews(Coach coach, User currentUser) {
 		return reviewRepository.findByCoach_CoachId(coach.getCoachId()).stream()
 			.map(review -> new ReviewDto(
 				review.getReviewId(),
@@ -427,8 +432,10 @@ public class CoachService {
 				review.getUserNickname(),
 				review.getContents(),
 				review.getStars(),
-				review.getCreatedAt().toString()
+				review.getCreatedAt().toString(),
+				review.getUser().getUserId().equals(currentUser.getUserId())
 			))
+			.sorted(Comparator.comparing(ReviewDto::createdAt).reversed())
 			.collect(Collectors.toList());
 	}
 
@@ -441,8 +448,14 @@ public class CoachService {
 			.collect(Collectors.toList());
 	}
 
-	public double calculateAverageRating(List<ReviewDto> reviews) {
-		return reviews.stream().mapToInt(ReviewDto::stars).average().orElse(0.0);
+	public BigDecimal calculateAverageRating(List<ReviewDto> reviews) {
+		double average = reviews.stream()
+			.mapToInt(ReviewDto::stars)
+			.average()
+			.orElse(0.0);
+
+		return BigDecimal.valueOf(average)
+			.setScale(1, RoundingMode.HALF_UP);
 	}
 
 	private int getCountOfLikes(Coach coach) {
