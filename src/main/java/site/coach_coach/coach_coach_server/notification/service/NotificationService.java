@@ -53,8 +53,10 @@ public class NotificationService {
 			throw new InvalidInputException(ErrorMessage.INVALID_REQUEST);
 		}
 
+		User receiver = (relationFunction == RelationFunctionEnum.match) ? user : coach;
+
 		Notification notification = Notification.builder()
-			.user(coach)
+			.user(receiver)
 			.message(message)
 			.relationFunction(relationFunction)
 			.build();
