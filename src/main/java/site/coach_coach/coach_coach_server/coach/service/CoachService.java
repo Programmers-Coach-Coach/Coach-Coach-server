@@ -165,19 +165,21 @@ public class CoachService {
 	}
 
 	@Transactional(readOnly = true)
-	public Coach getCoachByUserId(User user) {
-		return coachRepository.findByUser_UserId(user.getUserId())
-			.orElseThrow(AccessDeniedException::new);
-	}
-
-	@Transactional(readOnly = true)
 	public CoachDetailDto getCoachDetail(User user, Long coachId) {
-		Coach coach = (coachId != null) ? getCoachById(coachId) : getCoachByUserId(user);
+		Coach coach = (coachId != null) ? getCoachById(coachId) : getCoachByUserId(user.getUserId());
+
+		boolean isSelf = user.getUserId().equals(coach.getUser().getUserId());
+
+		if (!isSelf && !coach.getIsOpen()) {
+			throw new AccessDeniedException();
+		}
 
 		List<ReviewDto> reviews = getReviews(coach);
 		double averageRating = calculateAverageRating(reviews);
 
 		boolean isLiked = isLikedByUser(user, coach);
+		boolean isContacted = matchingRepository.existsByUserUserIdAndCoachCoachId(user.getUserId(), coachId);
+
 		int countOfLikes = getCountOfLikes(coach);
 
 		List<CoachingSportDto> coachingSports = getCoachingSports(coach);
@@ -197,6 +199,7 @@ public class CoachService {
 			.chattingUrl(coach.getChattingUrl())
 			.reviews(reviews)
 			.isOpen(coach.getIsOpen())
+			.isContacted(isContacted)
 			.countOfReviews(reviews.size())
 			.reviewRating(averageRating)
 			.isLiked(isLiked)
