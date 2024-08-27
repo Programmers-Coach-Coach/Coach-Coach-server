@@ -430,7 +430,7 @@ public class CoachService {
 				review.getUserNickname(),
 				review.getContents(),
 				review.getStars(),
-				review.getCreatedAt().toString(),
+				review.getUpdatedAt().toString(),
 				review.getUser().getUserId().equals(currentUser.getUserId())
 			))
 			.sorted(Comparator.comparing(ReviewDto::createdAt).reversed())
