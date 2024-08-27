@@ -48,7 +48,7 @@ public class NotificationService {
 		User coach = coachRepository.findUserByCoachId(coachId)
 			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_COACH));
 
-		String message = createMessage(user, relationFunction);
+		String message = createMessage(user, coach, relationFunction);
 		if (message.isEmpty()) {
 			throw new InvalidInputException(ErrorMessage.INVALID_REQUEST);
 		}
@@ -79,13 +79,15 @@ public class NotificationService {
 		}
 	}
 
-	private String createMessage(User user, RelationFunctionEnum relationFunction) {
+	private String createMessage(User user, User coach, RelationFunctionEnum relationFunction) {
 		return switch (relationFunction) {
 			case ask -> user.getNickname() + NotificationMessage.USER_MESSAGE.getMessage()
 				+ NotificationMessage.ASK_MESSAGE.getMessage();
 			case like -> user.getNickname() + NotificationMessage.USER_MESSAGE.getMessage()
 				+ NotificationMessage.LIKE_MESSAGE.getMessage();
 			case review -> NotificationMessage.REVIEW_MESSAGE.getMessage();
+			case match -> coach.getNickname() + NotificationMessage.USER_MESSAGE.getMessage()
+				+ NotificationMessage.MATCH_MESSAGE.getMessage();
 		};
 	}
 }

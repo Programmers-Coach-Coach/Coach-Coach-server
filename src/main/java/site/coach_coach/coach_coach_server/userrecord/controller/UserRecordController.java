@@ -52,7 +52,7 @@ public class UserRecordController {
 	@PutMapping("/v1/records/{recordId}")
 	public ResponseEntity<SuccessIdResponse> updateBodyInfoToUserRecord(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
-		@PathVariable("recordId") @Positive Long recordId,
+		@PathVariable(name = "recordId") @Positive Long recordId,
 		@RequestBody @Valid UserRecordUpdateRequest userRecordUpdateRequest
 	) {
 		Long userId = userDetails.getUserId();
@@ -74,7 +74,7 @@ public class UserRecordController {
 	@GetMapping("/v1/records/{recordId}")
 	public ResponseEntity<UserRecordDetailResponse> getUserRecordDetail(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
-		@PathVariable("recordId") @Positive Long recordId
+		@PathVariable(name = "recordId") @Positive Long recordId
 	) {
 		Long userId = userDetails.getUserId();
 		UserRecordDetailResponse detailResponse = userRecordService.getUserRecordDetail(userId, recordId);

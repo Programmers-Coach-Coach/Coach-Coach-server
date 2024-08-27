@@ -10,12 +10,12 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -72,10 +72,11 @@ public class User extends DateEntity {
 	@Size(max = 100)
 	private String localAddressDetail;
 
+	@NotNull
 	@Column(name = "is_coach")
 	private Boolean isCoach;
 
-	@Lob
+	@Size(max = 1000)
 	@Column(name = "introduction")
 	private String introduction;
 

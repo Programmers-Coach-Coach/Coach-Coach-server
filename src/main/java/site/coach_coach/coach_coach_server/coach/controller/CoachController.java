@@ -83,7 +83,7 @@ public class CoachController {
 	@PatchMapping("/v1/coaches/matches/{userId}")
 	public ResponseEntity<SuccessResponse> matchMember(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
-		@PathVariable Long userId) {
+		@PathVariable(name = "userId") Long userId) {
 
 		Long coachUserId = userDetails.getUser().getUserId();
 		coachService.updateMatchingStatus(coachUserId, userId);
@@ -94,7 +94,7 @@ public class CoachController {
 	@PostMapping("/v1/coaches/{coachId}/contact")
 	public ResponseEntity<SuccessResponse> contactCoach(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
-		@PathVariable Long coachId
+		@PathVariable(name = "coachId") Long coachId
 	) {
 		User user = userDetails.getUser();
 		coachService.contactCoach(user, coachId);
@@ -105,7 +105,7 @@ public class CoachController {
 	@DeleteMapping("/v1/coaches/matches/{userId}")
 	public ResponseEntity<SuccessResponse> deleteMatching(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
-		@PathVariable Long userId) {
+		@PathVariable(name = "userId") Long userId) {
 
 		Long coachUserId = userDetails.getUser().getUserId();
 		coachService.deleteMatching(coachUserId, userId);
@@ -116,7 +116,7 @@ public class CoachController {
 	@PostMapping("/v1/coaches/{coachId}/likes")
 	public ResponseEntity<SuccessResponse> addCoachToFavorites(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
-		@PathVariable Long coachId) {
+		@PathVariable(name = "coachId") Long coachId) {
 
 		Long userId = userDetails.getUserId();
 		coachService.addCoachToFavorites(userId, coachId);
@@ -128,7 +128,7 @@ public class CoachController {
 	@DeleteMapping("/v1/coaches/{coachId}/likes")
 	public ResponseEntity<SuccessResponse> deleteCoachToFavorites(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
-		@PathVariable Long coachId) {
+		@PathVariable(name = "coachId") Long coachId) {
 
 		Long userId = userDetails.getUserId();
 		coachService.deleteCoachToFavorites(userId, coachId);
@@ -159,7 +159,7 @@ public class CoachController {
 	@PostMapping("/v1/coaches/{coachId}/reviews")
 	public ResponseEntity<SuccessResponse> addReview(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
-		@PathVariable Long coachId,
+		@PathVariable(name = "coachId") Long coachId,
 		@RequestBody @Valid ReviewRequestDto requestDto) {
 
 		Long userId = userDetails.getUserId();
