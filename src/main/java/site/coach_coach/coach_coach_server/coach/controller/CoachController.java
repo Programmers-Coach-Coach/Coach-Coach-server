@@ -27,7 +27,6 @@ import site.coach_coach.coach_coach_server.coach.dto.ReviewRequestDto;
 import site.coach_coach.coach_coach_server.coach.service.CoachService;
 import site.coach_coach.coach_coach_server.common.constants.SuccessMessage;
 import site.coach_coach.coach_coach_server.common.exception.UserNotFoundException;
-import site.coach_coach.coach_coach_server.common.response.SuccessIdResponse;
 import site.coach_coach.coach_coach_server.common.response.SuccessResponse;
 import site.coach_coach.coach_coach_server.user.domain.User;
 
@@ -158,16 +157,16 @@ public class CoachController {
 	}
 
 	@PostMapping("/v1/coaches/{coachId}/reviews")
-	public ResponseEntity<SuccessIdResponse> addReview(
+	public ResponseEntity<SuccessResponse> addReview(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
-		@PathVariable Long coachId,
+		@PathVariable(name = "coachId") Long coachId,
 		@RequestBody @Valid ReviewRequestDto requestDto) {
 
 		Long userId = userDetails.getUserId();
-		Long reviewId = coachService.addReview(userId, coachId, requestDto);
+		coachService.addReview(userId, coachId, requestDto);
 
 		return ResponseEntity.status(HttpStatus.CREATED)
-			.body(new SuccessIdResponse(reviewId));
+			.body(new SuccessResponse(HttpStatus.CREATED.value(), SuccessMessage.CREATE_REVIEW_SUCCESS.getMessage()));
 	}
 
 	@PatchMapping("/v1/coaches/reviews/{reviewId}")
