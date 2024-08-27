@@ -10,7 +10,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,15 +38,15 @@ public class Action extends DateEntity {
 	@Column(name = "action_name")
 	private String actionName;
 
-	@Positive
+	@PositiveOrZero
 	@Column(name = "sets")
 	private Integer sets;
 
-	@Positive
+	@PositiveOrZero
 	@Column(name = "counts")
 	private Integer counts;
 
-	@Positive
+	@PositiveOrZero
 	@Column(name = "minutes")
 	private Integer minutes;
 
