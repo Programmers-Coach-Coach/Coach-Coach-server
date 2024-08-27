@@ -61,6 +61,6 @@ public class CategoryService {
 	@Scheduled(cron = "0 0 15 * * *")
 	public void resetIsCompleted() {
 		log.info("All 'IsCompleted' has been reset.");
-		categoryRepository.resetIsCompleted(false);
+		categoryRepository.resetIsCompleted();
 	}
 }
