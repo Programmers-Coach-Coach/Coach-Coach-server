@@ -18,6 +18,7 @@ public interface UserCoachLikeRepository extends JpaRepository<UserCoachLike, Lo
 
 	void deleteByUser_UserIdAndCoach_CoachId(Long userId, Long coachId);
 
-	@Query("SELECT u.coach FROM UserCoachLike u WHERE u.createdAt >= :since AND u.coach.isOpen = true GROUP BY u.coach ORDER BY COUNT(u) DESC")
+	@Query("SELECT u.coach FROM UserCoachLike u "
+		+ "WHERE u.createdAt >= :since AND u.coach.isOpen = true GROUP BY u.coach ORDER BY COUNT(u) DESC")
 	List<Coach> findTopCoachesByLikesSinceAndIsOpenTrue(@Param("since") LocalDateTime since, Pageable pageable);
 }
