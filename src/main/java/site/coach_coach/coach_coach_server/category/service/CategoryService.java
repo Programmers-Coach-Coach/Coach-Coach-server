@@ -60,7 +60,8 @@ public class CategoryService {
 	@Transactional
 	@Scheduled(cron = "0 0 15 * * *")
 	public void resetIsCompleted() {
-		log.info("All 'IsCompleted' has been reset.");
+		log.info("Start to reset All 'IsCompleted'.");
 		categoryRepository.resetIsCompleted();
+		log.info("All 'IsCompleted' has been reset.");
 	}
 }
