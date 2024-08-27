@@ -53,10 +53,16 @@ public class Review extends DateEntity {
 	private int stars;
 
 	public Long getUserId() {
+		if (this.user == null) {
+			return null;
+		}
 		return this.user.getUserId();
 	}
 
 	public String getUserNickname() {
+		if (this.user == null) {
+			return null;
+		}
 		return this.user.getNickname();
 	}
 

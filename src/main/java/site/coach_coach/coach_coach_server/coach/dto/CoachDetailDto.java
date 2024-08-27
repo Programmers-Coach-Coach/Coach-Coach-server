@@ -36,6 +36,7 @@ public record CoachDetailDto(
 	@NotNull
 	boolean isOpen,
 	boolean isContacted,
+	boolean isMatched,
 	int countOfReviews,
 	double reviewRating,
 	boolean isLiked,

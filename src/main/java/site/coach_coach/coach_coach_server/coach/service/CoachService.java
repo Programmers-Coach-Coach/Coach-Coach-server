@@ -1,5 +1,6 @@
 package site.coach_coach.coach_coach_server.coach.service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -175,7 +176,7 @@ public class CoachService {
 			throw new AccessDeniedException();
 		}
 
-		List<ReviewDto> reviews = getReviews(coach);
+		List<ReviewDto> reviews = getReviews(coach, user);
 		double averageRating = calculateAverageRating(reviews);
 
 		boolean isLiked = isLikedByUser(user, coach);
@@ -184,6 +185,7 @@ public class CoachService {
 		int countOfLikes = getCountOfLikes(coach);
 
 		List<CoachingSportDto> coachingSports = getCoachingSports(coach);
+		boolean isMatched = matchingRepository.existsByUserUserIdAndCoachCoachId(user.getUserId(), coach.getCoachId());
 
 		return CoachDetailDto.builder()
 			.coachId(coach.getCoachId())
@@ -201,6 +203,7 @@ public class CoachService {
 			.reviews(reviews)
 			.isOpen(coach.getIsOpen())
 			.isContacted(isContacted)
+			.isMatched(isMatched)
 			.countOfReviews(reviews.size())
 			.reviewRating(averageRating)
 			.isLiked(isLiked)
@@ -419,7 +422,7 @@ public class CoachService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<ReviewDto> getReviews(Coach coach) {
+	public List<ReviewDto> getReviews(Coach coach, User currentUser) {
 		return reviewRepository.findByCoach_CoachId(coach.getCoachId()).stream()
 			.map(review -> new ReviewDto(
 				review.getReviewId(),
@@ -427,8 +430,10 @@ public class CoachService {
 				review.getUserNickname(),
 				review.getContents(),
 				review.getStars(),
-				review.getCreatedAt().toString()
+				review.getUpdatedAt().toString(),
+				review.getUser().getUserId().equals(currentUser.getUserId())
 			))
+			.sorted(Comparator.comparing(ReviewDto::createdAt).reversed())
 			.collect(Collectors.toList());
 	}
 
@@ -442,7 +447,7 @@ public class CoachService {
 	}
 
 	public double calculateAverageRating(List<ReviewDto> reviews) {
-		return reviews.stream().mapToInt(ReviewDto::stars).average().orElse(0.0);
+		return Math.round(reviews.stream().mapToInt(ReviewDto::stars).average().orElse(0.0) * 10) / 10.0;
 	}
 
 	private int getCountOfLikes(Coach coach) {
