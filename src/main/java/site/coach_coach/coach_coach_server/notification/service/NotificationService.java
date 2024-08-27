@@ -87,7 +87,7 @@ public class NotificationService {
 				+ NotificationMessage.LIKE_MESSAGE.getMessage();
 			case review -> NotificationMessage.REVIEW_MESSAGE.getMessage();
 			case match -> coach.getNickname() + NotificationMessage.USER_MESSAGE.getMessage()
-				+ NotificationMessage.MATCH_MESSAGE;
+				+ NotificationMessage.MATCH_MESSAGE.getMessage();
 		};
 	}
 }
