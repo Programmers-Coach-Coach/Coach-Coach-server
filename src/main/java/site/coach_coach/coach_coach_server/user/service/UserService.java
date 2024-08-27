@@ -6,12 +6,14 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import site.coach_coach.coach_coach_server.auth.jwt.TokenProvider;
 import site.coach_coach.coach_coach_server.auth.jwt.dto.TokenDto;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
@@ -36,9 +38,9 @@ import site.coach_coach.coach_coach_server.user.exception.InvalidUserException;
 import site.coach_coach.coach_coach_server.user.exception.UserAlreadyExistException;
 import site.coach_coach.coach_coach_server.user.repository.UserRepository;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class UserService {
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
@@ -93,6 +95,17 @@ public class UserService {
 	public UserProfileResponse getUserProfile(Long userId) {
 		User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 		return UserProfileResponse.from(user);
+	}
+
+	public void deleteUser(Long userId) {
+		try {
+			userRepository.deleteById(userId);
+		} catch (EmptyResultDataAccessException e) {
+			log.error("Non-existent user : [{}] - {}", e.getClass().getSimpleName(), e.getMessage());
+		} catch (Exception e) {
+			log.error("회원 탈퇴 에러 : [{}] - {}", e.getClass().getSimpleName(), e.getMessage());
+			throw e;
+		}
 	}
 
 	@Transactional(readOnly = true)
