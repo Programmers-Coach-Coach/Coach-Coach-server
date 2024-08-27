@@ -45,7 +45,7 @@ public class NotificationController {
 	@DeleteMapping("/v1/notifications/{notificationId}")
 	public ResponseEntity<SuccessResponse> deleteNotification(
 		@AuthenticationPrincipal CustomUserDetails customUserDetails,
-		@PathVariable("notificationId") Long notificationId) {
+		@PathVariable(name = "notificationId") Long notificationId) {
 		Long userId = customUserDetails.getUserId();
 		notificationService.deleteNotification(userId, notificationId);
 		return ResponseEntity.ok(
