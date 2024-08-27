@@ -39,6 +39,9 @@ public final class ErrorMessage {
 	public static final String EXPIRED_TOKEN = "만료된 토큰입니다.";
 	public static final String INVALID_TOKEN = "유효하지 않은 토큰입니다.";
 
+	public static final String CANNOT_CONTACT_SELF = "자기 자신에게는 문의할 수 없습니다.";
+	public static final String CANNOT_MATCHING_SELF = "자기 자신을 매칭 회원으로 등록할 수 없습니다.";
+	public static final String CANNOT_LIKE_SELF = "자기 자신을 관심 코치로 등록할 수 없습니다.";
 	public static final String NOT_FOUND_MATCHING = "매칭되지 않은 대상입니다.";
 	public static final String NOT_FOUND_CONTACT = "문의 회원이 아닙니다.";
 	public static final String DUPLICATE_MATCHING = "이미 매칭된 회원입니다.";

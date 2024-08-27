@@ -26,6 +26,7 @@ import site.coach_coach.coach_coach_server.common.domain.RelationFunctionEnum;
 import site.coach_coach.coach_coach_server.common.exception.AccessDeniedException;
 import site.coach_coach.coach_coach_server.common.exception.DuplicateValueException;
 import site.coach_coach.coach_coach_server.common.exception.NotFoundException;
+import site.coach_coach.coach_coach_server.common.exception.SelfRequestNotAllowedException;
 import site.coach_coach.coach_coach_server.common.exception.UserNotFoundException;
 import site.coach_coach.coach_coach_server.like.domain.UserCoachLike;
 import site.coach_coach.coach_coach_server.like.repository.UserCoachLikeRepository;
@@ -122,6 +123,10 @@ public class CoachService {
 	public void contactCoach(User user, Long coachId) {
 		Coach coach = coachRepository.findById(coachId)
 			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_COACH));
+
+		if (user.getUserId().equals(coach.getUser().getUserId())) {
+			throw new SelfRequestNotAllowedException(ErrorMessage.CANNOT_CONTACT_SELF);
+		}
 
 		if (matchingRepository.existsByUserUserIdAndCoachCoachId(user.getUserId(), coachId)) {
 			throw new DuplicateValueException(ErrorMessage.DUPLICATE_CONTACT);
@@ -239,6 +244,10 @@ public class CoachService {
 
 		Coach coach = coachRepository.findById(coachId)
 			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_COACH));
+
+		if (userId.equals(coach.getUser().getUserId())) {
+			throw new SelfRequestNotAllowedException(ErrorMessage.CANNOT_LIKE_SELF);
+		}
 
 		if (!userCoachLikeRepository.existsByUser_UserIdAndCoach_CoachId(userId, coachId)) {
 			userCoachLikeRepository.save(new UserCoachLike(null, user, coach));
@@ -413,6 +422,10 @@ public class CoachService {
 	public void updateMatchingStatus(Long coachUserId, Long userId) {
 		Coach coach = coachRepository.findByUser_UserId(coachUserId)
 			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_COACH));
+
+		if (coachUserId.equals(userId)) {
+			throw new SelfRequestNotAllowedException(ErrorMessage.CANNOT_MATCHING_SELF);
+		}
 
 		Matching matching = matchingRepository.findByUser_UserIdAndCoach_CoachId(userId, coach.getCoachId())
 			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_CONTACT));
