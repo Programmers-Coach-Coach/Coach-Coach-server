@@ -292,7 +292,7 @@ public class CoachService {
 	}
 
 	@Transactional
-	public void addReview(Long userId, Long coachId, ReviewRequestDto requestDto) {
+	public Long addReview(Long userId, Long coachId, ReviewRequestDto requestDto) {
 		User user = getUserById(userId);
 		Coach coach = getCoachById(coachId);
 
@@ -305,6 +305,8 @@ public class CoachService {
 
 		reviewRepository.save(review);
 		notificationService.createNotification(user.getUserId(), coachId, RelationFunctionEnum.review);
+
+		return review.getReviewId();
 	}
 
 	public List<MatchingCoachResponseDto> getMatchingCoachesByUserId(Long userId) {
