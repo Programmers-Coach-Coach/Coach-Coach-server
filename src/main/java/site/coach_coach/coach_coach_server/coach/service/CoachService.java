@@ -2,6 +2,7 @@ package site.coach_coach.coach_coach_server.coach.service;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -431,7 +432,9 @@ public class CoachService {
 				review.getContents(),
 				review.getStars(),
 				review.getUpdatedAt().toString(),
-				review.getUser().getUserId().equals(currentUser.getUserId())
+				Optional.ofNullable(review.getUser())
+					.map(user -> user.getUserId().equals(currentUser.getUserId()))
+					.orElse(false)
 			))
 			.sorted(Comparator.comparing(ReviewDto::createdAt).reversed())
 			.collect(Collectors.toList());
