@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
-import site.coach_coach.coach_coach_server.common.exception.UserNotFoundException;
 import site.coach_coach.coach_coach_server.maininfo.dto.MainInfoResponseDto;
 import site.coach_coach.coach_coach_server.maininfo.service.MainInfoService;
 import site.coach_coach.coach_coach_server.user.domain.User;
@@ -20,10 +19,8 @@ public class MainInfoController {
 	private final MainInfoService mainInfoService;
 
 	@GetMapping("/v1/main-info")
-	public ResponseEntity<MainInfoResponseDto> getMainInfo(@AuthenticationPrincipal CustomUserDetails userDetails) {
-		if (userDetails == null || userDetails.getUser() == null) {
-			throw new UserNotFoundException();
-		}
+	public ResponseEntity<MainInfoResponseDto> getMainInfo(
+		@AuthenticationPrincipal CustomUserDetails userDetails) {
 
 		User user = userDetails.getUser();
 		MainInfoResponseDto mainInfoResponse = mainInfoService.getMainInfoResponse(user);

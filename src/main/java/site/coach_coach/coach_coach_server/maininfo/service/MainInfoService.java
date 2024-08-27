@@ -45,7 +45,8 @@ public class MainInfoService {
 
 	private List<MainInfoCoachDto> getTopCoaches(User user) {
 		LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
-		List<Coach> topCoaches = userCoachLikeRepository.findTopCoachesByLikesSince(oneWeekAgo, PageRequest.of(0, 3));
+		List<Coach> topCoaches = userCoachLikeRepository.findTopCoachesByLikesSinceAndIsOpenTrue(oneWeekAgo,
+			PageRequest.of(0, 3));
 		return topCoaches.stream()
 			.map(coach -> buildMainInfoCoachDto(coach, user, userCoachLikeRepository))
 			.collect(Collectors.toList());
