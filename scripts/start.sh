@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 PROJECT_ROOT="/home/ubuntu/app"
-JAR_VERSION="1.0.4"
+JAR_VERSION="1.0.5"
 JAR_FILE="$PROJECT_ROOT/spring-webapp-$JAR_VERSION.jar"
 
 APP_LOG="$PROJECT_ROOT/application.log"

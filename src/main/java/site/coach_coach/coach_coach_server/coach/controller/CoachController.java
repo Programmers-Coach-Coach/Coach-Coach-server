@@ -181,4 +181,16 @@ public class CoachController {
 		return ResponseEntity.ok(
 			new SuccessResponse(HttpStatus.OK.value(), SuccessMessage.UPDATE_REVIEW_SUCCESS.getMessage()));
 	}
+
+	@DeleteMapping("/v1/coaches/reviews/{reviewId}")
+	public ResponseEntity<SuccessResponse> deleteReview(
+		@AuthenticationPrincipal CustomUserDetails userDetails,
+		@PathVariable(name = "reviewId") Long reviewId) {
+
+		Long userId = userDetails.getUserId();
+		coachService.deleteReview(reviewId, userId);
+
+		return ResponseEntity.ok(
+			new SuccessResponse(HttpStatus.OK.value(), SuccessMessage.DELETE_REVIEW_SUCCESS.getMessage()));
+	}
 }

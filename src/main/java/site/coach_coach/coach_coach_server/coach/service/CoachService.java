@@ -327,6 +327,14 @@ public class CoachService {
 		reviewRepository.save(review);
 	}
 
+	@Transactional
+	public void deleteReview(Long reviewId, Long userId) {
+		Review review = reviewRepository.findByReviewIdAndUser_UserId(reviewId, userId)
+			.orElseThrow(AccessDeniedException::new);
+
+		reviewRepository.delete(review);
+	}
+
 	public List<MatchingCoachResponseDto> getMatchingCoachesByUserId(Long userId) {
 		List<Matching> matchings = matchingRepository.findByUser_UserId(userId);
 
