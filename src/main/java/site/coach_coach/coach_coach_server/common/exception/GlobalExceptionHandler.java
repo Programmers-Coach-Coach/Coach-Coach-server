@@ -108,8 +108,8 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(InvalidUserException.class)
 	public ResponseEntity<ErrorResponse> handleInvalidUserException(InvalidUserException ex) {
 		log.error("Handled exception: [{}] - {}", ex.getClass().getSimpleName(), ex.getMessage());
-		return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-			.body(new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), ex.getMessage()));
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+			.body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage()));
 	}
 
 	@ExceptionHandler(InvalidFileException.class)
