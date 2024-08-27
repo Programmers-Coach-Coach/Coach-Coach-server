@@ -2,7 +2,6 @@ package site.coach_coach.coach_coach_server.coach.dto;
 
 import java.util.List;
 
-import jakarta.persistence.Lob;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -10,8 +9,8 @@ import site.coach_coach.coach_coach_server.sport.dto.CoachingSportDto;
 
 public record CoachRequest(
 
-	@Lob
 	@NotNull
+	@Size(max = 1000)
 	String coachIntroduction,
 	@Size(max = 100)
 	String activeCenter,
