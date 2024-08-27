@@ -10,6 +10,7 @@ import site.coach_coach.coach_coach_server.sport.dto.CoachingSportDto;
 public record CoachRequest(
 
 	@NotNull
+	@Size(max = 1000)
 	String coachIntroduction,
 	@Size(max = 100)
 	String activeCenter,
