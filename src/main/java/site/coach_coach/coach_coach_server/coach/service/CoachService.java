@@ -296,6 +296,10 @@ public class CoachService {
 		User user = getUserById(userId);
 		Coach coach = getCoachById(coachId);
 
+		if (user.getUserId().equals(coach.getUser().getUserId())) {
+			throw new SelfRequestNotAllowedException(ErrorMessage.CANNOT_REVIEW_SELF);
+		}
+
 		reviewRepository.findByUser_UserIdAndCoach_CoachId(userId, coachId)
 			.ifPresent(review -> {
 				throw new DuplicateValueException(ErrorMessage.ALREADY_EXISTS_REVIEW);
