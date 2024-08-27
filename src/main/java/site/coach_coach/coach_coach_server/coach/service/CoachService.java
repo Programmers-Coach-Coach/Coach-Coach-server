@@ -296,6 +296,13 @@ public class CoachService {
 		User user = getUserById(userId);
 		Coach coach = getCoachById(coachId);
 
+		if (user.getUserId().equals(coach.getUser().getUserId())) {
+			throw new SelfRequestNotAllowedException(ErrorMessage.CANNOT_REVIEW_SELF);
+		}
+
+		matchingRepository.findByUser_UserIdAndCoach_CoachIdAndIsMatching(userId, coachId, true)
+			.orElseThrow(AccessDeniedException::new);
+
 		reviewRepository.findByUser_UserIdAndCoach_CoachId(userId, coachId)
 			.ifPresent(review -> {
 				throw new DuplicateValueException(ErrorMessage.ALREADY_EXISTS_REVIEW);
@@ -305,6 +312,19 @@ public class CoachService {
 
 		reviewRepository.save(review);
 		notificationService.createNotification(user.getUserId(), coachId, RelationFunctionEnum.review);
+	}
+
+	@Transactional
+	public void updateReview(Long userId, Long reviewId, ReviewRequestDto requestDto) {
+		Review review = reviewRepository.findById(reviewId)
+			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_REVIEW));
+
+		if (!review.getUser().getUserId().equals(userId)) {
+			throw new AccessDeniedException();
+		}
+
+		review.updateContents(requestDto.contents(), requestDto.stars());
+		reviewRepository.save(review);
 	}
 
 	public List<MatchingCoachResponseDto> getMatchingCoachesByUserId(Long userId) {
@@ -395,6 +415,7 @@ public class CoachService {
 	public List<ReviewDto> getReviews(Coach coach) {
 		return reviewRepository.findByCoach_CoachId(coach.getCoachId()).stream()
 			.map(review -> new ReviewDto(
+				review.getReviewId(),
 				review.getUserId(),
 				review.getUserNickname(),
 				review.getContents(),
