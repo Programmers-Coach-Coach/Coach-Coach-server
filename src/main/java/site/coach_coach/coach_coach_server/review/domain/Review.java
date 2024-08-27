@@ -38,7 +38,7 @@ public class Review extends DateEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "coach_id")
 	private Coach coach;
-	
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	private User user;
