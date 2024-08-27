@@ -159,7 +159,7 @@ public class CoachController {
 	@PostMapping("/v1/coaches/{coachId}/reviews")
 	public ResponseEntity<SuccessResponse> addReview(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
-		@PathVariable(name = "coachId") Long coachId,
+		@PathVariable Long coachId,
 		@RequestBody @Valid ReviewRequestDto requestDto) {
 
 		Long userId = userDetails.getUserId();
