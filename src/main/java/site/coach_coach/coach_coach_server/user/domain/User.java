@@ -10,7 +10,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -75,7 +74,7 @@ public class User extends DateEntity {
 	@Column(name = "is_coach")
 	private Boolean isCoach;
 
-	@Lob
+	@Size(max = 1000)
 	@Column(name = "introduction")
 	private String introduction;
 

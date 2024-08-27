@@ -2,7 +2,6 @@ package site.coach_coach.coach_coach_server.user.dto;
 
 import java.util.List;
 
-import jakarta.persistence.Lob;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import site.coach_coach.coach_coach_server.common.domain.GenderEnum;
@@ -22,7 +21,7 @@ public record UserProfileRequest(
 	@Size(max = 100)
 	String localAddressDetail,
 
-	@Lob
+	@Size(max = 1000)
 	String introduction,
 
 	List<InterestedSportDto> interestedSports
