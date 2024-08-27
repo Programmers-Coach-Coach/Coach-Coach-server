@@ -21,7 +21,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import site.coach_coach.coach_coach_server.action.domain.Action;
 import site.coach_coach.coach_coach_server.common.domain.DateEntity;
 import site.coach_coach.coach_coach_server.completedcategory.domain.CompletedCategory;
@@ -30,7 +29,6 @@ import site.coach_coach.coach_coach_server.routine.domain.Routine;
 @Table(name = "routine_categories")
 @Entity
 @Getter
-@Setter
 @DynamicUpdate
 @Builder
 @NoArgsConstructor
@@ -46,6 +44,7 @@ public class Category extends DateEntity {
 	@Column(name = "category_name")
 	private String categoryName;
 
+	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "routine_id")
 	private Routine routine;
