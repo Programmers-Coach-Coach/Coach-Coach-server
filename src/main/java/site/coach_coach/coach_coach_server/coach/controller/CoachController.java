@@ -169,4 +169,17 @@ public class CoachController {
 		return ResponseEntity.status(HttpStatus.CREATED)
 			.body(new SuccessIdResponse(reviewId));
 	}
+
+	@PatchMapping("/v1/coaches/reviews/{reviewId}")
+	public ResponseEntity<SuccessResponse> updateReview(
+		@AuthenticationPrincipal CustomUserDetails userDetails,
+		@PathVariable(name = "reviewId") Long reviewId,
+		@RequestBody @Valid ReviewRequestDto requestDto) {
+
+		Long userId = userDetails.getUserId();
+		coachService.updateReview(userId, reviewId, requestDto);
+
+		return ResponseEntity.ok(
+			new SuccessResponse(HttpStatus.OK.value(), SuccessMessage.UPDATE_REVIEW_SUCCESS.getMessage()));
+	}
 }

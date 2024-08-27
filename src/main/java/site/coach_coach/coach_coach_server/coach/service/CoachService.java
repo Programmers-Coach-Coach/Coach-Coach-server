@@ -313,6 +313,19 @@ public class CoachService {
 		return review.getReviewId();
 	}
 
+	@Transactional
+	public void updateReview(Long userId, Long reviewId, ReviewRequestDto requestDto) {
+		Review review = reviewRepository.findById(reviewId)
+			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_REVIEW));
+
+		if (!review.getUser().getUserId().equals(userId)) {
+			throw new AccessDeniedException();
+		}
+
+		review.updateContents(requestDto.contents(), requestDto.stars());
+		reviewRepository.save(review);
+	}
+
 	public List<MatchingCoachResponseDto> getMatchingCoachesByUserId(Long userId) {
 		List<Matching> matchings = matchingRepository.findByUser_UserId(userId);
 

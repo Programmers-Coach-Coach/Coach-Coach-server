@@ -60,4 +60,9 @@ public class Review extends DateEntity {
 	public String getUserNickname() {
 		return this.user.getNickname();
 	}
+
+	public void updateContents(String contents, int stars) {
+		this.contents = contents;
+		this.stars = stars;
+	}
 }
