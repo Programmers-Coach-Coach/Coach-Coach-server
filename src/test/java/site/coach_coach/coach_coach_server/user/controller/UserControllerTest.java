@@ -227,7 +227,7 @@ public class UserControllerTest {
 		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/auth/login")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(loginRequest)))
-			.andExpect(MockMvcResultMatchers.status().isUnauthorized())
+			.andExpect(MockMvcResultMatchers.status().isBadRequest())
 			.andReturn();
 
 		assertThat(result.getResponse().getContentAsString()).contains(ErrorMessage.INVALID_USER);
