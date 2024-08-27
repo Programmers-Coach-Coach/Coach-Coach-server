@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -20,14 +21,13 @@ import site.coach_coach.coach_coach_server.coach.dto.CoachRequest;
 import site.coach_coach.coach_coach_server.coach.dto.MatchingCoachResponseDto;
 import site.coach_coach.coach_coach_server.coach.dto.MatchingUserResponseDto;
 import site.coach_coach.coach_coach_server.coach.dto.ReviewRequestDto;
-import site.coach_coach.coach_coach_server.coach.exception.AlreadyMatchedException;
-import site.coach_coach.coach_coach_server.coach.exception.DuplicateContactException;
-import site.coach_coach.coach_coach_server.coach.exception.DuplicateReviewException;
 import site.coach_coach.coach_coach_server.coach.repository.CoachRepository;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.common.domain.RelationFunctionEnum;
 import site.coach_coach.coach_coach_server.common.exception.AccessDeniedException;
+import site.coach_coach.coach_coach_server.common.exception.DuplicateValueException;
 import site.coach_coach.coach_coach_server.common.exception.NotFoundException;
+import site.coach_coach.coach_coach_server.common.exception.SelfRequestNotAllowedException;
 import site.coach_coach.coach_coach_server.common.exception.UserNotFoundException;
 import site.coach_coach.coach_coach_server.like.domain.UserCoachLike;
 import site.coach_coach.coach_coach_server.like.repository.UserCoachLikeRepository;
@@ -68,6 +68,8 @@ public class CoachService {
 	@Transactional
 	public Coach createCoachForUser(Long userId) {
 		User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+		user.promoteToCoach();
+		userRepository.save(user);
 		return coachRepository.save(new Coach(user));
 	}
 
@@ -123,8 +125,12 @@ public class CoachService {
 		Coach coach = coachRepository.findById(coachId)
 			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_COACH));
 
+		if (user.getUserId().equals(coach.getUser().getUserId())) {
+			throw new SelfRequestNotAllowedException(ErrorMessage.CANNOT_CONTACT_SELF);
+		}
+
 		if (matchingRepository.existsByUserUserIdAndCoachCoachId(user.getUserId(), coachId)) {
-			throw new DuplicateContactException(ErrorMessage.DUPLICATE_CONTACT);
+			throw new DuplicateValueException(ErrorMessage.DUPLICATE_CONTACT);
 		}
 
 		Matching newMatching = new Matching(null, user, coach, false);
@@ -160,19 +166,21 @@ public class CoachService {
 	}
 
 	@Transactional(readOnly = true)
-	public Coach getCoachByUserId(User user) {
-		return coachRepository.findByUser_UserId(user.getUserId())
-			.orElseThrow(AccessDeniedException::new);
-	}
-
-	@Transactional(readOnly = true)
 	public CoachDetailDto getCoachDetail(User user, Long coachId) {
-		Coach coach = (coachId != null) ? getCoachById(coachId) : getCoachByUserId(user);
+		Coach coach = (coachId != null) ? getCoachById(coachId) : getCoachByUserId(user.getUserId());
+
+		boolean isSelf = user.getUserId().equals(coach.getUser().getUserId());
+
+		if (!isSelf && !coach.getIsOpen()) {
+			throw new AccessDeniedException();
+		}
 
 		List<ReviewDto> reviews = getReviews(coach);
 		double averageRating = calculateAverageRating(reviews);
 
 		boolean isLiked = isLikedByUser(user, coach);
+		boolean isContacted = matchingRepository.existsByUserUserIdAndCoachCoachId(user.getUserId(), coachId);
+
 		int countOfLikes = getCountOfLikes(coach);
 
 		List<CoachingSportDto> coachingSports = getCoachingSports(coach);
@@ -192,6 +200,7 @@ public class CoachService {
 			.chattingUrl(coach.getChattingUrl())
 			.reviews(reviews)
 			.isOpen(coach.getIsOpen())
+			.isContacted(isContacted)
 			.countOfReviews(reviews.size())
 			.reviewRating(averageRating)
 			.isLiked(isLiked)
@@ -203,7 +212,7 @@ public class CoachService {
 	public CoachListResponse getAllCoaches(User user, int page, String sports, String search, Boolean latest,
 		Boolean review, Boolean liked, Boolean my) {
 
-		List<Long> allSportsIds = List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L);
+		List<Long> allSportsIds = sportRepository.findAllSportIds();
 
 		Sort sort = Sort.by("updatedAt").descending();
 		Pageable pageable = PageRequest.of(page - 1, 20, sort);
@@ -239,6 +248,10 @@ public class CoachService {
 
 		Coach coach = coachRepository.findById(coachId)
 			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_COACH));
+
+		if (userId.equals(coach.getUser().getUserId())) {
+			throw new SelfRequestNotAllowedException(ErrorMessage.CANNOT_LIKE_SELF);
+		}
 
 		if (!userCoachLikeRepository.existsByUser_UserIdAndCoach_CoachId(userId, coachId)) {
 			userCoachLikeRepository.save(new UserCoachLike(null, user, coach));
@@ -285,7 +298,7 @@ public class CoachService {
 
 		reviewRepository.findByUser_UserIdAndCoach_CoachId(userId, coachId)
 			.ifPresent(review -> {
-				throw new DuplicateReviewException(ErrorMessage.ALREADY_EXISTS_REVIEW);
+				throw new DuplicateValueException(ErrorMessage.ALREADY_EXISTS_REVIEW);
 			});
 
 		Review review = new Review(null, coach, user, requestDto.contents(), requestDto.stars());
@@ -327,17 +340,26 @@ public class CoachService {
 
 	private Page<Coach> fetchCoachesPage(User user, List<Long> sportsList, String search, Pageable pageable,
 		Boolean review, Boolean liked, Boolean latest, Boolean my) {
+		Page<Coach> coachesPage;
+
 		if (Boolean.TRUE.equals(review)) {
-			return coachRepository.findAllWithReviewsSorted(sportsList, search, pageable);
+			coachesPage = coachRepository.findAllWithReviewsSorted(sportsList, search, pageable);
 		} else if (Boolean.TRUE.equals(liked)) {
-			return coachRepository.findAllWithLikesSorted(sportsList, search, pageable);
+			coachesPage = coachRepository.findAllWithLikesSorted(sportsList, search, pageable);
 		} else if (Boolean.TRUE.equals(latest)) {
-			return coachRepository.findAllWithLatestSorted(sportsList, search, pageable);
+			coachesPage = coachRepository.findAllWithLatestSorted(sportsList, search, pageable);
 		} else if (Boolean.TRUE.equals(my)) {
-			return coachRepository.findMyCoaches(user.getUserId(), sportsList, search, pageable);
+			coachesPage = coachRepository.findMyCoaches(user.getUserId(), sportsList, search, pageable);
 		} else {
-			return coachRepository.findAllWithLatestSorted(sportsList, search, pageable);
+			coachesPage = coachRepository.findAllWithLatestSorted(sportsList, search, pageable);
 		}
+
+		List<Coach> filteredCoaches = coachesPage.getContent().stream()
+			.filter(Coach::getIsOpen)
+			.collect(Collectors.toList());
+
+		return new PageImpl<>(filteredCoaches, pageable, coachesPage.getTotalElements());
+
 	}
 
 	private CoachListDto getCoachListDto(Coach coach, User user) {
@@ -414,11 +436,15 @@ public class CoachService {
 		Coach coach = coachRepository.findByUser_UserId(coachUserId)
 			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_COACH));
 
+		if (coachUserId.equals(userId)) {
+			throw new SelfRequestNotAllowedException(ErrorMessage.CANNOT_MATCHING_SELF);
+		}
+
 		Matching matching = matchingRepository.findByUser_UserIdAndCoach_CoachId(userId, coach.getCoachId())
 			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_CONTACT));
 
 		if (Boolean.TRUE.equals(matching.getIsMatching())) {
-			throw new AlreadyMatchedException(ErrorMessage.DUPLICATE_MATCHING);
+			throw new DuplicateValueException(ErrorMessage.DUPLICATE_MATCHING);
 		}
 
 		matching.markAsMatched();

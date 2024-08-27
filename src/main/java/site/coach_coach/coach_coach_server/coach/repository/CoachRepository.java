@@ -74,4 +74,6 @@ public interface CoachRepository extends JpaRepository<Coach, Long> {
 		@Param("sports") List<Long> sports,
 		@Param("search") String search,
 		Pageable pageable);
+
+	boolean existsByUser(User user);
 }

@@ -254,7 +254,7 @@ public class RoutineControllerTest {
 	public void getRoutineSuccessTest() throws Exception {
 		// Given
 		Long userIdParam = 1L;
-		ActionDto actionDto = new ActionDto(1L, "actionName", 5, "10", "description");
+		ActionDto actionDto = new ActionDto(1L, "actionName", 5, 10, 5, "description");
 		List<ActionDto> actionList = new ArrayList<>();
 		actionList.add(actionDto);
 		CategoryDto categoryDto = new CategoryDto(1L, "categoryName", false, actionList);

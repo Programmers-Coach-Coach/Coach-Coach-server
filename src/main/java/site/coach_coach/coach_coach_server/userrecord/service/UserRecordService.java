@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.common.exception.AccessDeniedException;
+import site.coach_coach.coach_coach_server.common.exception.DuplicateValueException;
 import site.coach_coach.coach_coach_server.common.exception.InvalidInputException;
 import site.coach_coach.coach_coach_server.common.exception.NotFoundException;
 import site.coach_coach.coach_coach_server.common.exception.UserNotFoundException;
@@ -37,7 +38,6 @@ import site.coach_coach.coach_coach_server.userrecord.dto.UserRecordCreateReques
 import site.coach_coach.coach_coach_server.userrecord.dto.UserRecordDetailResponse;
 import site.coach_coach.coach_coach_server.userrecord.dto.UserRecordResponse;
 import site.coach_coach.coach_coach_server.userrecord.dto.UserRecordUpdateRequest;
-import site.coach_coach.coach_coach_server.userrecord.exception.DuplicateRecordException;
 import site.coach_coach.coach_coach_server.userrecord.repository.UserRecordRepository;
 
 @Service
@@ -55,7 +55,7 @@ public class UserRecordService {
 		User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
 		if (userRecordRepository.existsByRecordDateAndUser_UserId(recordDate, userId)) {
-			throw new DuplicateRecordException(ErrorMessage.DUPLICATE_RECORD);
+			throw new DuplicateValueException(ErrorMessage.DUPLICATE_RECORD);
 		}
 
 		UserRecord userRecord = UserRecord.builder()
@@ -150,6 +150,7 @@ public class UserRecordService {
 		List<RecordsDto> records = mapToRecordsDto(completedCategories);
 
 		return new UserRecordDetailResponse(
+			userRecord.getUserRecordId(),
 			userRecord.getWeight(),
 			userRecord.getSkeletalMuscle(),
 			userRecord.getFatPercentage(),

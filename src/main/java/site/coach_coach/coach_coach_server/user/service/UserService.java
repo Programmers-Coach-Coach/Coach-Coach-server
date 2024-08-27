@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import site.coach_coach.coach_coach_server.auth.jwt.TokenProvider;
 import site.coach_coach.coach_coach_server.auth.jwt.dto.TokenDto;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
+import site.coach_coach.coach_coach_server.common.domain.GenderEnum;
 import site.coach_coach.coach_coach_server.common.exception.NotFoundException;
 import site.coach_coach.coach_coach_server.common.exception.UserNotFoundException;
 import site.coach_coach.coach_coach_server.common.utils.AmazonS3Uploader;
@@ -61,7 +62,6 @@ public class UserService {
 		}
 	}
 
-	@Transactional
 	public void signup(SignUpRequest signUpRequest) {
 		checkNicknameDuplicate(signUpRequest.nickname());
 		checkEmailDuplicate(signUpRequest.email());
@@ -69,7 +69,6 @@ public class UserService {
 		userRepository.save(user);
 	}
 
-	@Transactional
 	public User validateUser(LoginRequest loginRequest) {
 		String email = loginRequest.email();
 		String password = loginRequest.password();
@@ -98,6 +97,17 @@ public class UserService {
 		return UserProfileResponse.from(user);
 	}
 
+	public void deleteUser(Long userId) {
+		try {
+			userRepository.deleteById(userId);
+		} catch (EmptyResultDataAccessException e) {
+			log.error("Non-existent user : [{}] - {}", e.getClass().getSimpleName(), e.getMessage());
+		} catch (Exception e) {
+			log.error("회원 탈퇴 에러 : [{}] - {}", e.getClass().getSimpleName(), e.getMessage());
+			throw e;
+		}
+	}
+
 	@Transactional(readOnly = true)
 	public AuthResponse getUserAuthStatus(Optional<User> user) {
 		if (user.isPresent()) {
@@ -105,6 +115,33 @@ public class UserService {
 		} else {
 			return getAnonymousUserAuthStatus();
 		}
+	}
+
+	private AuthResponse getLoggedInUserAuthStatus(User user) {
+		String nickname = user.getNickname();
+		GenderEnum gender = user.getGender();
+		String profileImageUrl = user.getProfileImageUrl();
+		boolean isCoach = user.getIsCoach();
+		int countOfNotifications = notificationRepository.countByUser_UserId(user.getUserId());
+		return AuthResponse.builder()
+			.isLogin(true)
+			.nickname(nickname)
+			.gender(gender)
+			.profileImageUrl(profileImageUrl)
+			.isCoach(isCoach)
+			.countOfNotifications(countOfNotifications)
+			.build();
+	}
+
+	private AuthResponse getAnonymousUserAuthStatus() {
+		return AuthResponse.builder()
+			.isLogin(false)
+			.nickname(null)
+			.gender(null)
+			.profileImageUrl(null)
+			.isCoach(false)
+			.countOfNotifications(0)
+			.build();
 	}
 
 	@Transactional
@@ -127,25 +164,6 @@ public class UserService {
 		);
 
 		userRepository.save(user);
-	}
-
-	public void deleteUser(Long userId) {
-		try {
-			userRepository.deleteById(userId);
-		} catch (EmptyResultDataAccessException e) {
-			log.error("Non-existent user : [{}] - {}", e.getClass().getSimpleName(), e.getMessage());
-		} catch (Exception e) {
-			log.error("회원 탈퇴 에러 : [{}] - {}", e.getClass().getSimpleName(), e.getMessage());
-			throw e;
-		}
-	}
-
-	private User buildUserForSignUp(SignUpRequest signUpRequest) {
-		return User.builder()
-			.email(signUpRequest.email())
-			.password(passwordEncoder.encode(signUpRequest.password()))
-			.nickname(signUpRequest.nickname())
-			.build();
 	}
 
 	private String getUpdatedNickname(User user, UserProfileRequest userProfileRequest) {
@@ -186,22 +204,11 @@ public class UserService {
 		return user.getInterestedSports();
 	}
 
-	private AuthResponse getLoggedInUserAuthStatus(User user) {
-		String nickname = user.getNickname();
-		int countOfNotifications = notificationRepository.countByUser_UserId(user.getUserId());
-		return AuthResponse.builder()
-			.isLogin(true)
-			.nickname(nickname)
-			.countOfNotifications(countOfNotifications)
+	private User buildUserForSignUp(SignUpRequest signUpRequest) {
+		return User.builder()
+			.email(signUpRequest.email())
+			.password(passwordEncoder.encode(signUpRequest.password()))
+			.nickname(signUpRequest.nickname())
 			.build();
 	}
-
-	private AuthResponse getAnonymousUserAuthStatus() {
-		return AuthResponse.builder()
-			.isLogin(false)
-			.nickname(null)
-			.countOfNotifications(0)
-			.build();
-	}
-
 }
