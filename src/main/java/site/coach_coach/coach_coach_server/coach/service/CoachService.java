@@ -448,5 +448,6 @@ public class CoachService {
 		}
 
 		matching.markAsMatched();
+		notificationService.createNotification(userId, coach.getCoachId(), RelationFunctionEnum.match);
 	}
 }
