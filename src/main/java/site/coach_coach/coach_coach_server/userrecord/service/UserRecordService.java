@@ -6,6 +6,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -145,7 +146,7 @@ public class UserRecordService {
 			throw new AccessDeniedException();
 		}
 		List<CompletedCategory> completedCategories
-			= completedCategoryRepository.findAllByUserRecord_UserRecordIdWithJoins(recordId);
+			= completedCategoryRepository.findAllWithDetailsByUserRecordId(recordId);
 
 		List<RecordsDto> records = mapToRecordsDto(completedCategories);
 
@@ -182,14 +183,18 @@ public class UserRecordService {
 
 	private List<RecordsDto> mapToRecordsDto(List<CompletedCategory> completedCategories) {
 		return completedCategories.stream()
-			.collect(Collectors.groupingBy(c -> c.getCategory().getRoutine()))
+			.collect(Collectors.groupingBy(
+				c -> c.getCategory().getRoutine(),
+				LinkedHashMap::new,
+				Collectors.mapping(
+					CompletedCategoryDto::from,
+					Collectors.toList()
+				)
+			))
 			.entrySet().stream()
 			.map(entry -> {
 				Routine routine = entry.getKey();
-				List<CompletedCategoryDto> completedCategoryDtos = entry.getValue()
-					.stream()
-					.map(CompletedCategoryDto::from)
-					.collect(Collectors.toList());
+				List<CompletedCategoryDto> completedCategoryDtos = entry.getValue();
 
 				Coach coach = routine != null ? routine.getCoach() : null;
 
