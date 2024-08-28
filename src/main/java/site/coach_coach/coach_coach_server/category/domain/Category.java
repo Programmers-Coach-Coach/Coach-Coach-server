@@ -44,7 +44,6 @@ public class Category extends DateEntity {
 	@Column(name = "category_name")
 	private String categoryName;
 
-	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "routine_id")
 	private Routine routine;
