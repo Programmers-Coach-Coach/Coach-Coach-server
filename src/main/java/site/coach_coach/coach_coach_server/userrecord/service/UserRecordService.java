@@ -200,11 +200,7 @@ public class UserRecordService {
 				Routine routine = routineOpt.orElse(null);
 				Coach coach = routine != null ? routine.getCoach() : null;
 
-				return RecordsDto.from(
-					routine,
-					coach,
-					completedCategoryDtos
-				);
+				return RecordsDto.from(routine, coach, completedCategoryDtos);
 			})
 			.collect(Collectors.toList());
 	}
