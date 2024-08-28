@@ -12,6 +12,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 	Optional<Category> findByCategoryIdAndRoutine_RoutineIdIsNotNull(Long categoryId);
 
 	@Modifying
-	@Query("UPDATE Category c SET c.isCompleted = FALSE")
+	@Query("UPDATE Category c SET c.isCompleted = FALSE WHERE c.routine.routineId IS NOT NULL")
 	void resetIsCompleted();
 }
