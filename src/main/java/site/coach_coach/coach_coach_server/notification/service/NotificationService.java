@@ -56,7 +56,7 @@ public class NotificationService {
 		User receiver;
 
 		if (relationFunction == RelationFunctionEnum.match || relationFunction == RelationFunctionEnum.refusal
-			|| relationFunction == RelationFunctionEnum.delete) {
+			|| relationFunction == RelationFunctionEnum.cancel) {
 			receiver = user;
 		} else {
 			receiver = coach;
