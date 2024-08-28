@@ -1,5 +1,7 @@
 package site.coach_coach.coach_coach_server.action.service;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +29,9 @@ public class ActionService {
 		Category category = categoryRepository.findById(categoryId)
 			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_CATEGORY));
 
+		Optional.ofNullable(category.getRoutine())
+			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_ROUTINE));
+
 		routineService.validateIsMyRoutine(category.getRoutine().getRoutineId(), userIdByJwt);
 
 		Action action = Action.of(createActionRequest, category);
@@ -38,6 +43,9 @@ public class ActionService {
 		Action action = actionRepository.findById(actionId)
 			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_ACTION));
 
+		Optional.ofNullable(action.getCategory().getRoutine())
+			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_ROUTINE));
+
 		routineService.validateIsMyRoutine(action.getCategory().getRoutine().getRoutineId(), userIdByJwt);
 
 		actionRepository.deleteById(actionId);
@@ -47,6 +55,9 @@ public class ActionService {
 	public void updateActionInfo(UpdateActionInfoRequest updateActionInfoRequest, Long actionId, Long userIdByJwt) {
 		Action action = actionRepository.findById(actionId)
 			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_ACTION));
+
+		Optional.ofNullable(action.getCategory().getRoutine())
+			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_ROUTINE));
 
 		routineService.validateIsMyRoutine(action.getCategory().getRoutine().getRoutineId(), userIdByJwt);
 		action.updateActionInfo(updateActionInfoRequest);

@@ -1,5 +1,7 @@
 package site.coach_coach.coach_coach_server.category.service;
 
+import java.util.Optional;
+
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,6 +43,9 @@ public class CategoryService {
 		Category category = categoryRepository.findById(categoryId)
 			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_CATEGORY));
 
+		Optional.ofNullable(category.getRoutine())
+			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_ROUTINE));
+
 		routineService.validateIsMyRoutine(category.getRoutine().getRoutineId(), userIdByJwt);
 
 		categoryRepository.deleteById(categoryId);
@@ -51,6 +56,9 @@ public class CategoryService {
 	public void updateCategory(UpdateCategoryInfoRequest updateCategoryInfoRequest, Long categoryId, Long userIdByJwt) {
 		Category category = categoryRepository.findById(categoryId)
 			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_CATEGORY));
+
+		Optional.ofNullable(category.getRoutine())
+			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_ROUTINE));
 
 		routineService.validateIsMyRoutine(category.getRoutine().getRoutineId(), userIdByJwt);
 
