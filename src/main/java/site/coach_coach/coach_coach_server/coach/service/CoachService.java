@@ -192,7 +192,8 @@ public class CoachService {
 		int countOfLikes = getCountOfLikes(coach);
 
 		List<CoachingSportDto> coachingSports = getCoachingSports(coach);
-		boolean isMatched = matchingRepository.existsByUserUserIdAndCoachCoachId(user.getUserId(), coach.getCoachId());
+		boolean isMatched = matchingRepository.existsByUserUserIdAndCoachCoachIdAndIsMatching(
+			user.getUserId(), coach.getCoachId(), true);
 
 		return CoachDetailDto.builder()
 			.coachId(coach.getCoachId())
