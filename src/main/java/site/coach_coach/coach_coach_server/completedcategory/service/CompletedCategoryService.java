@@ -23,7 +23,7 @@ public class CompletedCategoryService {
 	private final CategoryRepository categoryRepository;
 
 	private Category validateAccessToCategory(Long categoryId, Long userIdByJwt) {
-		Category category = categoryRepository.findById(categoryId)
+		Category category = categoryRepository.findByCategoryIdAndRoutine_RoutineIdIsNotNull(categoryId)
 			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_CATEGORY));
 
 		if (!category.getRoutine().getUser().getUserId().equals(userIdByJwt)) {

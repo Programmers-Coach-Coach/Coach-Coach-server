@@ -37,8 +37,7 @@ public class CategoryService {
 
 	@Transactional
 	public void deleteCategory(Long categoryId, Long userIdByJwt) {
-
-		Category category = categoryRepository.findById(categoryId)
+		Category category = categoryRepository.findByCategoryIdAndRoutine_RoutineIdIsNotNull(categoryId)
 			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_CATEGORY));
 
 		routineService.validateIsMyRoutine(category.getRoutine().getRoutineId(), userIdByJwt);
@@ -49,7 +48,7 @@ public class CategoryService {
 
 	@Transactional
 	public void updateCategory(UpdateCategoryInfoRequest updateCategoryInfoRequest, Long categoryId, Long userIdByJwt) {
-		Category category = categoryRepository.findById(categoryId)
+		Category category = categoryRepository.findByCategoryIdAndRoutine_RoutineIdIsNotNull(categoryId)
 			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_CATEGORY));
 
 		routineService.validateIsMyRoutine(category.getRoutine().getRoutineId(), userIdByJwt);

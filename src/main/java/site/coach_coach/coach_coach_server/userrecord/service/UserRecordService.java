@@ -8,6 +8,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -181,9 +182,9 @@ public class UserRecordService {
 	}
 
 	private List<RecordsDto> mapToRecordsDto(List<CompletedCategory> completedCategories) {
-		Map<Routine, List<CompletedCategoryDto>> routineToCategoriesMap = completedCategories.stream()
+		Map<Optional<Routine>, List<CompletedCategoryDto>> routineToCategoriesMap = completedCategories.stream()
 			.collect(Collectors.groupingBy(
-				c -> c.getCategory().getRoutine(),
+				c -> Optional.ofNullable(c.getCategory().getRoutine()),
 				Collectors.mapping(
 					CompletedCategoryDto::from,
 					Collectors.toList()
@@ -192,10 +193,16 @@ public class UserRecordService {
 
 		return routineToCategoriesMap.entrySet().stream()
 			.map(entry -> {
-				Routine routine = entry.getKey();
+				Optional<Routine> routine = entry.getKey();
 				List<CompletedCategoryDto> completedCategoryDtos = entry.getValue();
-				Coach coach = routine.getCoach();
+
+				if (routine.isEmpty()) {
+					return RecordsDto.from(routine, null, completedCategoryDtos);
+				}
+
+				Coach coach = routine.get().getCoach();
 				return RecordsDto.from(routine, coach, completedCategoryDtos);
+
 			})
 			.collect(Collectors.toList());
 	}
