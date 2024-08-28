@@ -55,7 +55,8 @@ public class NotificationService {
 
 		User receiver;
 
-		if (relationFunction == RelationFunctionEnum.match || relationFunction == RelationFunctionEnum.refusal) {
+		if (relationFunction == RelationFunctionEnum.match || relationFunction == RelationFunctionEnum.refusal
+			|| relationFunction == RelationFunctionEnum.delete) {
 			receiver = user;
 		} else {
 			receiver = coach;
@@ -98,6 +99,8 @@ public class NotificationService {
 				+ NotificationMessage.MATCH_MESSAGE.getMessage();
 			case refusal -> coach.getNickname() + NotificationMessage.USER_MESSAGE.getMessage()
 				+ NotificationMessage.REFUSAL_MESSAGE.getMessage();
+			case delete -> coach.getNickname() + NotificationMessage.USER_MESSAGE.getMessage()
+				+ NotificationMessage.DELETE_MESSAGE.getMessage();
 		};
 	}
 }
