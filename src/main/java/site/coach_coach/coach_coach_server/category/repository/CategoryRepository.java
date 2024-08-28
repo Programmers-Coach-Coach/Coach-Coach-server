@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import site.coach_coach.coach_coach_server.category.domain.Category;
 
 public interface CategoryRepository extends JpaRepository<Category, Long> {
-	Optional<Category> findByCategoryIdAndRoutine_RoutineId(Long categoryId, Long routineId);
+	Optional<Category> findByCategoryIdAndRoutine_RoutineIdIsNotNull(Long categoryId);
 
 	@Modifying
 	@Query("UPDATE Category c SET c.isCompleted = FALSE WHERE c.routine.routineId IS NOT NULL")
