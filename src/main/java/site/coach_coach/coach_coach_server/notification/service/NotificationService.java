@@ -99,8 +99,8 @@ public class NotificationService {
 				+ NotificationMessage.MATCH_MESSAGE.getMessage();
 			case refusal -> coach.getNickname() + NotificationMessage.USER_MESSAGE.getMessage()
 				+ NotificationMessage.REFUSAL_MESSAGE.getMessage();
-			case delete -> coach.getNickname() + NotificationMessage.USER_MESSAGE.getMessage()
-				+ NotificationMessage.DELETE_MESSAGE.getMessage();
+			case cancel -> coach.getNickname() + NotificationMessage.USER_MESSAGE.getMessage()
+				+ NotificationMessage.CANCEL_MESSAGE.getMessage();
 		};
 	}
 }

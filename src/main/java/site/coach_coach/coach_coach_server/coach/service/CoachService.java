@@ -155,7 +155,7 @@ public class CoachService {
 		boolean isMatching = matching.getIsMatching();
 		matchingRepository.delete(matching);
 		if (isMatching) {
-			notificationService.createNotification(userId, coach.getCoachId(), RelationFunctionEnum.delete);
+			notificationService.createNotification(userId, coach.getCoachId(), RelationFunctionEnum.cancel);
 		} else {
 			notificationService.createNotification(userId, coach.getCoachId(), RelationFunctionEnum.refusal);
 		}
