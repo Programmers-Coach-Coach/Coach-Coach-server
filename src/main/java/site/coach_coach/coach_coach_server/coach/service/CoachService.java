@@ -152,13 +152,7 @@ public class CoachService {
 		Matching matching = matchingRepository.findByUser_UserIdAndCoach_CoachId(user.getUserId(), coach.getCoachId())
 			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_CONTACT));
 
-		boolean isMatching = matching.getIsMatching();
 		matchingRepository.delete(matching);
-		if (isMatching) {
-			notificationService.createNotification(userId, coach.getCoachId(), RelationFunctionEnum.cancel);
-		} else {
-			notificationService.createNotification(userId, coach.getCoachId(), RelationFunctionEnum.refusal);
-		}
 	}
 
 	@Transactional(readOnly = true)
@@ -192,7 +186,8 @@ public class CoachService {
 		int countOfLikes = getCountOfLikes(coach);
 
 		List<CoachingSportDto> coachingSports = getCoachingSports(coach);
-		boolean isMatched = matchingRepository.existsByUserUserIdAndCoachCoachId(user.getUserId(), coach.getCoachId());
+		boolean isMatched = matchingRepository.existsByUserUserIdAndCoachCoachIdAndIsMatching(
+			user.getUserId(), coach.getCoachId(), true);
 
 		return CoachDetailDto.builder()
 			.coachId(coach.getCoachId())
