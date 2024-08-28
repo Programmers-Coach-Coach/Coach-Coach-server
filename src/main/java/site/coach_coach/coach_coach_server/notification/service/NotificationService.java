@@ -53,7 +53,14 @@ public class NotificationService {
 			throw new InvalidInputException(ErrorMessage.INVALID_REQUEST);
 		}
 
-		User receiver = (relationFunction == RelationFunctionEnum.match) ? user : coach;
+		User receiver;
+
+		if (relationFunction == RelationFunctionEnum.match || relationFunction == RelationFunctionEnum.refusal
+			|| relationFunction == RelationFunctionEnum.cancel) {
+			receiver = user;
+		} else {
+			receiver = coach;
+		}
 
 		Notification notification = Notification.builder()
 			.user(receiver)
@@ -90,6 +97,10 @@ public class NotificationService {
 			case review -> NotificationMessage.REVIEW_MESSAGE.getMessage();
 			case match -> coach.getNickname() + NotificationMessage.USER_MESSAGE.getMessage()
 				+ NotificationMessage.MATCH_MESSAGE.getMessage();
+			case refusal -> coach.getNickname() + NotificationMessage.USER_MESSAGE.getMessage()
+				+ NotificationMessage.REFUSAL_MESSAGE.getMessage();
+			case cancel -> coach.getNickname() + NotificationMessage.USER_MESSAGE.getMessage()
+				+ NotificationMessage.CANCEL_MESSAGE.getMessage();
 		};
 	}
 }
