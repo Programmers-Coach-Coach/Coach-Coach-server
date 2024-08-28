@@ -9,6 +9,7 @@ import java.time.format.DateTimeParseException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -184,7 +185,7 @@ public class UserRecordService {
 	private List<RecordsDto> mapToRecordsDto(List<CompletedCategory> completedCategories) {
 		return completedCategories.stream()
 			.collect(Collectors.groupingBy(
-				c -> c.getCategory().getRoutine(),
+				c -> Optional.ofNullable(c.getCategory().getRoutine()),
 				LinkedHashMap::new,
 				Collectors.mapping(
 					CompletedCategoryDto::from,
@@ -193,9 +194,10 @@ public class UserRecordService {
 			))
 			.entrySet().stream()
 			.map(entry -> {
-				Routine routine = entry.getKey();
+				Optional<Routine> routineOpt = entry.getKey();
 				List<CompletedCategoryDto> completedCategoryDtos = entry.getValue();
 
+				Routine routine = routineOpt.orElse(null);
 				Coach coach = routine != null ? routine.getCoach() : null;
 
 				return RecordsDto.from(

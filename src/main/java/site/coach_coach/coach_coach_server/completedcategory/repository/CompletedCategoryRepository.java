@@ -14,8 +14,8 @@ import site.coach_coach.coach_coach_server.completedcategory.domain.CompletedCat
 @Repository
 public interface CompletedCategoryRepository extends JpaRepository<CompletedCategory, Long> {
 	@Query("SELECT cc FROM CompletedCategory cc "
-		+ "JOIN FETCH cc.category c "
-		+ "JOIN FETCH c.routine r "
+		+ "LEFT JOIN FETCH cc.category c "
+		+ "LEFT JOIN FETCH c.routine r "
 		+ "LEFT JOIN FETCH r.coach "
 		+ "WHERE cc.userRecord.userRecordId = :recordId")
 	List<CompletedCategory> findAllWithDetailsByUserRecordId(@Param("recordId") Long recordId);
