@@ -1,7 +1,5 @@
 package site.coach_coach.coach_coach_server.action.service;
 
-import java.util.Optional;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,11 +24,8 @@ public class ActionService {
 	@Transactional
 	public Long createAction(Long categoryId, Long userIdByJwt,
 		CreateActionRequest createActionRequest) {
-		Category category = categoryRepository.findById(categoryId)
+		Category category = categoryRepository.findByCategoryIdAndRoutine_RoutineIdIsNotNull(categoryId)
 			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_CATEGORY));
-
-		Optional.ofNullable(category.getRoutine())
-			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_ROUTINE));
 
 		routineService.validateIsMyRoutine(category.getRoutine().getRoutineId(), userIdByJwt);
 
@@ -40,11 +35,8 @@ public class ActionService {
 
 	@Transactional
 	public void deleteAction(Long actionId, Long userIdByJwt) {
-		Action action = actionRepository.findById(actionId)
+		Action action = actionRepository.findByActionIdAndCategory_Routine_RoutineIdIsNotNull(actionId)
 			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_ACTION));
-
-		Optional.ofNullable(action.getCategory().getRoutine())
-			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_ROUTINE));
 
 		routineService.validateIsMyRoutine(action.getCategory().getRoutine().getRoutineId(), userIdByJwt);
 
@@ -53,11 +45,8 @@ public class ActionService {
 
 	@Transactional
 	public void updateActionInfo(UpdateActionInfoRequest updateActionInfoRequest, Long actionId, Long userIdByJwt) {
-		Action action = actionRepository.findById(actionId)
+		Action action = actionRepository.findByActionIdAndCategory_Routine_RoutineIdIsNotNull(actionId)
 			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_ACTION));
-
-		Optional.ofNullable(action.getCategory().getRoutine())
-			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_ROUTINE));
 
 		routineService.validateIsMyRoutine(action.getCategory().getRoutine().getRoutineId(), userIdByJwt);
 		action.updateActionInfo(updateActionInfoRequest);

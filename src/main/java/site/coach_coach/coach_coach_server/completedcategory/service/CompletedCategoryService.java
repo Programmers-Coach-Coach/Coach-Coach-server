@@ -1,7 +1,5 @@
 package site.coach_coach.coach_coach_server.completedcategory.service;
 
-import java.util.Optional;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,11 +23,8 @@ public class CompletedCategoryService {
 	private final CategoryRepository categoryRepository;
 
 	private Category validateAccessToCategory(Long categoryId, Long userIdByJwt) {
-		Category category = categoryRepository.findById(categoryId)
+		Category category = categoryRepository.findByCategoryIdAndRoutine_RoutineIdIsNotNull(categoryId)
 			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_CATEGORY));
-
-		Optional.ofNullable(category.getRoutine())
-			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_ROUTINE));
 
 		if (!category.getRoutine().getUser().getUserId().equals(userIdByJwt)) {
 			throw new AccessDeniedException();
