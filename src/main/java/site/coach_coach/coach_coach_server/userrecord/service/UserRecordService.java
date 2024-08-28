@@ -8,7 +8,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -145,8 +144,8 @@ public class UserRecordService {
 		if (!userRecord.getUser().getUserId().equals(userId)) {
 			throw new AccessDeniedException();
 		}
-		List<CompletedCategory> completedCategories = completedCategoryRepository.findAllByUserRecord_UserRecordId(
-			recordId);
+		List<CompletedCategory> completedCategories
+			= completedCategoryRepository.findAllByUserRecord_UserRecordIdWithJoins(recordId);
 
 		List<RecordsDto> records = mapToRecordsDto(completedCategories);
 
@@ -182,27 +181,23 @@ public class UserRecordService {
 	}
 
 	private List<RecordsDto> mapToRecordsDto(List<CompletedCategory> completedCategories) {
-		Map<Optional<Routine>, List<CompletedCategoryDto>> routineToCategoriesMap = completedCategories.stream()
-			.collect(Collectors.groupingBy(
-				c -> Optional.ofNullable(c.getCategory().getRoutine()),
-				Collectors.mapping(
-					CompletedCategoryDto::from,
-					Collectors.toList()
-				)
-			));
-
-		return routineToCategoriesMap.entrySet().stream()
+		return completedCategories.stream()
+			.collect(Collectors.groupingBy(c -> c.getCategory().getRoutine()))
+			.entrySet().stream()
 			.map(entry -> {
-				Optional<Routine> routine = entry.getKey();
-				List<CompletedCategoryDto> completedCategoryDtos = entry.getValue();
+				Routine routine = entry.getKey();
+				List<CompletedCategoryDto> completedCategoryDtos = entry.getValue()
+					.stream()
+					.map(CompletedCategoryDto::from)
+					.collect(Collectors.toList());
 
-				if (routine.isEmpty()) {
-					return RecordsDto.from(routine, null, completedCategoryDtos);
-				}
+				Coach coach = routine != null ? routine.getCoach() : null;
 
-				Coach coach = routine.get().getCoach();
-				return RecordsDto.from(routine, coach, completedCategoryDtos);
-
+				return RecordsDto.from(
+					routine,
+					coach,
+					completedCategoryDtos
+				);
 			})
 			.collect(Collectors.toList());
 	}
