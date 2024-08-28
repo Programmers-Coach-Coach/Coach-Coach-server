@@ -6,6 +6,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -145,8 +146,8 @@ public class UserRecordService {
 		if (!userRecord.getUser().getUserId().equals(userId)) {
 			throw new AccessDeniedException();
 		}
-		List<CompletedCategory> completedCategories = completedCategoryRepository.findAllByUserRecord_UserRecordId(
-			recordId);
+		List<CompletedCategory> completedCategories
+			= completedCategoryRepository.findAllWithDetailsByUserRecordId(recordId);
 
 		List<RecordsDto> records = mapToRecordsDto(completedCategories);
 
@@ -182,27 +183,24 @@ public class UserRecordService {
 	}
 
 	private List<RecordsDto> mapToRecordsDto(List<CompletedCategory> completedCategories) {
-		Map<Optional<Routine>, List<CompletedCategoryDto>> routineToCategoriesMap = completedCategories.stream()
+		return completedCategories.stream()
 			.collect(Collectors.groupingBy(
 				c -> Optional.ofNullable(c.getCategory().getRoutine()),
+				LinkedHashMap::new,
 				Collectors.mapping(
 					CompletedCategoryDto::from,
 					Collectors.toList()
 				)
-			));
-
-		return routineToCategoriesMap.entrySet().stream()
+			))
+			.entrySet().stream()
 			.map(entry -> {
-				Optional<Routine> routine = entry.getKey();
+				Optional<Routine> routineOpt = entry.getKey();
 				List<CompletedCategoryDto> completedCategoryDtos = entry.getValue();
 
-				if (routine.isEmpty()) {
-					return RecordsDto.from(routine, null, completedCategoryDtos);
-				}
+				Routine routine = routineOpt.orElse(null);
+				Coach coach = routine != null ? routine.getCoach() : null;
 
-				Coach coach = routine.get().getCoach();
 				return RecordsDto.from(routine, coach, completedCategoryDtos);
-
 			})
 			.collect(Collectors.toList());
 	}
