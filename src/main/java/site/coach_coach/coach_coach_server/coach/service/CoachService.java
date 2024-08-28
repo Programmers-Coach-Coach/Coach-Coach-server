@@ -152,7 +152,13 @@ public class CoachService {
 		Matching matching = matchingRepository.findByUser_UserIdAndCoach_CoachId(user.getUserId(), coach.getCoachId())
 			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_CONTACT));
 
+		boolean isMatching = matching.getIsMatching();
 		matchingRepository.delete(matching);
+		if (isMatching) {
+			notificationService.createNotification(userId, coach.getCoachId(), RelationFunctionEnum.cancel);
+		} else {
+			notificationService.createNotification(userId, coach.getCoachId(), RelationFunctionEnum.refusal);
+		}
 	}
 
 	@Transactional(readOnly = true)
