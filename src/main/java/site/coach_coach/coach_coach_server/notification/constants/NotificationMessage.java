@@ -9,7 +9,7 @@ public enum NotificationMessage {
 	LIKE_MESSAGE("회원님을 관심 코치로 등록하였습니다."),
 	MATCH_MESSAGE("회원님의 매칭 신청을 수락하셨습니다."),
 	REFUSAL_MESSAGE("매칭 신청을 거절하였습니다."),
-	CANCEL_MESSAGE("회원님을 매칭 취소하였습니다."),
+	CANCEL_MESSAGE("매칭을 취소하였습니다."),
 	USER_MESSAGE("님이 ");
 
 	private final String message;
