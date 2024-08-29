@@ -18,8 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
-import site.coach_coach.coach_coach_server.common.constants.SuccessMessage;
-import site.coach_coach.coach_coach_server.common.response.SuccessResponse;
 import site.coach_coach.coach_coach_server.routine.dto.CreateRoutineRequest;
 import site.coach_coach.coach_coach_server.routine.dto.CreateRoutineResponse;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineForListDto;
@@ -74,14 +72,13 @@ public class RoutineController {
 	}
 
 	@DeleteMapping("/v1/routines/{routineId}")
-	public ResponseEntity<SuccessResponse> deleteRoutine(
+	public ResponseEntity<Void> deleteRoutine(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
 		@PathVariable(name = "routineId") Long routineId
 	) {
 		Long userIdByJwt = userDetails.getUserId();
 		routineService.deleteRoutine(routineId, userIdByJwt);
-		return ResponseEntity.ok(
-			new SuccessResponse(HttpStatus.OK.value(), SuccessMessage.DELETE_ROUTINE_SUCCESS.getMessage()));
+		return ResponseEntity.noContent().build();
 	}
 
 	@GetMapping("/v1/routines/{routineId}")
