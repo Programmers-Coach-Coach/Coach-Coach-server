@@ -44,7 +44,7 @@ public interface CoachRepository extends JpaRepository<Coach, Long> {
 		+ "WHERE (:sports IS NULL OR cs.sport.sportId IN :sports) "
 		+ "AND (:search IS NULL OR c.user.nickname LIKE %:search%) "
 		+ "GROUP BY c.coachId "
-		+ "ORDER BY COUNT(r.reviewId) DESC")
+		+ "ORDER BY COUNT(r) DESC")
 	Page<Coach> findAllWithReviewsSorted(@Param("sports") List<Long> sports,
 		@Param("search") String search,
 		Pageable pageable);
