@@ -225,7 +225,7 @@ public class CoachService {
 
 		List<Long> allSportsIds = sportRepository.findAllSportIds();
 
-		Sort sort = Sort.by("updatedAt").descending();
+		Sort sort = Sort.by(Sort.Order.desc("updatedAt"));
 		Pageable pageable = PageRequest.of(page - 1, 20, sort);
 
 		List<Long> sportsList = (sports != null && !sports.isEmpty()) ? parseSports(sports) : allSportsIds;
@@ -245,7 +245,8 @@ public class CoachService {
 			throw new NotFoundException(ErrorMessage.NOT_FOUND_PAGE);
 		}
 
-		List<CoachListDto> coaches = coachesPage.stream()
+		List<CoachListDto> coaches = coachesPage.getContent().stream()
+			.filter(Coach::getIsOpen)
 			.map(coach -> getCoachListDto(coach, user))
 			.collect(Collectors.toList());
 
