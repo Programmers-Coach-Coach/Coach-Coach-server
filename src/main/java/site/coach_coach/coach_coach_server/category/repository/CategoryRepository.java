@@ -22,5 +22,5 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
 	@Query("SELECT c FROM Category c WHERE c.categoryId = :categoryId AND c.isDeleted IS FALSE "
 		+ "AND c.routine.routineId IS NOT NULL")
-	Optional<Category> checkIsExistCategory(@Param("categoryId") Long categoryId);
+	Optional<Category> findExistCategory(@Param("categoryId") Long categoryId);
 }

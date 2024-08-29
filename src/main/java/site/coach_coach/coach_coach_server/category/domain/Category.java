@@ -54,7 +54,7 @@ public class Category extends DateEntity {
 
 	@NotNull
 	@Column(name = "is_deleted")
-	private Boolean isDeleted;
+	private boolean isDeleted;
 
 	@OneToMany(mappedBy = "category")
 	private List<Action> actionList;
