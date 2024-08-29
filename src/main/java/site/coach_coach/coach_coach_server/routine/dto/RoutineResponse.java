@@ -16,7 +16,7 @@ public record RoutineResponse(
 ) {
 	public static RoutineResponse from(Routine routine) {
 		List<CategoryDto> categoryList = routine.getCategoryList().stream()
-			.filter((category -> !category.getIsDeleted()))
+			.filter((category -> !category.isDeleted()))
 			.map(CategoryDto::from)
 			.collect(Collectors.toList());
 
