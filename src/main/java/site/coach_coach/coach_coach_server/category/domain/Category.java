@@ -52,6 +52,10 @@ public class Category extends DateEntity {
 	@Column(name = "is_completed")
 	private Boolean isCompleted;
 
+	@NotNull
+	@Column(name = "is_deleted")
+	private Boolean isDeleted;
+
 	@OneToMany(mappedBy = "category")
 	private List<Action> actionList;
 
@@ -64,5 +68,9 @@ public class Category extends DateEntity {
 
 	public void changeIsCompleted() {
 		this.isCompleted = !this.isCompleted;
+	}
+
+	public void changeIsDeleted() {
+		this.isDeleted = true;
 	}
 }

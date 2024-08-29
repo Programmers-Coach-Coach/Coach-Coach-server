@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import site.coach_coach.coach_coach_server.category.repository.CategoryRepository;
 import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.coach.repository.CoachRepository;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
@@ -36,6 +37,7 @@ public class RoutineService {
 	private final CoachRepository coachRepository;
 	private final UserRepository userRepository;
 	private final SportRepository sportRepository;
+	private final CategoryRepository categoryRepository;
 
 	public void checkIsMatching(Long userId, Long coachId) {
 		matchingRepository.findByUser_UserIdAndCoach_CoachId(userId, coachId)
@@ -162,6 +164,7 @@ public class RoutineService {
 	@Transactional
 	public void deleteRoutine(Long routineId, Long userIdByJwt) {
 		validateIsMyRoutine(routineId, userIdByJwt);
+		categoryRepository.changeIsDeletedByRemoveRoutine(routineId);
 		routineRepository.deleteById(routineId);
 	}
 
