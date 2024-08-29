@@ -18,8 +18,6 @@ import site.coach_coach.coach_coach_server.category.dto.CreateCategoryRequest;
 import site.coach_coach.coach_coach_server.category.dto.CreateCategoryResponse;
 import site.coach_coach.coach_coach_server.category.dto.UpdateCategoryInfoRequest;
 import site.coach_coach.coach_coach_server.category.service.CategoryService;
-import site.coach_coach.coach_coach_server.common.constants.SuccessMessage;
-import site.coach_coach.coach_coach_server.common.response.SuccessResponse;
 
 @RestController
 @RequiredArgsConstructor
@@ -40,18 +38,17 @@ public class CategoryController {
 	}
 
 	@DeleteMapping("/v1/categories/{categoryId}")
-	public ResponseEntity<SuccessResponse> deleteCategory(
+	public ResponseEntity<Void> deleteCategory(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
 		@PathVariable(name = "categoryId") Long categoryId
 	) {
 		Long userIdByJwt = userDetails.getUserId();
 		categoryService.deleteCategory(categoryId, userIdByJwt);
-		return ResponseEntity.ok(
-			new SuccessResponse(HttpStatus.OK.value(), SuccessMessage.DELETE_CATEGORY_SUCCESS.getMessage()));
+		return ResponseEntity.noContent().build();
 	}
 
 	@PatchMapping("/v1/categories/{categoryId}")
-	public ResponseEntity<SuccessResponse> updateCategory(
+	public ResponseEntity<Void> updateCategory(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
 		@PathVariable(name = "categoryId") Long categoryId,
 		@RequestBody @Valid UpdateCategoryInfoRequest updateCategoryInfoRequest
