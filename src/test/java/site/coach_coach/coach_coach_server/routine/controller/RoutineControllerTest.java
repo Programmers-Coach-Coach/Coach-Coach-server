@@ -29,7 +29,6 @@ import site.coach_coach.coach_coach_server.auth.jwt.TokenProvider;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
 import site.coach_coach.coach_coach_server.category.dto.CategoryDto;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
-import site.coach_coach.coach_coach_server.common.constants.SuccessMessage;
 import site.coach_coach.coach_coach_server.common.exception.AccessDeniedException;
 import site.coach_coach.coach_coach_server.common.exception.NotFoundException;
 import site.coach_coach.coach_coach_server.routine.dto.CreateRoutineRequest;
@@ -209,11 +208,8 @@ public class RoutineControllerTest {
 		doNothing().when(routineService).deleteRoutine(1L, userIdByJwt);
 
 		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/routines/1").with(csrf()))
-			.andExpect(MockMvcResultMatchers.status().isOk())
+			.andExpect(MockMvcResultMatchers.status().isNoContent())
 			.andReturn();
-
-		assertThat(result.getResponse().getContentAsString()).contains(
-			SuccessMessage.DELETE_ROUTINE_SUCCESS.getMessage());
 	}
 
 	@Test
