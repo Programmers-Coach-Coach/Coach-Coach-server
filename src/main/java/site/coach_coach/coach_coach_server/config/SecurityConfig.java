@@ -2,6 +2,7 @@ package site.coach_coach.coach_coach_server.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -33,6 +34,7 @@ public class SecurityConfig {
 			.csrf(AbstractHttpConfigurer::disable)
 			.formLogin(AbstractHttpConfigurer::disable)
 			.httpBasic(AbstractHttpConfigurer::disable)
+			.oauth2Login(Customizer.withDefaults())
 			.addFilterBefore(new TokenFilter(tokenProvider),
 				UsernamePasswordAuthenticationFilter.class)
 			.addFilterBefore(jwtExceptionFilter, TokenFilter.class)
@@ -40,7 +42,7 @@ public class SecurityConfig {
 				authorizeRequests
 					.requestMatchers("/api/v1/auth/login", "/api/v1/auth/signup", "/api/v1/test",
 						"/api/v1/auth/check-email", "/api/v1/auth/check-nickname", "/api/v1/auth/reissue",
-						"/api/v1/auth")
+						"/api/v1/auth", "/oauth2/", "/login/oauth2/")
 					.permitAll()
 					.anyRequest()
 					.authenticated()
