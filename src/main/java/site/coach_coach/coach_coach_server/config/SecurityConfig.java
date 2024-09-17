@@ -2,7 +2,6 @@ package site.coach_coach.coach_coach_server.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -19,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.auth.jwt.JwtExceptionFilter;
 import site.coach_coach.coach_coach_server.auth.jwt.TokenFilter;
 import site.coach_coach.coach_coach_server.auth.jwt.TokenProvider;
+import site.coach_coach.coach_coach_server.auth.oauth.CustomOAuth2UserService;
 
 @Configuration
 @EnableWebSecurity
@@ -27,6 +27,7 @@ public class SecurityConfig {
 	private final TokenProvider tokenProvider;
 	private final JwtExceptionFilter jwtExceptionFilter;
 	private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+	private final CustomOAuth2UserService customOAuth2UserService;
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -34,7 +35,11 @@ public class SecurityConfig {
 			.csrf(AbstractHttpConfigurer::disable)
 			.formLogin(AbstractHttpConfigurer::disable)
 			.httpBasic(AbstractHttpConfigurer::disable)
-			.oauth2Login(Customizer.withDefaults())
+			.oauth2Login((oauth2) ->
+				oauth2.userInfoEndpoint(
+					userInfoEndpointConfig ->
+						userInfoEndpointConfig.userService(customOAuth2UserService)
+				))
 			.addFilterBefore(new TokenFilter(tokenProvider),
 				UsernamePasswordAuthenticationFilter.class)
 			.addFilterBefore(jwtExceptionFilter, TokenFilter.class)
