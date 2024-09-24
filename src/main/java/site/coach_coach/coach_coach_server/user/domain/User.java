@@ -51,8 +51,7 @@ public class User extends DateEntity {
 	@Size(max = 45)
 	private String email;
 
-	@Column(name = "password", nullable = false, length = 200)
-	@NotBlank
+	@Column(name = "password", length = 200)
 	@Size(max = 200)
 	private String password;
 
@@ -79,6 +78,14 @@ public class User extends DateEntity {
 	@Size(max = 1000)
 	@Column(name = "introduction")
 	private String introduction;
+
+	@NotNull
+	@Column(name = "is_social")
+	private Boolean isSocial;
+
+	@Column(name = "username")
+	@Size(max = 500)
+	private String username;
 
 	@OneToOne(mappedBy = "user")
 	private Coach coach;
