@@ -110,6 +110,18 @@ public class User extends DateEntity {
 		this.interestedSports = interestedSports;
 	}
 
+	public void signUpOAuth2(String nickname, String email, String username) {
+		this.nickname = nickname;
+		this.email = email;
+		this.username = username;
+		this.isSocial = true;
+	}
+
+	public void updateOAuth2UserInfo(String nickname, String email) {
+		this.nickname = nickname;
+		this.email = email;
+	}
+
 	public void promoteToCoach() {
 		this.isCoach = true;
 	}
