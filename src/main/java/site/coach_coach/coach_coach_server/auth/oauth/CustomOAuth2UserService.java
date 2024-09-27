@@ -49,7 +49,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 			userRepository.save(user);
 
 			OAuth2UserDto oauth2UserDto = new OAuth2UserDto(oAuth2Response.getName(), username);
-			return new CustomOAuth2User(oauth2UserDto);
+			return new CustomOAuth2User(oauth2UserDto, user);
 		} else {
 			existUser.updateOAuth2UserInfo(
 				oAuth2Response.getName(),
@@ -57,7 +57,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 			);
 			userRepository.save(existUser);
 			OAuth2UserDto oauth2UserDto = new OAuth2UserDto(oAuth2Response.getName(), username);
-			return new CustomOAuth2User(oauth2UserDto);
+			return new CustomOAuth2User(oauth2UserDto, existUser);
 		}
 	}
 }

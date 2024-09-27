@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.auth.jwt.JwtExceptionFilter;
 import site.coach_coach.coach_coach_server.auth.jwt.TokenFilter;
 import site.coach_coach.coach_coach_server.auth.jwt.TokenProvider;
+import site.coach_coach.coach_coach_server.auth.oauth.CustomOAuth2Handler;
 import site.coach_coach.coach_coach_server.auth.oauth.CustomOAuth2UserService;
 
 @Configuration
@@ -28,6 +29,7 @@ public class SecurityConfig {
 	private final JwtExceptionFilter jwtExceptionFilter;
 	private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 	private final CustomOAuth2UserService customOAuth2UserService;
+	private final CustomOAuth2Handler customOAuth2Handler;
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -35,14 +37,15 @@ public class SecurityConfig {
 			.csrf(AbstractHttpConfigurer::disable)
 			.formLogin(AbstractHttpConfigurer::disable)
 			.httpBasic(AbstractHttpConfigurer::disable)
-			.oauth2Login((oauth2) ->
-				oauth2.userInfoEndpoint(
-					userInfoEndpointConfig ->
-						userInfoEndpointConfig.userService(customOAuth2UserService)
-				))
 			.addFilterBefore(new TokenFilter(tokenProvider),
 				UsernamePasswordAuthenticationFilter.class)
 			.addFilterBefore(jwtExceptionFilter, TokenFilter.class)
+			.oauth2Login((oauth2) ->
+				oauth2.userInfoEndpoint(
+						userInfoEndpointConfig ->
+							userInfoEndpointConfig.userService(customOAuth2UserService))
+					.successHandler(customOAuth2Handler)
+			)
 			.authorizeHttpRequests((authorizeRequests) ->
 				authorizeRequests
 					.requestMatchers("/api/v1/auth/login", "/api/v1/auth/signup", "/api/v1/test",
