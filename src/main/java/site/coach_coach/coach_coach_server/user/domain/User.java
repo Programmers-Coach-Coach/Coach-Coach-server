@@ -114,6 +114,7 @@ public class User extends DateEntity {
 		this.nickname = nickname;
 		this.email = email;
 		this.username = username;
+		this.isCoach = false;
 		this.isSocial = true;
 	}
 
