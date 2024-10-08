@@ -45,7 +45,7 @@ public class TokenProviderTest {
 			faker.name().firstName(),
 			faker.internet().emailAddress(),
 			"test1234!",
-			null, null, null, null, null, null, null, null, null, null
+			null, null, null, null, false, null, false, null, null, null, null, Collections.emptyList()
 		);
 		tokenProvider = new TokenProvider(jwtProperties, customUserDetailsService);
 	}
