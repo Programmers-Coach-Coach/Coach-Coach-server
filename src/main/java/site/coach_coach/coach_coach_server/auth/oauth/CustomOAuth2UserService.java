@@ -15,12 +15,14 @@ import site.coach_coach.coach_coach_server.auth.oauth.dto.OAuth2Response;
 import site.coach_coach.coach_coach_server.auth.oauth.dto.OAuth2UserDto;
 import site.coach_coach.coach_coach_server.user.domain.User;
 import site.coach_coach.coach_coach_server.user.repository.UserRepository;
+import site.coach_coach.coach_coach_server.user.service.UserService;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 	private final UserRepository userRepository;
+	private final UserService userService;
 
 	@Override
 	public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -40,23 +42,25 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 		String username = oAuth2Response.getProvider() + " " + oAuth2Response.getProviderId();
 		User existUser = userRepository.findByUsername(username);
 		if (existUser == null) {
+			userService.checkEmailDuplicate(oAuth2Response.getEmail());
+			userService.checkNicknameDuplicate(oAuth2Response.getNickName());
 			User user = new User();
 			user.signUpOAuth2(
-				oAuth2Response.getName(),
+				oAuth2Response.getNickName(),
 				oAuth2Response.getEmail(),
 				username
 			);
 			userRepository.save(user);
 
-			OAuth2UserDto oauth2UserDto = new OAuth2UserDto(oAuth2Response.getName(), username);
+			OAuth2UserDto oauth2UserDto = new OAuth2UserDto(oAuth2Response.getNickName(), username);
 			return new CustomOAuth2User(oauth2UserDto, user);
 		} else {
 			existUser.updateOAuth2UserInfo(
-				oAuth2Response.getName(),
+				oAuth2Response.getNickName(),
 				oAuth2Response.getEmail()
 			);
 			userRepository.save(existUser);
-			OAuth2UserDto oauth2UserDto = new OAuth2UserDto(oAuth2Response.getName(), username);
+			OAuth2UserDto oauth2UserDto = new OAuth2UserDto(oAuth2Response.getNickName(), username);
 			return new CustomOAuth2User(oauth2UserDto, existUser);
 		}
 	}
