@@ -19,6 +19,8 @@ import net.datafaker.Faker;
 
 import io.jsonwebtoken.Claims;
 import site.coach_coach.coach_coach_server.auth.jwt.dto.TokenDto;
+import site.coach_coach.coach_coach_server.auth.oauth.CustomOAuth2Handler;
+import site.coach_coach.coach_coach_server.auth.oauth.CustomOAuth2UserService;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetailsService;
 import site.coach_coach.coach_coach_server.user.domain.User;
@@ -35,6 +37,12 @@ public class TokenProviderTest {
 	@Autowired
 	private TokenProvider tokenProvider;
 
+	@MockBean
+	private CustomOAuth2UserService customOAuth2UserService;
+
+	@MockBean
+	private CustomOAuth2Handler customOAuth2Handler;
+
 	Faker faker = new Faker();
 	private User user;
 
@@ -45,7 +53,7 @@ public class TokenProviderTest {
 			faker.name().firstName(),
 			faker.internet().emailAddress(),
 			"test1234!",
-			null, null, null, null, null, null, null, null, null, null
+			null, null, null, null, false, null, false, null, null, null, null, Collections.emptyList()
 		);
 		tokenProvider = new TokenProvider(jwtProperties, customUserDetailsService);
 	}
