@@ -5,9 +5,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import site.coach_coach.coach_coach_server.auth.jwt.TokenProvider;
+import site.coach_coach.coach_coach_server.auth.oauth.CustomOAuth2Handler;
+import site.coach_coach.coach_coach_server.auth.oauth.CustomOAuth2UserService;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -15,6 +20,15 @@ public class SecurityConfigTest {
 
 	@Autowired
 	private MockMvc mockMvc;
+
+	@MockBean
+	private TokenProvider tokenProvider;
+
+	@MockBean
+	private CustomOAuth2UserService customOAuth2UserService;
+
+	@MockBean
+	private CustomOAuth2Handler customOAuth2Handler;
 
 	@Test
 	@DisplayName("CORS 설정 테스트 - 유효한 Origin")
