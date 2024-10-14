@@ -48,6 +48,7 @@ public class UserController {
 	private final UserService userService;
 	private final TokenService tokenService;
 	private final TokenProvider tokenProvider;
+	private static final String[] DOMAINS = {"localhost", ".coach-coach.site"};
 
 	@PostMapping("/v1/auth/signup")
 	public ResponseEntity<SuccessResponse> signup(@RequestBody @Valid SignUpRequest signUpRequest) {
@@ -62,18 +63,10 @@ public class UserController {
 		User user = userService.validateUser(loginRequest);
 		TokenDto tokenDto = userService.createJwt(user);
 
-		//TODO : 서비스 배포 후 localhost 쿠키 삭제
-		response.addHeader("Set-Cookie",
-			tokenProvider.createCookie("access_token", tokenDto.accessToken(), "localhost").toString());
-		response.addHeader("Set-Cookie",
-			tokenProvider.createCookie("refresh_token", tokenDto.refreshToken(), "localhost").toString());
-
-		response.addHeader("Set-Cookie",
-			tokenProvider.createCookie("access_token", tokenDto.accessToken(), ".coach-coach.site").toString());
-		response.addHeader("Set-Cookie",
-			tokenProvider.createCookie("refresh_token", tokenDto.refreshToken(), ".coach-coach.site").toString());
-
+		setCookies(response, "access_token", tokenDto.accessToken());
+		setCookies(response, "refresh_token", tokenDto.refreshToken());
 		tokenService.createRefreshToken(user, tokenDto.refreshToken(), tokenDto);
+
 		return ResponseEntity.ok(new SuccessResponse(HttpStatus.OK.value(), SuccessMessage.LOGIN_SUCCESS.getMessage()));
 	}
 
@@ -92,12 +85,8 @@ public class UserController {
 		String refreshToken = tokenProvider.getCookieValue(request, "refresh_token");
 		tokenService.deleteRefreshToken(userId, refreshToken);
 
-		//TODO : 서비스 배포 후 localhost 쿠키 삭제
-		response.addHeader("Set-Cookie", tokenProvider.clearCookie("access_token", "localhost").toString());
-		response.addHeader("Set-Cookie", tokenProvider.clearCookie("refresh_token", "localhost").toString());
-		response.addHeader("Set-Cookie", tokenProvider.clearCookie("access_token", ".coach-coach.site").toString());
-		response.addHeader("Set-Cookie", tokenProvider.clearCookie("refresh_token", ".coach-coach.site").toString());
-
+		clearCookies(response, "access_token");
+		clearCookies(response, "refresh_token");
 		SecurityContextHolder.clearContext();
 
 		return ResponseEntity.ok(
@@ -160,10 +149,8 @@ public class UserController {
 		Long userId = userDetails.getUserId();
 		userService.deleteUser(userId);
 
-		response.addHeader("Set-Cookie", tokenProvider.clearCookie("access_token", "localhost").toString());
-		response.addHeader("Set-Cookie", tokenProvider.clearCookie("refresh_token", "localhost").toString());
-		response.addHeader("Set-Cookie", tokenProvider.clearCookie("access_token", ".coach-coach.site").toString());
-		response.addHeader("Set-Cookie", tokenProvider.clearCookie("refresh_token", ".coach-coach.site").toString());
+		clearCookies(response, "access_token");
+		clearCookies(response, "refresh_token");
 		SecurityContextHolder.clearContext();
 
 		return ResponseEntity.noContent().build();
@@ -174,14 +161,23 @@ public class UserController {
 		String refreshToken = tokenProvider.getCookieValue(request, "refresh_token");
 
 		String newAccessToken = tokenService.reissueAccessToken(refreshToken);
-		response.addHeader("Set-Cookie", tokenProvider.clearCookie("access_token", "localhost").toString());
-		response.addHeader("Set-Cookie", tokenProvider.clearCookie("access_token", ".coach-coach.site").toString());
-
-		response.addHeader("Set-Cookie",
-			tokenProvider.createCookie("access_token", newAccessToken, "localhost").toString());
-		response.addHeader("Set-Cookie",
-			tokenProvider.createCookie("access_token", newAccessToken, ".coach-coach.site").toString());
+		clearCookies(response, "access_token");
+		setCookies(response, "access_token", newAccessToken);
 
 		return ResponseEntity.noContent().build();
+	}
+
+	private void setCookies(HttpServletResponse response, String tokenName, String tokenValue) {
+		for (String domain : DOMAINS) {
+			String cookie = tokenProvider.createCookie(tokenName, tokenValue, domain).toString();
+			response.addHeader("Set-Cookie", cookie);
+		}
+	}
+
+	private void clearCookies(HttpServletResponse response, String tokenName) {
+		for (String domain : DOMAINS) {
+			String cookie = tokenProvider.clearCookie(tokenName, domain).toString();
+			response.addHeader("Set-Cookie", cookie);
+		}
 	}
 }
