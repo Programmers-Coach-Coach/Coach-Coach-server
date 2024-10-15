@@ -42,14 +42,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 	}
 
 	private OAuth2Response parseOAuth2Response(String provider, Map<String, Object> attributes) {
-		switch (provider) {
-			case "google":
-				return new GoogleResponse(attributes);
-			case "kakao":
-				return new KakaoResponse(attributes);
-			default:
-				return null;
-		}
+		return switch (provider) {
+			case "google" -> new GoogleResponse(attributes);
+			case "kakao" -> new KakaoResponse(attributes);
+			default -> null;
+		};
 	}
 
 	private User findOrRegisterUser(OAuth2Response response) {
@@ -70,7 +67,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 			response.getEmail(),
 			username
 		);
-
 		return userRepository.save(user);
 	}
 

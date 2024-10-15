@@ -24,7 +24,6 @@ import lombok.NoArgsConstructor;
 import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.common.domain.DateEntity;
 import site.coach_coach.coach_coach_server.common.domain.GenderEnum;
-import site.coach_coach.coach_coach_server.common.domain.UserRole;
 import site.coach_coach.coach_coach_server.notification.domain.Notification;
 import site.coach_coach.coach_coach_server.sport.domain.InterestedSport;
 import site.coach_coach.coach_coach_server.userrecord.domain.UserRecord;
@@ -80,11 +79,6 @@ public class User extends DateEntity {
 	@Column(name = "introduction")
 	private String introduction;
 
-	@Column(name = "role")
-	@NotNull
-	@Enumerated(EnumType.STRING)
-	private UserRole role;
-
 	@NotNull
 	@Column(name = "is_social")
 	private Boolean isSocial;
@@ -120,14 +114,8 @@ public class User extends DateEntity {
 		this.nickname = nickname;
 		this.email = email;
 		this.username = username;
-		this.role = UserRole.ROLE_GUEST;
 		this.isCoach = false;
 		this.isSocial = true;
-	}
-
-	public void updateOAuth2User(String nickname) {
-		this.nickname = nickname;
-		this.role = UserRole.ROLE_USER;
 	}
 
 	public void promoteToCoach() {

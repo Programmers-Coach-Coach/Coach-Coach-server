@@ -65,7 +65,7 @@ public class TokenProvider {
 			.setIssuedAt(now)
 			.setExpiration(expiryDate)
 			.setSubject(user.getUserId().toString())
-			.claim("role", user.getRole())
+			.claim("nickname", user.getNickname())
 			.claim("email", user.getEmail())
 			.claim("token_type", "access_token")
 			.signWith(secretKey, SignatureAlgorithm.HS256)
@@ -149,11 +149,6 @@ public class TokenProvider {
 
 	public Long getUserId(String token) {
 		return Long.parseLong(extractClaims(token).getSubject());
-	}
-
-	public String getRoleFromJwt(String token) {
-		Claims claims = extractClaims(token);
-		return claims.get("role", String.class);
 	}
 
 	public boolean validateToken(String token, String type) {

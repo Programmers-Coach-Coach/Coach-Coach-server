@@ -14,7 +14,6 @@ import site.coach_coach.coach_coach_server.auth.jwt.TokenProvider;
 import site.coach_coach.coach_coach_server.auth.jwt.dto.TokenDto;
 import site.coach_coach.coach_coach_server.auth.jwt.service.TokenService;
 import site.coach_coach.coach_coach_server.auth.oauth.dto.CustomOAuth2User;
-import site.coach_coach.coach_coach_server.common.domain.UserRole;
 import site.coach_coach.coach_coach_server.user.domain.User;
 
 @Component
@@ -39,12 +38,7 @@ public class CustomOAuth2Handler extends SimpleUrlAuthenticationSuccessHandler {
 		setCookies(response, "refresh_token", tokenDto.refreshToken());
 		tokenService.createRefreshToken(user, tokenDto.refreshToken(), tokenDto);
 
-		String role = tokenProvider.getRoleFromJwt(tokenDto.accessToken());
-		if (role.equals(UserRole.ROLE_GUEST.name())) {
-			response.sendRedirect(redirectUrl + "/nickname");
-		} else {
-			response.sendRedirect(redirectUrl);
-		}
+		response.sendRedirect(redirectUrl);
 	}
 
 	private void setCookies(HttpServletResponse response, String tokenName, String tokenValue) {
