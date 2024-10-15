@@ -64,7 +64,6 @@ public class UserServiceTest {
 	@Test
 	@DisplayName("회원가입 성공 시 사용자 저장")
 	public void signUpSuccessTest() {
-		when(userRepository.existsByNickname(signUpRequest.nickname())).thenReturn(false);
 		when(userRepository.existsByEmail(signUpRequest.email())).thenReturn(false);
 		when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
 
@@ -74,21 +73,8 @@ public class UserServiceTest {
 	}
 
 	@Test
-	@DisplayName("회원가입 시 사용자 닉네임 중복 예외 처리")
-	public void signUpUserAlreadyExistsTest() {
-		when(userRepository.existsByNickname(signUpRequest.nickname())).thenReturn(true);
-
-		Exception exception = assertThrows(UserAlreadyExistException.class, () -> {
-			userService.signup(signUpRequest);
-		});
-
-		assertEquals(ErrorMessage.DUPLICATE_NICKNAME, exception.getMessage());
-	}
-
-	@Test
 	@DisplayName("회원가입 시 이메일 중복 예외 처리")
 	public void signUpEmailAlreadyExistsTest() {
-		when(userRepository.existsByNickname(signUpRequest.nickname())).thenReturn(false);
 		when(userRepository.existsByEmail(signUpRequest.email())).thenReturn(true);
 
 		Exception exception = assertThrows(UserAlreadyExistException.class, () -> {

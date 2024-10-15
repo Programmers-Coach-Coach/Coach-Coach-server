@@ -9,8 +9,8 @@ public class KakaoResponse implements OAuth2Response {
 
 	public KakaoResponse(Map<String, Object> attribute) {
 		this.attribute = attribute;
-		this.kakaoAccountAttributes = (Map<String, Object>)attribute.get("kakao_account");
-		this.profileAttributes = (Map<String, Object>)attribute.get("profile");
+		this.kakaoAccountAttributes = (Map<String, Object>)attribute.getOrDefault("kakao_account", Map.of());
+		this.profileAttributes = (Map<String, Object>)this.kakaoAccountAttributes.getOrDefault("profile", Map.of());
 	}
 
 	@Override
@@ -25,11 +25,11 @@ public class KakaoResponse implements OAuth2Response {
 
 	@Override
 	public String getEmail() {
-		return kakaoAccountAttributes.get("email").toString();
+		return kakaoAccountAttributes.getOrDefault("email", "no-email").toString();
 	}
 
 	@Override
 	public String getNickName() {
-		return profileAttributes.get("nickname").toString();
+		return profileAttributes.getOrDefault("nickname", "anonymous").toString();
 	}
 }
