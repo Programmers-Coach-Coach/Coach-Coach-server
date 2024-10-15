@@ -50,12 +50,6 @@ public class UserService {
 	private final SportRepository sportRepository;
 	private final NotificationRepository notificationRepository;
 
-	public void checkNicknameDuplicate(String nickname) {
-		if (userRepository.existsByNickname(nickname)) {
-			throw new UserAlreadyExistException(ErrorMessage.DUPLICATE_NICKNAME);
-		}
-	}
-
 	public void checkEmailDuplicate(String email) {
 		if (userRepository.existsByEmail(email)) {
 			throw new UserAlreadyExistException(ErrorMessage.DUPLICATE_EMAIL);
@@ -63,7 +57,6 @@ public class UserService {
 	}
 
 	public void signup(SignUpRequest signUpRequest) {
-		checkNicknameDuplicate(signUpRequest.nickname());
 		checkEmailDuplicate(signUpRequest.email());
 		User user = buildUserForSignUp(signUpRequest);
 		userRepository.save(user);
@@ -210,6 +203,7 @@ public class UserService {
 			.password(passwordEncoder.encode(signUpRequest.password()))
 			.nickname(signUpRequest.nickname())
 			.isCoach(false)
+			.isSocial(false)
 			.build();
 	}
 }

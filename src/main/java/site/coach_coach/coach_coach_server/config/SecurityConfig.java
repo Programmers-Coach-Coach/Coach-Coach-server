@@ -18,6 +18,8 @@ import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.auth.jwt.JwtExceptionFilter;
 import site.coach_coach.coach_coach_server.auth.jwt.TokenFilter;
 import site.coach_coach.coach_coach_server.auth.jwt.TokenProvider;
+import site.coach_coach.coach_coach_server.auth.oauth.CustomOAuth2Handler;
+import site.coach_coach.coach_coach_server.auth.oauth.CustomOAuth2UserService;
 
 @Configuration
 @EnableWebSecurity
@@ -25,7 +27,9 @@ import site.coach_coach.coach_coach_server.auth.jwt.TokenProvider;
 public class SecurityConfig {
 	private final TokenProvider tokenProvider;
 	private final JwtExceptionFilter jwtExceptionFilter;
-	private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+	private final ExceptionHandlerConfig exceptionHandlerConfig;
+	private final CustomOAuth2UserService customOAuth2UserService;
+	private final CustomOAuth2Handler customOAuth2Handler;
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -36,18 +40,21 @@ public class SecurityConfig {
 			.addFilterBefore(new TokenFilter(tokenProvider),
 				UsernamePasswordAuthenticationFilter.class)
 			.addFilterBefore(jwtExceptionFilter, TokenFilter.class)
+			.oauth2Login((oauth2) ->
+				oauth2.userInfoEndpoint(
+						userInfoEndpointConfig ->
+							userInfoEndpointConfig.userService(customOAuth2UserService))
+					.successHandler(customOAuth2Handler)
+			)
 			.authorizeHttpRequests((authorizeRequests) ->
 				authorizeRequests
 					.requestMatchers("/api/v1/auth/login", "/api/v1/auth/signup", "/api/v1/test",
 						"/api/v1/auth/check-email", "/api/v1/auth/check-nickname", "/api/v1/auth/reissue",
-						"/api/v1/auth")
-					.permitAll()
+						"/api/v1/auth", "/oauth2/", "/login/oauth2/").permitAll()
 					.anyRequest()
 					.authenticated()
 			)
-			.exceptionHandling(exceptionHandling ->
-				exceptionHandling.authenticationEntryPoint(customAuthenticationEntryPoint)
-			)
+			.exceptionHandling(exceptionHandlerConfig)
 			.sessionManagement((sessionManagement) ->
 				sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			)

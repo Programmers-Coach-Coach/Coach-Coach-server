@@ -51,8 +51,7 @@ public class User extends DateEntity {
 	@Size(max = 45)
 	private String email;
 
-	@Column(name = "password", nullable = false, length = 200)
-	@NotBlank
+	@Column(name = "password", length = 200)
 	@Size(max = 200)
 	private String password;
 
@@ -80,6 +79,14 @@ public class User extends DateEntity {
 	@Column(name = "introduction")
 	private String introduction;
 
+	@NotNull
+	@Column(name = "is_social")
+	private Boolean isSocial;
+
+	@Column(name = "username")
+	@Size(max = 500)
+	private String username;
+
 	@OneToOne(mappedBy = "user")
 	private Coach coach;
 
@@ -101,6 +108,14 @@ public class User extends DateEntity {
 		this.localAddressDetail = localAddressDetail;
 		this.introduction = introduction;
 		this.interestedSports = interestedSports;
+	}
+
+	public void signUpOAuth2(String nickname, String email, String username) {
+		this.nickname = nickname;
+		this.email = email;
+		this.username = username;
+		this.isCoach = false;
+		this.isSocial = true;
 	}
 
 	public void promoteToCoach() {
