@@ -23,6 +23,7 @@ import site.coach_coach.coach_coach_server.auth.oauth.CustomOAuth2Handler;
 import site.coach_coach.coach_coach_server.auth.oauth.CustomOAuth2UserService;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetailsService;
+import site.coach_coach.coach_coach_server.common.domain.UserRole;
 import site.coach_coach.coach_coach_server.user.domain.User;
 
 @TestPropertySource(locations = "/application.properties")
@@ -53,7 +54,8 @@ public class TokenProviderTest {
 			faker.name().firstName(),
 			faker.internet().emailAddress(),
 			"test1234!",
-			null, null, null, null, false, null, false, null, null, null, null, Collections.emptyList()
+			null, null, null, null, false, null, UserRole.ROLE_USER, false, null, null, null, null,
+			Collections.emptyList()
 		);
 		tokenProvider = new TokenProvider(jwtProperties, customUserDetailsService);
 	}
@@ -67,7 +69,7 @@ public class TokenProviderTest {
 		Claims claims = tokenProvider.extractClaims(accessToken);
 
 		assertThat(claims.getSubject()).isEqualTo(user.getUserId().toString());
-		assertThat(claims.get("nickname")).isEqualTo(user.getNickname());
+		assertThat(claims.get("role")).isEqualTo(user.getRole().name());
 		assertThat(claims.get("email")).isEqualTo(user.getEmail());
 		assertThat(claims.get("token_type")).isEqualTo("access_token");
 		assertThat(claims.getExpiration()).isAfter(new Date());
