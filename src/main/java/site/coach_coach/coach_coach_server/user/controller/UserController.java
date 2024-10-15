@@ -168,8 +168,8 @@ public class UserController {
 		return ResponseEntity.noContent().build();
 	}
 
-	@PostMapping("/v1/auth/nickname")
-	public ResponseEntity<Void> nickname(
+	@PostMapping("/v1/auth/register")
+	public ResponseEntity<Void> completeRegistration(
 		HttpServletRequest request,
 		@RequestBody @Valid NicknameRequest nicknameRequest,
 		@AuthenticationPrincipal CustomUserDetails userDetails,
