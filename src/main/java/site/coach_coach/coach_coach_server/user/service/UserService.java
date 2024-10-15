@@ -108,6 +108,12 @@ public class UserService {
 		}
 	}
 
+	public void updateNickname(User user, String nickname) {
+		checkNicknameDuplicate(nickname);
+		user.updateOAuth2User(nickname);
+		userRepository.save(user);
+	}
+
 	@Transactional(readOnly = true)
 	public AuthResponse getUserAuthStatus(Optional<User> user) {
 		if (user.isPresent()) {

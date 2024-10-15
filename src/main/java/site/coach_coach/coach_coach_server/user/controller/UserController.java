@@ -34,6 +34,7 @@ import site.coach_coach.coach_coach_server.common.response.SuccessResponse;
 import site.coach_coach.coach_coach_server.user.domain.User;
 import site.coach_coach.coach_coach_server.user.dto.AuthResponse;
 import site.coach_coach.coach_coach_server.user.dto.LoginRequest;
+import site.coach_coach.coach_coach_server.user.dto.NicknameRequest;
 import site.coach_coach.coach_coach_server.user.dto.PasswordRequest;
 import site.coach_coach.coach_coach_server.user.dto.SignUpRequest;
 import site.coach_coach.coach_coach_server.user.dto.UserProfileRequest;
@@ -159,6 +160,25 @@ public class UserController {
 	@GetMapping("/v1/auth/reissue")
 	public ResponseEntity<Void> reissue(HttpServletRequest request, HttpServletResponse response) {
 		String refreshToken = tokenProvider.getCookieValue(request, "refresh_token");
+
+		String newAccessToken = tokenService.reissueAccessToken(refreshToken);
+		clearCookies(response, "access_token");
+		setCookies(response, "access_token", newAccessToken);
+
+		return ResponseEntity.noContent().build();
+	}
+
+	@PostMapping("/v1/auth/nickname")
+	public ResponseEntity<Void> nickname(
+		HttpServletRequest request,
+		@RequestBody @Valid NicknameRequest nicknameRequest,
+		@AuthenticationPrincipal CustomUserDetails userDetails,
+		HttpServletResponse response
+	) {
+		User user = userDetails.getUser();
+		String refreshToken = tokenProvider.getCookieValue(request, "refresh_token");
+
+		userService.updateNickname(user, nicknameRequest.nickname());
 
 		String newAccessToken = tokenService.reissueAccessToken(refreshToken);
 		clearCookies(response, "access_token");

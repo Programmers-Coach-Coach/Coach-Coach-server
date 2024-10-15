@@ -27,7 +27,7 @@ import site.coach_coach.coach_coach_server.auth.oauth.CustomOAuth2UserService;
 public class SecurityConfig {
 	private final TokenProvider tokenProvider;
 	private final JwtExceptionFilter jwtExceptionFilter;
-	private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+	private final ExceptionHandlerConfig exceptionHandlerConfig;
 	private final CustomOAuth2UserService customOAuth2UserService;
 	private final CustomOAuth2Handler customOAuth2Handler;
 
@@ -48,16 +48,14 @@ public class SecurityConfig {
 			)
 			.authorizeHttpRequests((authorizeRequests) ->
 				authorizeRequests
+					.requestMatchers("/api/v1/auth/nickname").hasRole("GUEST")
 					.requestMatchers("/api/v1/auth/login", "/api/v1/auth/signup", "/api/v1/test",
 						"/api/v1/auth/check-email", "/api/v1/auth/check-nickname", "/api/v1/auth/reissue",
-						"/api/v1/auth", "/oauth2/", "/login/oauth2/")
-					.permitAll()
-					.anyRequest()
-					.authenticated()
+						"/api/v1/auth", "/oauth2/", "/login/oauth2/").permitAll()
+					.requestMatchers("/**").hasRole("USER")
+					.anyRequest().authenticated()
 			)
-			.exceptionHandling(exceptionHandling ->
-				exceptionHandling.authenticationEntryPoint(customAuthenticationEntryPoint)
-			)
+			.exceptionHandling(exceptionHandlerConfig)
 			.sessionManagement((sessionManagement) ->
 				sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			)

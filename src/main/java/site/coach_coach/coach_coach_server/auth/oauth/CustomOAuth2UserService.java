@@ -1,5 +1,7 @@
 package site.coach_coach.coach_coach_server.auth.oauth;
 
+import java.util.Map;
+
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -13,16 +15,16 @@ import site.coach_coach.coach_coach_server.auth.oauth.dto.GoogleResponse;
 import site.coach_coach.coach_coach_server.auth.oauth.dto.KakaoResponse;
 import site.coach_coach.coach_coach_server.auth.oauth.dto.OAuth2Response;
 import site.coach_coach.coach_coach_server.auth.oauth.dto.OAuth2UserDto;
+import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.user.domain.User;
+import site.coach_coach.coach_coach_server.user.exception.UserAlreadyExistException;
 import site.coach_coach.coach_coach_server.user.repository.UserRepository;
-import site.coach_coach.coach_coach_server.user.service.UserService;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 	private final UserRepository userRepository;
-	private final UserService userService;
 
 	@Override
 	public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -30,38 +32,50 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 		log.info("oauth2 user: {}", oAuth2User);
 
 		String registrationId = userRequest.getClientRegistration().getRegistrationId();
-		OAuth2Response oAuth2Response = null;
-		if (registrationId.equals("google")) {
-			oAuth2Response = new GoogleResponse(oAuth2User.getAttributes());
-		} else if (registrationId.equals("kakao")) {
-			oAuth2Response = new KakaoResponse(oAuth2User.getAttributes());
-		} else {
-			return null;
+		OAuth2Response oAuth2Response = parseOAuth2Response(registrationId, oAuth2User.getAttributes());
+		if (oAuth2Response == null) {
+			throw new OAuth2AuthenticationException("Unsupported OAuth2 provider: " + registrationId);
 		}
 
-		String username = oAuth2Response.getProvider() + " " + oAuth2Response.getProviderId();
-		User existUser = userRepository.findByUsername(username);
-		if (existUser == null) {
-			userService.checkEmailDuplicate(oAuth2Response.getEmail());
-			userService.checkNicknameDuplicate(oAuth2Response.getNickName());
-			User user = new User();
-			user.signUpOAuth2(
-				oAuth2Response.getNickName(),
-				oAuth2Response.getEmail(),
-				username
-			);
-			userRepository.save(user);
+		User user = findOrRegisterUser(oAuth2Response);
+		return createCustomOAuth2User(user, oAuth2Response);
+	}
 
-			OAuth2UserDto oauth2UserDto = new OAuth2UserDto(oAuth2Response.getNickName(), username);
-			return new CustomOAuth2User(oauth2UserDto, user);
-		} else {
-			existUser.updateOAuth2UserInfo(
-				oAuth2Response.getNickName(),
-				oAuth2Response.getEmail()
-			);
-			userRepository.save(existUser);
-			OAuth2UserDto oauth2UserDto = new OAuth2UserDto(oAuth2Response.getNickName(), username);
-			return new CustomOAuth2User(oauth2UserDto, existUser);
+	private OAuth2Response parseOAuth2Response(String provider, Map<String, Object> attributes) {
+		switch (provider) {
+			case "google":
+				return new GoogleResponse(attributes);
+			case "kakao":
+				return new KakaoResponse(attributes);
+			default:
+				return null;
 		}
+	}
+
+	private User findOrRegisterUser(OAuth2Response response) {
+		String username = response.getProvider() + " " + response.getProviderId();
+
+		return userRepository.findByUsername(username)
+			.orElseGet(() -> createUser(response, username));
+	}
+
+	private User createUser(OAuth2Response response, String username) {
+		if (userRepository.existsByEmail(response.getEmail())) {
+			throw new UserAlreadyExistException(ErrorMessage.DUPLICATE_NICKNAME);
+		}
+
+		User user = new User();
+		user.signUpOAuth2(
+			response.getNickName(),
+			response.getEmail(),
+			username
+		);
+
+		return userRepository.save(user);
+	}
+
+	private CustomOAuth2User createCustomOAuth2User(User user, OAuth2Response response) {
+		OAuth2UserDto dto = new OAuth2UserDto(response.getNickName(), user.getUsername());
+		return new CustomOAuth2User(dto, user);
 	}
 }
