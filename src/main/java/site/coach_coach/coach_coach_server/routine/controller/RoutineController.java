@@ -65,7 +65,7 @@ public class RoutineController {
 	) {
 		Long userIdByJwt = userDetails.getUserId();
 		Long newRoutineId = routineService.createRoutine(createRoutineRequest, userIdByJwt);
-		actionService.createAction(newRoutineId, userIdByJwt, createRoutineRequest.actions());
+		actionService.createAction(newRoutineId, createRoutineRequest.actions());
 		return ResponseEntity.status(HttpStatus.CREATED)
 			.body(new CreateRoutineResponse(HttpStatus.CREATED.value(), newRoutineId));
 	}

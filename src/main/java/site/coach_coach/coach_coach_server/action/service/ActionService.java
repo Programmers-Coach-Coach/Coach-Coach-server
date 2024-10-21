@@ -13,7 +13,6 @@ import site.coach_coach.coach_coach_server.action.dto.UpdateActionInfoRequest;
 import site.coach_coach.coach_coach_server.action.repository.ActionRepository;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.common.exception.NotFoundException;
-import site.coach_coach.coach_coach_server.routine.domain.Routine;
 import site.coach_coach.coach_coach_server.routine.service.RoutineService;
 
 @Service
@@ -24,12 +23,7 @@ public class ActionService {
 	private final JdbcTemplate jdbcTemplate;
 
 	@Transactional
-	public void createAction(Long routineId, Long userIdByJwt, List<Action> actions) {
-		Routine routine = routineService.validateIsMyRoutine(routineId, userIdByJwt);
-
-		actions.forEach((action) -> {
-			action.setRoutineIdInAction(routine);
-		});
+	public void createAction(Long newRoutineId, List<Action> actions) {
 
 		String sql = "INSERT INTO actions (routine_id, action_name, sets, counts_or_minutes) VALUES (?, ?, ?, ?)";
 
@@ -37,7 +31,7 @@ public class ActionService {
 			actions,
 			actions.size(),
 			(PreparedStatement ps, Action action) -> {
-				ps.setLong(1, action.getRoutine().getRoutineId());
+				ps.setLong(1, newRoutineId);
 				ps.setString(2, action.getActionName());
 				ps.setInt(3, action.getSets());
 				ps.setInt(4, action.getCountsOrMinutes());
