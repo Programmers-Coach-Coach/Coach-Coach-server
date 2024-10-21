@@ -10,10 +10,6 @@ public record UpdateActionInfoRequest(
 	String actionName,
 
 	Integer sets,
-	Integer counts,
-	Integer minutes,
-
-	@Size(max = 200)
-	String description
+	Integer countsOrMinutes
 ) {
 }

@@ -47,6 +47,11 @@
             <appender-ref ref="CONSOLE"/>
         </root>
     </springProfile>
+    
+    <logger name="com.mysql.jdbc" level="DEBUG"/>
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
     <!-- dev profile -->
     <springProfile name="dev">
         <root level="INFO">

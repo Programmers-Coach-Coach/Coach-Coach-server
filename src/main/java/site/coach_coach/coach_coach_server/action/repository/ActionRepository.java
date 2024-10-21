@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 import site.coach_coach.coach_coach_server.action.domain.Action;
 
 public interface ActionRepository extends JpaRepository<Action, Long> {
-	@Query("SELECT a FROM Action a WHERE a.actionId = :actionId AND a.category.isDeleted IS FALSE "
-		+ "AND a.category.routine.routineId IS NOT NULL")
+	@Query("SELECT a FROM Action a WHERE a.actionId = :actionId AND a.routine.isDeleted IS FALSE "
+		+ "AND a.routine.routineId IS NOT NULL")
 	Optional<Action> findExistAction(@Param("actionId") Long actionId);
 }

@@ -2,6 +2,8 @@ package site.coach_coach.coach_coach_server.routine.domain;
 
 import java.util.List;
 
+import org.hibernate.annotations.DynamicUpdate;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -18,7 +20,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import site.coach_coach.coach_coach_server.category.domain.Category;
+import site.coach_coach.coach_coach_server.action.domain.Action;
 import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.common.domain.DateEntity;
 import site.coach_coach.coach_coach_server.sport.domain.Sport;
@@ -27,6 +29,7 @@ import site.coach_coach.coach_coach_server.user.domain.User;
 @Table(name = "routines")
 @Entity
 @Getter
+@DynamicUpdate
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -55,12 +58,28 @@ public class Routine extends DateEntity {
 	@JoinColumn(name = "sport_id")
 	private Sport sport;
 
+	@NotNull
+	@Column(name = "is_completed")
+	private Boolean isCompleted;
+
+	@NotNull
+	@Column(name = "is_deleted")
+	private Boolean isDeleted;
+
 	@OneToMany(mappedBy = "routine")
-	private List<Category> categoryList;
+	private List<Action> actions;
 
 	public void updateRoutineInfo(String routineName, Sport sport) {
 		this.routineName = routineName;
 		this.sport = sport;
+	}
+
+	public void changIsCompleted() {
+		this.isCompleted = !this.isCompleted;
+	}
+
+	public void deleteRoutine() {
+		this.isDeleted = true;
 	}
 }
 

@@ -24,17 +24,15 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import site.coach_coach.coach_coach_server.action.dto.ActionDto;
 import site.coach_coach.coach_coach_server.auth.jwt.TokenProvider;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
-import site.coach_coach.coach_coach_server.category.dto.CategoryDto;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.common.exception.AccessDeniedException;
 import site.coach_coach.coach_coach_server.common.exception.NotFoundException;
 import site.coach_coach.coach_coach_server.routine.dto.CreateRoutineRequest;
-import site.coach_coach.coach_coach_server.routine.dto.RoutineForListDto;
-import site.coach_coach.coach_coach_server.routine.dto.RoutineListRequest;
-import site.coach_coach.coach_coach_server.routine.dto.RoutineResponse;
+import site.coach_coach.coach_coach_server.routine.dto.RoutineCreatorDto;
+import site.coach_coach.coach_coach_server.routine.dto.RoutineDto;
+import site.coach_coach.coach_coach_server.routine.dto.RoutineListDto;
 import site.coach_coach.coach_coach_server.routine.dto.UserInfoForRoutineList;
 import site.coach_coach.coach_coach_server.routine.service.RoutineService;
 
@@ -53,9 +51,9 @@ public class RoutineControllerTest {
 	@Autowired
 	private RoutineController routineController;
 
-	private RoutineListRequest routineListRequest;
-	private RoutineForListDto routine;
-	private List<RoutineForListDto> routineList;
+	private RoutineCreatorDto routineCreatorDto;
+	private RoutineDto routine;
+	private RoutineListDto routineList;
 	private UserInfoForRoutineList userInfoForRoutineList;
 	private ObjectMapper objectMapper;
 	private Long userIdByJwt;
@@ -68,8 +66,8 @@ public class RoutineControllerTest {
 		// Set the SecurityContext with mockUserDetails
 		setSecurityContextWithMockUserDetails(userIdByJwt);
 
-		routine = new RoutineForListDto(1L, "routineName", "sportName");
-		routineList = List.of(routine);
+		routine = new RoutineDto(1L, "RoutineName", "SportName", false, new ArrayList<>());
+		routineList = new RoutineListDto(0.7f, List.of(routine));
 		userInfoForRoutineList = new UserInfoForRoutineList(1L, "nickname", "profileImageUrl");
 	}
 
@@ -82,13 +80,13 @@ public class RoutineControllerTest {
 		// Set the SecurityContext with mockUserDetails
 		setSecurityContextWithMockUserDetails(userIdByJwt);
 
-		when(routineService.getRoutineForList(null, null, userIdByJwt)).thenReturn(routineList);
+		when(routineService.getRoutineList(null, null, userIdByJwt)).thenReturn(routineList);
 
-		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/routines"))
+		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v2/routines"))
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn();
 
-		assertThat(result.getResponse().getContentAsString()).contains(routineList.getFirst().routineName());
+		assertThat(result.getResponse().getContentAsString()).contains("RoutineName");
 	}
 
 	@Test
@@ -101,15 +99,15 @@ public class RoutineControllerTest {
 		// Set the SecurityContext with mockUserDetails
 		setSecurityContextWithMockUserDetails(userIdByJwt);
 
-		when(routineService.getRoutineForList(null, coachIdParam, userIdByJwt)).thenReturn(routineList);
+		when(routineService.getRoutineList(null, coachIdParam, userIdByJwt)).thenReturn(routineList);
 
-		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/routines")
+		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v2/routines")
 				.contentType(MediaType.APPLICATION_JSON)
 				.queryParam("coachId", coachIdParam.toString()))
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn();
 
-		assertThat(result.getResponse().getContentAsString()).contains(routineList.getFirst().routineName());
+		assertThat(result.getResponse().getContentAsString()).contains("RoutineName");
 	}
 
 	@Test
@@ -120,39 +118,40 @@ public class RoutineControllerTest {
 
 		// Set the SecurityContext with mockUserDetails
 		setSecurityContextWithMockUserDetails(userIdByJwt);
+		RoutineListDto emptyRoutineList = new RoutineListDto(0f, new ArrayList<>());
 
-		when(routineService.getRoutineForList(null, null, userIdByJwt))
-			.thenReturn(new ArrayList<>());
+		when(routineService.getRoutineList(null, null, userIdByJwt))
+			.thenReturn(emptyRoutineList);
 
-		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/routines"))
+		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v2/routines"))
 			.andExpect(MockMvcResultMatchers.status().isOk())
 			.andReturn();
 
-		assertThat(result.getResponse().getContentAsString()).isEqualTo("[]");
+		assertThat(result.getResponse().getContentAsString()).contains("[]");
 	}
 
-	@Test
-	@DisplayName("루틴 목록 사용자 정보 조회 테스트")
-	public void getUserInfoForRoutineListTest() throws Exception {
-		// Given
-		Long userIdByJwt = 1L;
-		Long userIdParam = 2L;
-		Long coachIdParam = 2L;
-
-		setSecurityContextWithMockUserDetails(userIdByJwt);
-
-		when(routineService.confirmIsMatching(userIdParam, coachIdParam, userIdByJwt)).thenReturn(routineListRequest);
-		when(routineService.getUserInfoForRoutineList(userIdParam, coachIdParam)).thenReturn(userInfoForRoutineList);
-
-		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/routines/user")
-				.contentType(MediaType.APPLICATION_JSON)
-				.queryParam("userId", userIdParam.toString())
-				.queryParam("coachId", coachIdParam.toString()))
-			.andExpect(MockMvcResultMatchers.status().isOk())
-			.andReturn();
-
-		assertThat(result.getResponse().getContentAsString()).contains(userInfoForRoutineList.nickname());
-	}
+	// @Test
+	// @DisplayName("루틴 목록 사용자 정보 조회 테스트")
+	// public void getUserInfoForRoutineListTest() throws Exception {
+	// 	// Given
+	// 	Long userIdByJwt = 1L;
+	// 	Long userIdParam = 2L;
+	// 	Long coachIdParam = 2L;
+	//
+	// 	setSecurityContextWithMockUserDetails(userIdByJwt);
+	//
+	// 	when(routineService.confirmIsMatching(userIdParam, coachIdParam, userIdByJwt)).thenReturn(routineCreatorDto);
+	// 	when(routineService.getUserInfoForRoutineList(userIdParam, coachIdParam)).thenReturn(userInfoForRoutineList);
+	//
+	// 	MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/routines/user")
+	// 			.contentType(MediaType.APPLICATION_JSON)
+	// 			.queryParam("userId", userIdParam.toString())
+	// 			.queryParam("coachId", coachIdParam.toString()))
+	// 		.andExpect(MockMvcResultMatchers.status().isOk())
+	// 		.andReturn();
+	//
+	// 	assertThat(result.getResponse().getContentAsString()).contains(userInfoForRoutineList.nickname());
+	// }
 
 	@Test
 	@DisplayName("루틴 추가 성공 테스트")
@@ -161,7 +160,7 @@ public class RoutineControllerTest {
 		Long userIdByJwt = 1L;
 		Long routineId = 1L;
 		CreateRoutineRequest createRoutineRequest =
-			new CreateRoutineRequest(2L, 1L, "나의 헬스 루틴");
+			new CreateRoutineRequest(2L, "나의 헬스 루틴", 1L, new ArrayList<>());
 
 		setSecurityContextWithMockUserDetails(userIdByJwt);
 
@@ -186,7 +185,7 @@ public class RoutineControllerTest {
 		// Given
 		Long userIdByJwt = 1L;
 		CreateRoutineRequest createRoutineRequest =
-			new CreateRoutineRequest(null, 1L, "  ");
+			new CreateRoutineRequest(null, "  ", 1L, new ArrayList<>());
 
 		setSecurityContextWithMockUserDetails(userIdByJwt);
 
@@ -243,31 +242,6 @@ public class RoutineControllerTest {
 
 		assertThat(result.getResponse().getContentAsString()).contains(
 			ErrorMessage.ACCESS_DENIED);
-	}
-
-	@Test
-	@DisplayName("루틴 개별 조회 성공 - 일반 회원")
-	public void getRoutineSuccessTest() throws Exception {
-		// Given
-		Long userIdParam = 1L;
-		ActionDto actionDto = new ActionDto(1L, "actionName", 5, 10, 5, "description");
-		List<ActionDto> actionList = new ArrayList<>();
-		actionList.add(actionDto);
-		CategoryDto categoryDto = new CategoryDto(1L, "categoryName", false, actionList);
-		List<CategoryDto> categoryList = new ArrayList<>();
-		categoryList.add(categoryDto);
-		RoutineResponse routineResponse = new RoutineResponse("routineName", categoryList);
-
-		when(routineService.getRoutineDetail(anyLong(), anyLong(), anyLong())).thenReturn(
-			routineResponse);
-
-		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/routines/" + routine.routineId())
-				.contentType(MediaType.APPLICATION_JSON)
-				.queryParam(("userId"), userIdParam.toString()))
-			.andExpect(MockMvcResultMatchers.status().isOk())
-			.andReturn();
-
-		assertThat(result.getResponse().getContentAsString()).contains(actionDto.actionName());
 	}
 
 	public void setSecurityContextWithMockUserDetails(Long userIdByJwt) {

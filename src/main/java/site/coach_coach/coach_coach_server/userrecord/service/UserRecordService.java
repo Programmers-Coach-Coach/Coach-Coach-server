@@ -26,9 +26,9 @@ import site.coach_coach.coach_coach_server.common.exception.DuplicateValueExcept
 import site.coach_coach.coach_coach_server.common.exception.InvalidInputException;
 import site.coach_coach.coach_coach_server.common.exception.NotFoundException;
 import site.coach_coach.coach_coach_server.common.exception.UserNotFoundException;
-import site.coach_coach.coach_coach_server.completedcategory.domain.CompletedCategory;
-import site.coach_coach.coach_coach_server.completedcategory.dto.CompletedCategoryDto;
-import site.coach_coach.coach_coach_server.completedcategory.repository.CompletedCategoryRepository;
+import site.coach_coach.coach_coach_server.completedroutine.domain.CompletedRoutine;
+import site.coach_coach.coach_coach_server.completedroutine.dto.CompletedRoutineDto;
+import site.coach_coach.coach_coach_server.completedroutine.repository.CompletedRoutineRepository;
 import site.coach_coach.coach_coach_server.routine.domain.Routine;
 import site.coach_coach.coach_coach_server.user.domain.User;
 import site.coach_coach.coach_coach_server.user.repository.UserRepository;
@@ -47,7 +47,7 @@ import site.coach_coach.coach_coach_server.userrecord.repository.UserRecordRepos
 public class UserRecordService {
 	private final UserRecordRepository userRecordRepository;
 	private final UserRepository userRepository;
-	private final CompletedCategoryRepository completedCategoryRepository;
+	private final CompletedRoutineRepository completedRoutineRepository;
 
 	@Transactional
 	public Long addBodyInfoToUserRecord(Long userId, UserRecordCreateRequest userRecordCreateRequest) {
@@ -146,8 +146,8 @@ public class UserRecordService {
 		if (!userRecord.getUser().getUserId().equals(userId)) {
 			throw new AccessDeniedException();
 		}
-		List<CompletedCategory> completedCategories
-			= completedCategoryRepository.findAllWithDetailsByUserRecordId(recordId);
+		List<CompletedRoutine> completedCategories
+			= completedRoutineRepository.findAllWithDetailsByUserRecordId(recordId);
 
 		List<RecordsDto> records = mapToRecordsDto(completedCategories);
 
@@ -161,7 +161,7 @@ public class UserRecordService {
 		);
 	}
 
-	public UserRecord getUserRecordForCompleteCategory(Long userId) {
+	public UserRecord getUserRecordForCompleteRoutine(Long userId) {
 		LocalDate recordDate = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDate();
 		return userRecordRepository.findByRecordDateAndUser_UserId(recordDate, userId)
 			.orElseGet(() -> {
@@ -182,25 +182,25 @@ public class UserRecordService {
 		}
 	}
 
-	private List<RecordsDto> mapToRecordsDto(List<CompletedCategory> completedCategories) {
-		return completedCategories.stream()
+	private List<RecordsDto> mapToRecordsDto(List<CompletedRoutine> completedRoutines) {
+		return completedRoutines.stream()
 			.collect(Collectors.groupingBy(
-				c -> Optional.ofNullable(c.getCategory().getRoutine()),
+				c -> Optional.ofNullable(c.getRoutine()),
 				LinkedHashMap::new,
 				Collectors.mapping(
-					CompletedCategoryDto::from,
+					CompletedRoutineDto::from,
 					Collectors.toList()
 				)
 			))
 			.entrySet().stream()
 			.map(entry -> {
 				Optional<Routine> routineOpt = entry.getKey();
-				List<CompletedCategoryDto> completedCategoryDtos = entry.getValue();
+				List<CompletedRoutineDto> completedRoutineDtos = entry.getValue();
 
 				Routine routine = routineOpt.orElse(null);
 				Coach coach = routine != null ? routine.getCoach() : null;
 
-				return RecordsDto.from(routine, coach, completedCategoryDtos);
+				return RecordsDto.from(routine, coach, completedRoutineDtos);
 			})
 			.collect(Collectors.toList());
 	}

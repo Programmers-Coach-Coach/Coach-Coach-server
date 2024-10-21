@@ -18,8 +18,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import site.coach_coach.coach_coach_server.action.dto.CreateActionRequest;
 import site.coach_coach.coach_coach_server.action.dto.UpdateActionInfoRequest;
-import site.coach_coach.coach_coach_server.category.domain.Category;
 import site.coach_coach.coach_coach_server.common.domain.DateEntity;
+import site.coach_coach.coach_coach_server.routine.domain.Routine;
 
 @Table(name = "actions")
 @Entity
@@ -43,37 +43,29 @@ public class Action extends DateEntity {
 	private Integer sets;
 
 	@PositiveOrZero
-	@Column(name = "counts")
-	private Integer counts;
-
-	@PositiveOrZero
-	@Column(name = "minutes")
-	private Integer minutes;
-
-	@Size(max = 200)
-	@Column(name = "description")
-	private String description;
+	@Column(name = "counts_or_minutes")
+	private Integer countsOrMinutes;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "routine_category_id")
-	private Category category;
+	@JoinColumn(name = "routine_id")
+	private Routine routine;
 
-	public static Action of(CreateActionRequest createActionRequest, Category category) {
+	public static Action of(CreateActionRequest createActionRequest, Routine routine) {
 		return Action.builder()
 			.actionName(createActionRequest.actionName())
 			.sets(createActionRequest.sets())
-			.counts(createActionRequest.counts())
-			.minutes(createActionRequest.minutes())
-			.description(createActionRequest.description())
-			.category(category)
+			.countsOrMinutes(createActionRequest.countsOrMinutes())
+			.routine(routine)
 			.build();
 	}
 
 	public void updateActionInfo(UpdateActionInfoRequest updateActionInfoRequest) {
 		this.actionName = updateActionInfoRequest.actionName();
 		this.sets = updateActionInfoRequest.sets();
-		this.counts = updateActionInfoRequest.counts();
-		this.minutes = updateActionInfoRequest.minutes();
-		this.description = updateActionInfoRequest.description();
+		this.countsOrMinutes = updateActionInfoRequest.countsOrMinutes();
+	}
+
+	public void setRoutineIdInAction(Routine routine) {
+		this.routine = routine;
 	}
 }

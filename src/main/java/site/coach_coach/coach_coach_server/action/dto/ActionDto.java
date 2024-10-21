@@ -6,18 +6,14 @@ public record ActionDto(
 	Long actionId,
 	String actionName,
 	Integer sets,
-	Integer counts,
-	Integer minutes,
-	String description
+	Integer countsOrMinutes
 ) {
 	public static ActionDto from(Action action) {
 		return new ActionDto(
 			action.getActionId(),
 			action.getActionName(),
 			action.getSets(),
-			action.getCounts(),
-			action.getMinutes(),
-			action.getDescription()
+			action.getCountsOrMinutes()
 		);
 	}
 }
