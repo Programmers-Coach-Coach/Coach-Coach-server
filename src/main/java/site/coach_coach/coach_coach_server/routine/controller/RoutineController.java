@@ -93,7 +93,7 @@ public class RoutineController {
 	// 	return ResponseEntity.ok(routineResponse);
 	// }
 
-	@PatchMapping("v1/routines/{routineId}")
+	@PatchMapping("/v1/routines/{routineId}")
 	public ResponseEntity<Void> updateRoutineInfo(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
 		@PathVariable(name = "routineId") Long routineId,
