@@ -3,6 +3,7 @@ CREATE TABLE `coachcoach`.`chat_rooms`
     `chat_room_id` BIGINT    NOT NULL AUTO_INCREMENT,
     `coach_id`     BIGINT    NOT NULL,
     `user_id`      BIGINT    NOT NULL,
+    `matching_id`  BIGINT    NOT NULL,
     `created_at`   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
     `updated_at`   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
     PRIMARY KEY (`chat_room_id`)

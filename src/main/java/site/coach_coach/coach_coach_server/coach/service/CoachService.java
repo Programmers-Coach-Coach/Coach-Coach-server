@@ -15,6 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import site.coach_coach.coach_coach_server.chatroom.dto.ChatRoomRequest;
+import site.coach_coach.coach_coach_server.chatroom.repository.ChatRoomRepository;
+import site.coach_coach.coach_coach_server.chatroom.service.ChatRoomService;
 import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.coach.dto.CoachDetailDto;
 import site.coach_coach.coach_coach_server.coach.dto.CoachListDto;
@@ -59,6 +62,8 @@ public class CoachService {
 	private final NotificationService notificationService;
 	private final SportRepository sportRepository;
 	private final UserRepository userRepository;
+	private final ChatRoomRepository chatRoomRepository;
+	private final ChatRoomService chatRoomService;
 
 	@Transactional(readOnly = true)
 	public Coach getCoachByUserId(Long userId) {
@@ -137,6 +142,10 @@ public class CoachService {
 
 		Matching newMatching = new Matching(null, user, coach, false);
 		matchingRepository.save(newMatching);
+
+		ChatRoomRequest chatRoomRequest = new ChatRoomRequest(user.getUserId(), coach.getCoachId(),
+			newMatching.getUserCoachMatchingId());
+		Long chatRoomId = chatRoomService.createChatRoom(chatRoomRequest);
 
 		notificationService.createNotification(user.getUserId(), coachId, RelationFunctionEnum.ask);
 	}
