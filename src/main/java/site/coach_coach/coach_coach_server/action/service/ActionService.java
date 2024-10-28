@@ -21,7 +21,7 @@ public class ActionService {
 	private static final Logger log = LoggerFactory.getLogger(ActionService.class);
 	private final ActionRepository actionRepository;
 	private final JdbcTemplate jdbcTemplate;
-	private int i = 0;
+	private int indexOfAction = 0;
 
 	@Transactional
 	public void createAction(Routine newRoutine, List<ActionDto> actions) {
@@ -58,14 +58,14 @@ public class ActionService {
 		List<Action> actions = actionRepository.findByRoutine_RoutineId(routineId);
 
 		newActions.forEach((newAction) -> {
-			actions.get(i).updateActionInfo(newAction);
-			i++;
+			actions.get(indexOfAction).updateActionInfo(newAction);
+			indexOfAction++;
 		});
 
-		while (i < 4) {
-			actions.get(i).resetActionInfo();
-			i++;
+		while (indexOfAction < 4) {
+			actions.get(indexOfAction).resetActionInfo();
+			indexOfAction++;
 		}
-		i = 0;
+		indexOfAction = 0;
 	}
 }

@@ -89,11 +89,13 @@ public class RoutineService {
 		}
 
 		routines.forEach((routine) -> {
-			RoutineDto dto = RoutineDto.from(routine);
-			if (dto.isCompleted()) {
-				numberOfCompletedRoutine += 1;
+			if (!routine.getIsDeleted()) {
+				RoutineDto dto = RoutineDto.from(routine);
+				if (dto.isCompleted()) {
+					numberOfCompletedRoutine += 1;
+				}
+				routineListDto.routines().add(dto);
 			}
-			routineListDto.routines().add(dto);
 		});
 
 		if (!routineListDto.routines().isEmpty() && numberOfCompletedRoutine != 0) {
@@ -122,7 +124,7 @@ public class RoutineService {
 
 	@Transactional
 	public Routine createRoutine(CreateRoutineRequest createRoutineRequest, Long userIdByJwt) {
-		Sport sportInfo = Sport.builder()
+		Sport sport = Sport.builder()
 			.sportId(createRoutineRequest.sportId())
 			.build();
 
@@ -133,7 +135,7 @@ public class RoutineService {
 		Routine.RoutineBuilder routineBuilder = Routine.builder()
 			.user(user)
 			.routineName(createRoutineRequest.routineName())
-			.sport(sportInfo)
+			.sport(sport)
 			.isCompleted(false)
 			.isDeleted(false);
 
