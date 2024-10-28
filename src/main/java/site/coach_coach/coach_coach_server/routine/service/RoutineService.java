@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import site.coach_coach.coach_coach_server.action.service.ActionService;
 import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.coach.repository.CoachRepository;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
@@ -32,6 +33,7 @@ import site.coach_coach.coach_coach_server.user.repository.UserRepository;
 @RequiredArgsConstructor
 @Slf4j
 public class RoutineService {
+	private final ActionService actionService;
 	private final RoutineRepository routineRepository;
 	private final MatchingRepository matchingRepository;
 	private final CoachRepository coachRepository;
@@ -119,7 +121,7 @@ public class RoutineService {
 	// }
 
 	@Transactional
-	public Long createRoutine(CreateRoutineRequest createRoutineRequest, Long userIdByJwt) {
+	public Routine createRoutine(CreateRoutineRequest createRoutineRequest, Long userIdByJwt) {
 		Sport sportInfo = Sport.builder()
 			.sportId(createRoutineRequest.sportId())
 			.build();
@@ -143,31 +145,8 @@ public class RoutineService {
 			routineBuilder.coach(coach);
 		}
 
-		return routineRepository.save(routineBuilder.build()).getRoutineId();
+		return routineRepository.save(routineBuilder.build());
 	}
-
-	// @Transactional(readOnly = true)
-	// public RoutineDto getRoutineDetail(Long routineId, Long userIdByJwt, Long userIdParam) {
-	// 	Routine routine = routineRepository.findById(routineId)
-	// 		.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_ROUTINE));
-	//
-	// 	validateBeforeGetRoutine(routine, userIdParam, userIdByJwt);
-	// 	return RoutineDto.from(routine);
-	// }
-
-	// private void validateBeforeGetRoutine(Routine routine, Long userIdParam, Long userIdByJwt) {
-	// 	if (userIdParam == null) {
-	// 		if (!routine.getUser().getUserId().equals(userIdByJwt)) {
-	// 			throw new AccessDeniedException();
-	// 		}
-	// 	} else {
-	// 		Long coachId = getCoachId(userIdByJwt);
-	// 		if (routine.getCoach() == null || !routine.getCoach().getCoachId().equals(coachId)
-	// 			|| !routine.getUser().getUserId().equals(userIdParam)) {
-	// 			throw new AccessDeniedException();
-	// 		}
-	// 	}
-	// }
 
 	@Transactional
 	public void deleteRoutine(Long routineId, Long userIdByJwt) {

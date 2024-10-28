@@ -27,6 +27,7 @@ public record RoutineDto(
 ) {
 	public static RoutineDto from(Routine routine) {
 		List<ActionDto> actions = routine.getActions().stream()
+			.filter(action -> action.getActionName() != null)
 			.map(ActionDto::from)
 			.collect(Collectors.toList());
 

@@ -7,9 +7,10 @@ DROP COLUMN `minutes`,
 DROP COLUMN `description`,
 CHANGE COLUMN `routine_category_id` `routine_id` BIGINT NOT NULL ,
 CHANGE COLUMN `counts` `counts_or_minutes` INT NULL DEFAULT NULL ,
+CHANGE COLUMN `action_name` `action_name` VARCHAR(45) NULL ,
 ADD INDEX `fk_actions_routine_id_idx` (`routine_id` ASC) VISIBLE,
 DROP INDEX `routine_category_id_idx` ;
-;
+
 ALTER TABLE `coachcoach`.`actions`
 ADD CONSTRAINT `fk_actions_routine_id`
   FOREIGN KEY (`routine_id`)

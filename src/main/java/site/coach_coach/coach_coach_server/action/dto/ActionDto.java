@@ -1,7 +1,9 @@
 package site.coach_coach.coach_coach_server.action.dto;
 
+import lombok.Builder;
 import site.coach_coach.coach_coach_server.action.domain.Action;
 
+@Builder
 public record ActionDto(
 	Long actionId,
 	String actionName,

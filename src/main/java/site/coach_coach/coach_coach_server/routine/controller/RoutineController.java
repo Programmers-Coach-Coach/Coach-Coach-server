@@ -17,6 +17,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.action.service.ActionService;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
+import site.coach_coach.coach_coach_server.routine.domain.Routine;
 import site.coach_coach.coach_coach_server.routine.dto.CreateRoutineRequest;
 import site.coach_coach.coach_coach_server.routine.dto.CreateRoutineResponse;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineListDto;
@@ -64,10 +65,10 @@ public class RoutineController {
 		@RequestBody @Valid CreateRoutineRequest createRoutineRequest
 	) {
 		Long userIdByJwt = userDetails.getUserId();
-		Long newRoutineId = routineService.createRoutine(createRoutineRequest, userIdByJwt);
-		actionService.createAction(newRoutineId, createRoutineRequest.actions());
+		Routine newRoutine = routineService.createRoutine(createRoutineRequest, userIdByJwt);
+		actionService.createAction(newRoutine, createRoutineRequest.actions());
 		return ResponseEntity.status(HttpStatus.CREATED)
-			.body(new CreateRoutineResponse(HttpStatus.CREATED.value(), newRoutineId));
+			.body(new CreateRoutineResponse(HttpStatus.CREATED.value(), newRoutine.getRoutineId()));
 	}
 
 	@DeleteMapping("/v1/routines/{routineId}")
@@ -93,7 +94,7 @@ public class RoutineController {
 	// 	return ResponseEntity.ok(routineResponse);
 	// }
 
-	@PatchMapping("/v1/routines/{routineId}")
+	@PatchMapping("/v2/routines/{routineId}")
 	public ResponseEntity<Void> updateRoutineInfo(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
 		@PathVariable(name = "routineId") Long routineId,
@@ -101,6 +102,7 @@ public class RoutineController {
 	) {
 		Long userIdByJwt = userDetails.getUserId();
 		routineService.updateRoutine(updateRoutineInfoRequest, routineId, userIdByJwt);
+		actionService.updateAction(routineId, updateRoutineInfoRequest.newActions());
 		return ResponseEntity.noContent().build();
 	}
 
