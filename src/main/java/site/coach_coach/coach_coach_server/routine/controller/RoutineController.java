@@ -44,21 +44,6 @@ public class RoutineController {
 		return ResponseEntity.ok(routineListResponse);
 	}
 
-	// @GetMapping("/v1/routines/user")
-	// public ResponseEntity<UserInfoForRoutineList> getUserInfoForRoutineList(
-	// 	@AuthenticationPrincipal CustomUserDetails userDetails,
-	// 	@RequestParam(name = "userId", required = false) Long userIdParam,
-	// 	@RequestParam(name = "coachId", required = false) Long coachIdParam) {
-	//
-	// 	Long userIdByJwt = userDetails.getUserId();
-	//
-	// 	routineService.confirmIsMatching(userIdParam, coachIdParam, userIdByJwt);
-	// 	UserInfoForRoutineList userInfoForRoutineList = routineService.getUserInfoForRoutineList(userIdParam,
-	// 		coachIdParam);
-	//
-	// 	return ResponseEntity.ok(userInfoForRoutineList);
-	// }
-
 	@PostMapping("/v2/routines")
 	public ResponseEntity<CreateRoutineResponse> createRoutine(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
@@ -80,19 +65,6 @@ public class RoutineController {
 		routineService.deleteRoutine(routineId, userIdByJwt);
 		return ResponseEntity.noContent().build();
 	}
-
-	// @GetMapping("/v1/routines/{routineId}")
-	// public ResponseEntity<RoutineResponse> getRoutine(
-	// 	@AuthenticationPrincipal CustomUserDetails userDetails,
-	// 	@PathVariable(name = "routineId") Long routineId,
-	// 	@RequestParam(name = "userId", required = false) Long userIdParam
-	// ) {
-	// 	Long userIdByJwt = userDetails.getUserId();
-	//
-	// 	RoutineResponse routineResponse = routineService.getRoutineDetail(routineId,
-	// 		userIdByJwt, userIdParam);
-	// 	return ResponseEntity.ok(routineResponse);
-	// }
 
 	@PatchMapping("/v2/routines/{routineId}")
 	public ResponseEntity<Void> updateRoutineInfo(

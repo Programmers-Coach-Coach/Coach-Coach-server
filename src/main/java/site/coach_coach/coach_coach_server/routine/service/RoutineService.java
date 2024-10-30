@@ -89,13 +89,11 @@ public class RoutineService {
 		}
 
 		routines.forEach((routine) -> {
-			// if (!routine.getIsDeleted()) {
 			RoutineDto dto = RoutineDto.from(routine);
 			if (dto.isCompleted()) {
 				numberOfCompletedRoutine += 1;
 			}
 			routineListDto.routines().add(dto);
-			// }
 		});
 
 		if (!routineListDto.routines().isEmpty() && numberOfCompletedRoutine != 0) {
@@ -105,22 +103,6 @@ public class RoutineService {
 			return routineListDto.setCompletionPercentage(0.0f);
 		}
 	}
-
-	// @Transactional(readOnly = true)
-	// public UserInfoForRoutineList getUserInfoForRoutineList(Long userIdParam, Long coachIdParam) {
-	// 	if (userIdParam == null) {
-	// 		User userInfo = coachRepository.findById(coachIdParam)
-	// 			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_COACH))
-	// 			.getUser();
-	// 		return new UserInfoForRoutineList(userInfo.getUserId(), userInfo.getNickname(),
-	// 			userInfo.getProfileImageUrl());
-	// 	} else {
-	// 		User userInfo = userRepository.findById(userIdParam)
-	// 			.orElseThrow(UserNotFoundException::new);
-	// 		return new UserInfoForRoutineList(userIdParam, userInfo.getNickname(),
-	// 			userInfo.getProfileImageUrl());
-	// 	}
-	// }
 
 	@Transactional
 	public Routine createRoutine(CreateRoutineRequest createRoutineRequest, Long userIdByJwt) {

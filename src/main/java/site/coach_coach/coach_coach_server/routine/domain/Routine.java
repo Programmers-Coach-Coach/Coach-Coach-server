@@ -15,6 +15,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -25,7 +26,7 @@ import lombok.NoArgsConstructor;
 import site.coach_coach.coach_coach_server.action.domain.Action;
 import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.common.domain.DateEntity;
-import site.coach_coach.coach_coach_server.common.domain.RepeatDateEnum;
+import site.coach_coach.coach_coach_server.repeatdate.domain.RepeatDate;
 import site.coach_coach.coach_coach_server.sport.domain.Sport;
 import site.coach_coach.coach_coach_server.user.domain.User;
 
@@ -69,13 +70,13 @@ public class Routine extends DateEntity {
 
 	@NotNull
 	@Column(name = "is_deleted")
-	private Boolean isDeleted = Boolean.FALSE;
+	private Boolean isDeleted;
 
 	@OneToMany(mappedBy = "routine")
 	private List<Action> actions;
 
-	@OneToMany(mappedBy = "routine")
-	private RepeatDateEnum repeatDate;
+	@OneToOne(mappedBy = "routine")
+	private RepeatDate repeatDate;
 
 	public void updateRoutineInfo(String routineName, Sport sport) {
 		this.routineName = routineName;
