@@ -102,7 +102,7 @@ public class RoutineController {
 	) {
 		Long userIdByJwt = userDetails.getUserId();
 		routineService.updateRoutine(updateRoutineInfoRequest, routineId, userIdByJwt);
-		actionService.updateAction(routineId, updateRoutineInfoRequest.newActions());
+		actionService.updateAction(routineId, updateRoutineInfoRequest.actions());
 		return ResponseEntity.noContent().build();
 	}
 

@@ -3,6 +3,8 @@ package site.coach_coach.coach_coach_server.routine.domain;
 import java.util.List;
 
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -33,6 +35,8 @@ import site.coach_coach.coach_coach_server.user.domain.User;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@SQLDelete(sql = "UPDATE routines SET is_deleted = true WHERE routine_id=?")
+@Where(clause = "is_deleted=false")
 public class Routine extends DateEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -64,7 +68,7 @@ public class Routine extends DateEntity {
 
 	@NotNull
 	@Column(name = "is_deleted")
-	private Boolean isDeleted;
+	private Boolean isDeleted = Boolean.FALSE;
 
 	@OneToMany(mappedBy = "routine")
 	private List<Action> actions;
@@ -76,10 +80,6 @@ public class Routine extends DateEntity {
 
 	public void changIsCompleted() {
 		this.isCompleted = !this.isCompleted;
-	}
-
-	public void deleteRoutine() {
-		this.isDeleted = true;
 	}
 }
 

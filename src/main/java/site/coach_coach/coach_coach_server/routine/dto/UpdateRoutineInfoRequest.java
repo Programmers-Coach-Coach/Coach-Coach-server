@@ -16,6 +16,6 @@ public record UpdateRoutineInfoRequest(
 	@NotNull
 	Long sportId,
 
-	List<ActionDto> newActions
+	List<ActionDto> actions
 ) {
 }

@@ -8,6 +8,7 @@ public record RoutineListDto(
 	List<RoutineDto> routines
 ) {
 	public RoutineListDto setCompletionPercentage(float completionPercentage) {
-		return new RoutineListDto(completionPercentage, this.routines);
+
+		return new RoutineListDto(Math.round(completionPercentage * 100) / 100.0f, this.routines);
 	}
 }

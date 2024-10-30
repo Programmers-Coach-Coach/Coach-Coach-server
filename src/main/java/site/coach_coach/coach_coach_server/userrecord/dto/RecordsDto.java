@@ -11,16 +11,16 @@ public record RecordsDto(
 	String coachName,
 	String coachProfileImageUrl,
 	String routineName,
-	List<CompletedRoutineDto> completedCategories
+	List<CompletedRoutineDto> completedRoutines
 ) {
 	public static RecordsDto from(Routine routine, Coach coach,
-		List<CompletedRoutineDto> completedCategories) {
+		List<CompletedRoutineDto> completedRoutines) {
 		return new RecordsDto(
 			coach != null ? coach.getCoachId() : null,
 			coach != null ? coach.getUser().getNickname() : null,
 			coach != null ? coach.getUser().getProfileImageUrl() : null,
 			routine != null ? routine.getRoutineName() : null,
-			completedCategories
+			completedRoutines
 		);
 	}
 }

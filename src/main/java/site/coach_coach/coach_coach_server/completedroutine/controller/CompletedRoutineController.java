@@ -28,8 +28,8 @@ public class CompletedRoutineController {
 		@PathVariable(name = "routineId") Long routineId
 	) {
 		Long userIdByJwt = userDetails.getUserId();
-		Long completedCategoryId = completedRoutineService.createCompletedRoutine(routineId, userIdByJwt);
-		return ResponseEntity.status(HttpStatus.CREATED).body(new SuccessIdResponse(completedCategoryId));
+		Long completedRoutineId = completedRoutineService.createCompletedRoutine(routineId, userIdByJwt);
+		return ResponseEntity.status(HttpStatus.CREATED).body(new SuccessIdResponse(completedRoutineId));
 
 	}
 

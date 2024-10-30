@@ -36,7 +36,7 @@ public class CompletedRoutine extends DateEntity {
 	@JoinColumn(name = "user_record_id")
 	private UserRecord userRecord;
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "routine_id")
 	private Routine routine;
 

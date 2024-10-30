@@ -39,7 +39,7 @@ public class CompletedRoutineService {
 		UserRecord userRecord = userRecordService.getUserRecordForCompleteRoutine(userIdByJwt);
 		completedRoutineRepository.findByUserRecord_RecordDateAndRoutine_RoutineId(
 				userRecord.getRecordDate(), routine.getRoutineId())
-			.ifPresent(completedCategory -> {
+			.ifPresent(completedRoutine -> {
 				throw new DuplicateValueException(ErrorMessage.DUPLICATE_COMPLETED_ROUTINE);
 			});
 

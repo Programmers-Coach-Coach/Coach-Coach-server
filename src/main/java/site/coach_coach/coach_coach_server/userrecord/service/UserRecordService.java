@@ -97,7 +97,7 @@ public class UserRecordService {
 		LocalDate endDate = YearMonth.of(year, month).atEndOfMonth();
 
 		List<UserRecord> userRecords =
-			userRecordRepository.findByUser_UserIdAndRecordDateBetweenWithCompletedCategories(
+			userRecordRepository.findByUser_UserIdAndRecordDateBetweenWithCompletedRoutines(
 				userId, startDate, endDate
 			);
 
@@ -105,7 +105,7 @@ public class UserRecordService {
 			.map(record -> new RecordResponse(
 				record.getUserRecordId(),
 				record.getRecordDate(),
-				!record.getCompletedCategories().isEmpty()
+				!record.getCompletedRoutines().isEmpty()
 			))
 			.collect(Collectors.toList());
 
@@ -146,10 +146,10 @@ public class UserRecordService {
 		if (!userRecord.getUser().getUserId().equals(userId)) {
 			throw new AccessDeniedException();
 		}
-		List<CompletedRoutine> completedCategories
+		List<CompletedRoutine> completedRoutines
 			= completedRoutineRepository.findAllWithDetailsByUserRecordId(recordId);
 
-		List<RecordsDto> records = mapToRecordsDto(completedCategories);
+		List<RecordsDto> records = mapToRecordsDto(completedRoutines);
 
 		return new UserRecordDetailResponse(
 			userRecord.getUserRecordId(),

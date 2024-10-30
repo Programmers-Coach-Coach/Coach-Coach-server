@@ -55,7 +55,7 @@ public class UserRecord extends DateEntity {
 	private LocalDate recordDate;
 
 	@OneToMany(mappedBy = "userRecord", fetch = FetchType.LAZY)
-	private List<CompletedRoutine> completedCategories;
+	private List<CompletedRoutine> completedRoutines;
 
 	public void updateBodyInfo(Double weight, Double skeletalMuscle, Double fatPercentage, Double bmi) {
 		this.weight = weight;

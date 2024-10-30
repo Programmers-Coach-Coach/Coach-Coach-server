@@ -89,13 +89,13 @@ public class RoutineService {
 		}
 
 		routines.forEach((routine) -> {
-			if (!routine.getIsDeleted()) {
-				RoutineDto dto = RoutineDto.from(routine);
-				if (dto.isCompleted()) {
-					numberOfCompletedRoutine += 1;
-				}
-				routineListDto.routines().add(dto);
+			// if (!routine.getIsDeleted()) {
+			RoutineDto dto = RoutineDto.from(routine);
+			if (dto.isCompleted()) {
+				numberOfCompletedRoutine += 1;
 			}
+			routineListDto.routines().add(dto);
+			// }
 		});
 
 		if (!routineListDto.routines().isEmpty() && numberOfCompletedRoutine != 0) {
@@ -124,13 +124,14 @@ public class RoutineService {
 
 	@Transactional
 	public Routine createRoutine(CreateRoutineRequest createRoutineRequest, Long userIdByJwt) {
-		Sport sport = Sport.builder()
-			.sportId(createRoutineRequest.sportId())
-			.build();
 
 		User user = userRepository.findById(
 				createRoutineRequest.userId() == null ? userIdByJwt : createRoutineRequest.userId())
 			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_USER));
+
+		Sport sport = Sport.builder()
+			.sportId(createRoutineRequest.sportId())
+			.build();
 
 		Routine.RoutineBuilder routineBuilder = Routine.builder()
 			.user(user)
@@ -153,7 +154,7 @@ public class RoutineService {
 	@Transactional
 	public void deleteRoutine(Long routineId, Long userIdByJwt) {
 		validateIsMyRoutine(routineId, userIdByJwt);
-		routineRepository.deleteRoutine(routineId);
+		routineRepository.deleteById(routineId);
 	}
 
 	@Transactional
