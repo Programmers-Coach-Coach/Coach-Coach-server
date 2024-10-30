@@ -25,6 +25,7 @@ import lombok.NoArgsConstructor;
 import site.coach_coach.coach_coach_server.action.domain.Action;
 import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.common.domain.DateEntity;
+import site.coach_coach.coach_coach_server.common.domain.RepeatDateEnum;
 import site.coach_coach.coach_coach_server.sport.domain.Sport;
 import site.coach_coach.coach_coach_server.user.domain.User;
 
@@ -72,6 +73,9 @@ public class Routine extends DateEntity {
 
 	@OneToMany(mappedBy = "routine")
 	private List<Action> actions;
+
+	@OneToMany(mappedBy = "routine")
+	private RepeatDateEnum repeatDate;
 
 	public void updateRoutineInfo(String routineName, Sport sport) {
 		this.routineName = routineName;

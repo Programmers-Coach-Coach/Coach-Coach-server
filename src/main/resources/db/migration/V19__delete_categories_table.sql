@@ -47,3 +47,18 @@ ADD CONSTRAINT `fk_completed_routines_user_record_id`
 
   -- routine_categories 테이블 삭제 ---
 DROP TABLE 'routine_categories';
+
+ -- repeat_dates 테이블 생성 --
+CREATE TABLE `coachcoach`.`repeat_dates` (
+  `repeat_date_id` BIGINT NOT NULL,
+  `routine_id` BIGINT NOT NULL,
+  `date` ENUM('mon', 'tue', 'wed', 'thr', 'fri', 'sat', 'sun') NOT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`repeat_date_id`),
+  INDEX `fk_repeat_dates_routine_id_idx` (`routine_id` ASC) VISIBLE,
+  CONSTRAINT `fk_repeat_dates_routine_id`
+    FOREIGN KEY (`routine_id`)
+    REFERENCES `coachcoach`.`routines` (`routine_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
