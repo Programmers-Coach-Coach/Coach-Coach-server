@@ -3,7 +3,7 @@ package site.coach_coach.coach_coach_server.userrecord.dto;
 import java.util.List;
 
 import site.coach_coach.coach_coach_server.coach.domain.Coach;
-import site.coach_coach.coach_coach_server.completedcategory.dto.CompletedCategoryDto;
+import site.coach_coach.coach_coach_server.completedroutine.dto.CompletedRoutineDto;
 import site.coach_coach.coach_coach_server.routine.domain.Routine;
 
 public record RecordsDto(
@@ -11,16 +11,16 @@ public record RecordsDto(
 	String coachName,
 	String coachProfileImageUrl,
 	String routineName,
-	List<CompletedCategoryDto> completedCategories
+	List<CompletedRoutineDto> completedRoutines
 ) {
 	public static RecordsDto from(Routine routine, Coach coach,
-		List<CompletedCategoryDto> completedCategories) {
+		List<CompletedRoutineDto> completedRoutines) {
 		return new RecordsDto(
 			coach != null ? coach.getCoachId() : null,
 			coach != null ? coach.getUser().getNickname() : null,
 			coach != null ? coach.getUser().getProfileImageUrl() : null,
 			routine != null ? routine.getRoutineName() : null,
-			completedCategories
+			completedRoutines
 		);
 	}
 }

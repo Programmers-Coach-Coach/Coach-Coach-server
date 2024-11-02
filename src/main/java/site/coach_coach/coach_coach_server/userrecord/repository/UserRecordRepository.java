@@ -17,9 +17,9 @@ public interface UserRecordRepository extends JpaRepository<UserRecord, Long> {
 	boolean existsByRecordDateAndUser_UserId(LocalDate recordDate, Long userId);
 
 	@Query("SELECT ur FROM UserRecord ur "
-		+ "LEFT JOIN FETCH ur.completedCategories cc "
+		+ "LEFT JOIN FETCH ur.completedRoutines cr "
 		+ "WHERE ur.user.userId = :userId AND ur.recordDate BETWEEN :startDate AND :endDate")
-	List<UserRecord> findByUser_UserIdAndRecordDateBetweenWithCompletedCategories(
+	List<UserRecord> findByUser_UserIdAndRecordDateBetweenWithCompletedRoutines(
 		@Param("userId") Long userId,
 		@Param("startDate") LocalDate startDate,
 		@Param("endDate") LocalDate endDate);
