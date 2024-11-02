@@ -2,7 +2,6 @@
 ALTER TABLE `coachcoach`.`actions`
 DROP FOREIGN KEY `fk_actions_routine_category_id`;
 ALTER TABLE `coachcoach`.`actions`
-DROP COLUMN `count_or_minutes`,
 DROP COLUMN `minutes`,
 DROP COLUMN `description`,
 CHANGE COLUMN `routine_category_id` `routine_id` BIGINT NOT NULL ,
