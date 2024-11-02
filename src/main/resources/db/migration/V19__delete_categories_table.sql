@@ -45,7 +45,7 @@ ADD CONSTRAINT `fk_completed_routines_user_record_id`
   ON DELETE CASCADE;
 
   -- routine_categories 테이블 삭제 ---
-DROP TABLE 'routine_categories';
+DROP TABLE `coachcoach`.`routine_categories`;
 
  -- repeat_dates 테이블 생성 --
 CREATE TABLE `coachcoach`.`repeat_dates` (
