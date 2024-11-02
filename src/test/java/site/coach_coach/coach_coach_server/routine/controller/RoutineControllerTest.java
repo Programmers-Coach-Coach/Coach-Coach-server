@@ -181,8 +181,9 @@ public class RoutineControllerTest {
 		// Given
 		Long userIdByJwt = 1L;
 		Long routineId = 1L;
+		String[] repeats = {"MONDAY"};
 		CreateRoutineRequest createRoutineRequest =
-			new CreateRoutineRequest(2L, "routineName", 1L, new ArrayList<>());
+			new CreateRoutineRequest(2L, "routineName", 1L, repeats, new ArrayList<>());
 
 		setSecurityContextWithMockUserDetails(userIdByJwt);
 
@@ -206,8 +207,9 @@ public class RoutineControllerTest {
 	public void createdRoutineFailTest() throws Exception {
 		// Given
 		Long userIdByJwt = 1L;
+		String[] repeats = {"MONDAY"};
 		CreateRoutineRequest createRoutineRequest =
-			new CreateRoutineRequest(null, "  ", 1L, new ArrayList<>());
+			new CreateRoutineRequest(null, "  ", 1L, repeats, new ArrayList<>());
 
 		setSecurityContextWithMockUserDetails(userIdByJwt);
 

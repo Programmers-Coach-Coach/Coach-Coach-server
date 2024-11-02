@@ -37,13 +37,13 @@ public class CompletedRoutineService {
 		Routine routine = validateAccessToRoutine(routineId, userIdByJwt);
 
 		UserRecord userRecord = userRecordService.getUserRecordForCompleteRoutine(userIdByJwt);
-		completedRoutineRepository.findByUserRecord_RecordDateAndRoutine_RoutineId(
-				userRecord.getRecordDate(), routine.getRoutineId())
+		completedRoutineRepository.findByUserRecord_RecordDateAndRoutine(
+				userRecord.getRecordDate(), routine)
 			.ifPresent(completedRoutine -> {
 				throw new DuplicateValueException(ErrorMessage.DUPLICATE_COMPLETED_ROUTINE);
 			});
 
-		routine.changIsCompleted();
+		routine.changeIsCompleted();
 
 		CompletedRoutine completedRoutine = CompletedRoutine.builder()
 			.userRecord(userRecord)
@@ -64,7 +64,7 @@ public class CompletedRoutineService {
 		if (deletedCount == 0) {
 			throw new NotFoundException(ErrorMessage.NOT_FOUND_COMPLETED_ROUTINE);
 		} else {
-			routine.changIsCompleted();
+			routine.changeIsCompleted();
 		}
 	}
 }

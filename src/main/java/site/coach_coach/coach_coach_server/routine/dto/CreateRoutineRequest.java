@@ -16,6 +16,9 @@ public record CreateRoutineRequest(
 	@NotNull
 	Long sportId,
 
+	@NotNull
+	String[] repeats,
+
 	List<ActionDto> actions
 ) {
 }

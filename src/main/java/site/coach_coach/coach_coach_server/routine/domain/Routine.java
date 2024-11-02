@@ -83,7 +83,7 @@ public class Routine extends DateEntity {
 		this.sport = sport;
 	}
 
-	public void changIsCompleted() {
+	public void changeIsCompleted() {
 		this.isCompleted = !this.isCompleted;
 	}
 }

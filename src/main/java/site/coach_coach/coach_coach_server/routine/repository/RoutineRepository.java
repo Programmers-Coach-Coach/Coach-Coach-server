@@ -21,10 +21,6 @@ public interface RoutineRepository extends JpaRepository<Routine, Long> {
 	@Query("UPDATE Routine r SET r.isCompleted = FALSE WHERE r.routineId IS NOT NULL")
 	void resetIsCompleted();
 
-	@Modifying
-	@Query("UPDATE Routine r SET r.isDeleted = TRUE WHERE r.routineId = :routineId")
-	void deleteRoutine(@Param("routineId") Long routineId);
-
 	@Query("SELECT r FROM Routine r WHERE r.routineId = :routineId AND r.isDeleted IS FALSE ")
 	Optional<Routine> findExistRoutine(@Param("routineId") Long routineId);
 }

@@ -3,13 +3,11 @@ package site.coach_coach.coach_coach_server.routine.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import site.coach_coach.coach_coach_server.action.service.ActionService;
 import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.coach.repository.CoachRepository;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
@@ -33,7 +31,6 @@ import site.coach_coach.coach_coach_server.user.repository.UserRepository;
 @RequiredArgsConstructor
 @Slf4j
 public class RoutineService {
-	private final ActionService actionService;
 	private final RoutineRepository routineRepository;
 	private final MatchingRepository matchingRepository;
 	private final CoachRepository coachRepository;
@@ -164,13 +161,5 @@ public class RoutineService {
 			}
 		}
 		return routine;
-	}
-
-	@Transactional
-	@Scheduled(cron = "0 0 15 * * *")
-	public void resetIsCompleted() {
-		log.info("Start to reset All 'IsCompleted'.");
-		routineRepository.resetIsCompleted();
-		log.info("All 'IsCompleted' has been reset.");
 	}
 }

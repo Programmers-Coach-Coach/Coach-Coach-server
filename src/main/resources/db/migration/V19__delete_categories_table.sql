@@ -52,7 +52,7 @@ DROP TABLE 'routine_categories';
 CREATE TABLE `coachcoach`.`repeat_dates` (
   `repeat_date_id` BIGINT NOT NULL,
   `routine_id` BIGINT NOT NULL,
-  `date` ENUM('mon', 'tue', 'wed', 'thr', 'fri', 'sat', 'sun') NOT NULL,
+  `date` SET('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY') NOT NULL,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`repeat_date_id`),

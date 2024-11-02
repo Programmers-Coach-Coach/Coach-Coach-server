@@ -3,8 +3,6 @@ package site.coach_coach.coach_coach_server.action.service;
 import java.sql.PreparedStatement;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +16,6 @@ import site.coach_coach.coach_coach_server.routine.domain.Routine;
 @Service
 @RequiredArgsConstructor
 public class ActionService {
-	private static final Logger log = LoggerFactory.getLogger(ActionService.class);
 	private final ActionRepository actionRepository;
 	private final JdbcTemplate jdbcTemplate;
 	private int indexOfAction = 0;

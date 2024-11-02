@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import site.coach_coach.coach_coach_server.completedroutine.domain.CompletedRoutine;
+import site.coach_coach.coach_coach_server.routine.domain.Routine;
 
 @Repository
 public interface CompletedRoutineRepository extends JpaRepository<CompletedRoutine, Long> {
@@ -19,8 +20,8 @@ public interface CompletedRoutineRepository extends JpaRepository<CompletedRouti
 		+ "WHERE cr.userRecord.userRecordId = :recordId")
 	List<CompletedRoutine> findAllWithDetailsByUserRecordId(@Param("recordId") Long recordId);
 
-	Optional<CompletedRoutine> findByUserRecord_RecordDateAndRoutine_RoutineId(LocalDate recordDate,
-		Long routineId);
+	Optional<CompletedRoutine> findByUserRecord_RecordDateAndRoutine(LocalDate recordDate,
+		Routine routine);
 
 	int deleteByUserRecord_UserRecordIdAndRoutine_RoutineId(Long userRecordId, Long routineId);
 }
