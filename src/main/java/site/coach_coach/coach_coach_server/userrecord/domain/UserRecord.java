@@ -19,7 +19,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import site.coach_coach.coach_coach_server.common.domain.DateEntity;
-import site.coach_coach.coach_coach_server.completedcategory.domain.CompletedCategory;
+import site.coach_coach.coach_coach_server.completedroutine.domain.CompletedRoutine;
 import site.coach_coach.coach_coach_server.user.domain.User;
 
 @Table(name = "user_records")
@@ -55,7 +55,7 @@ public class UserRecord extends DateEntity {
 	private LocalDate recordDate;
 
 	@OneToMany(mappedBy = "userRecord", fetch = FetchType.LAZY)
-	private List<CompletedCategory> completedCategories;
+	private List<CompletedRoutine> completedRoutines;
 
 	public void updateBodyInfo(Double weight, Double skeletalMuscle, Double fatPercentage, Double bmi) {
 		this.weight = weight;

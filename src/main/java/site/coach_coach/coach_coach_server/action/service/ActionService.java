@@ -1,54 +1,68 @@
 package site.coach_coach.coach_coach_server.action.service;
 
+import java.sql.PreparedStatement;
+import java.util.List;
+
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.action.domain.Action;
-import site.coach_coach.coach_coach_server.action.dto.CreateActionRequest;
-import site.coach_coach.coach_coach_server.action.dto.UpdateActionInfoRequest;
+import site.coach_coach.coach_coach_server.action.dto.ActionDto;
 import site.coach_coach.coach_coach_server.action.repository.ActionRepository;
-import site.coach_coach.coach_coach_server.category.domain.Category;
-import site.coach_coach.coach_coach_server.category.repository.CategoryRepository;
-import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
-import site.coach_coach.coach_coach_server.common.exception.NotFoundException;
-import site.coach_coach.coach_coach_server.routine.service.RoutineService;
+import site.coach_coach.coach_coach_server.routine.domain.Routine;
 
 @Service
 @RequiredArgsConstructor
 public class ActionService {
-	private final RoutineService routineService;
-	private final CategoryRepository categoryRepository;
 	private final ActionRepository actionRepository;
+	private final JdbcTemplate jdbcTemplate;
+	private int indexOfAction = 0;
 
 	@Transactional
-	public Long createAction(Long categoryId, Long userIdByJwt,
-		CreateActionRequest createActionRequest) {
-		Category category = categoryRepository.findExistCategory(categoryId)
-			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_CATEGORY));
+	public void createAction(Routine newRoutine, List<ActionDto> actions) {
 
-		routineService.validateIsMyRoutine(category.getRoutine().getRoutineId(), userIdByJwt);
+		int newActionSize = actions.size();
 
-		Action action = Action.of(createActionRequest, category);
-		return actionRepository.save(action).getActionId();
+		String sql = "INSERT INTO actions (routine_id, action_name, sets, counts_or_minutes) VALUES (?, ?, ?, ?)";
+
+		jdbcTemplate.batchUpdate(sql,
+			actions,
+			actions.size(),
+			(PreparedStatement ps, ActionDto action) -> {
+				ps.setLong(1, newRoutine.getRoutineId());
+				ps.setString(2, action.actionName());
+				ps.setInt(3, action.sets());
+				ps.setInt(4, action.countsOrMinutes());
+
+			});
+
+		if (newActionSize < 4) {
+			for (int j = 0; j < 4 - newActionSize; j++) {
+				Action emptyAction = Action.builder()
+					.routine(newRoutine)
+					.actionName(null)
+					.sets(null)
+					.countsOrMinutes(null).build();
+				actionRepository.save(emptyAction);
+			}
+		}
 	}
 
 	@Transactional
-	public void deleteAction(Long actionId, Long userIdByJwt) {
-		Action action = actionRepository.findExistAction(actionId)
-			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_ACTION));
+	public void updateAction(Long routineId, List<ActionDto> newActions) {
+		List<Action> actions = actionRepository.findByRoutine_RoutineId(routineId);
 
-		routineService.validateIsMyRoutine(action.getCategory().getRoutine().getRoutineId(), userIdByJwt);
+		newActions.forEach((newAction) -> {
+			actions.get(indexOfAction).updateActionInfo(newAction);
+			indexOfAction++;
+		});
 
-		actionRepository.deleteById(actionId);
-	}
-
-	@Transactional
-	public void updateActionInfo(UpdateActionInfoRequest updateActionInfoRequest, Long actionId, Long userIdByJwt) {
-		Action action = actionRepository.findExistAction(actionId)
-			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_ACTION));
-
-		routineService.validateIsMyRoutine(action.getCategory().getRoutine().getRoutineId(), userIdByJwt);
-		action.updateActionInfo(updateActionInfoRequest);
+		while (indexOfAction < 4) {
+			actions.get(indexOfAction).resetActionInfo();
+			indexOfAction++;
+		}
+		indexOfAction = 0;
 	}
 }

@@ -1,4 +1,4 @@
-package site.coach_coach.coach_coach_server.completedcategory.controller;
+package site.coach_coach.coach_coach_server.completedroutine.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,34 +12,34 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
 import site.coach_coach.coach_coach_server.common.response.SuccessIdResponse;
-import site.coach_coach.coach_coach_server.completedcategory.service.CompletedCategoryService;
+import site.coach_coach.coach_coach_server.completedroutine.service.CompletedRoutineService;
 import site.coach_coach.coach_coach_server.routine.service.RoutineService;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
-public class CompletedCategoryController {
-	private final CompletedCategoryService completedCategoryService;
+public class CompletedRoutineController {
+	private final CompletedRoutineService completedRoutineService;
 	private final RoutineService routineService;
 
-	@PostMapping("/v1/categories/{categoryId}/completed")
-	public ResponseEntity<SuccessIdResponse> createCategoryCompletion(
+	@PostMapping("/v2/routines/{routineId}/completed")
+	public ResponseEntity<SuccessIdResponse> createRoutineCompletion(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
-		@PathVariable(name = "categoryId") Long categoryId
+		@PathVariable(name = "routineId") Long routineId
 	) {
 		Long userIdByJwt = userDetails.getUserId();
-		Long completedCategoryId = completedCategoryService.createCompletedCategory(categoryId, userIdByJwt);
-		return ResponseEntity.status(HttpStatus.CREATED).body(new SuccessIdResponse(completedCategoryId));
+		Long completedRoutineId = completedRoutineService.createCompletedRoutine(routineId, userIdByJwt);
+		return ResponseEntity.status(HttpStatus.CREATED).body(new SuccessIdResponse(completedRoutineId));
 
 	}
 
-	@DeleteMapping("/v1/categories/{categoryId}/completed")
-	public ResponseEntity<Void> deleteCategoryCompletion(
+	@DeleteMapping("/v2/routines/{routineId}/completed")
+	public ResponseEntity<Void> deleteRoutineCompletion(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
-		@PathVariable(name = "categoryId") Long categoryId
+		@PathVariable(name = "routineId") Long routineId
 	) {
 		Long userIdByJwt = userDetails.getUserId();
-		completedCategoryService.deleteCompletedCategory(categoryId, userIdByJwt);
+		completedRoutineService.deleteCompletedRoutine(routineId, userIdByJwt);
 		return ResponseEntity.noContent().build();
 	}
 
