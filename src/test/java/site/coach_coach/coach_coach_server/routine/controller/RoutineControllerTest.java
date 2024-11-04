@@ -152,29 +152,6 @@ public class RoutineControllerTest {
 		assertThat(result.getResponse().getContentAsString()).contains("[]");
 	}
 
-	// @Test
-	// @DisplayName("루틴 목록 사용자 정보 조회 테스트")
-	// public void getUserInfoForRoutineListTest() throws Exception {
-	// 	// Given
-	// 	Long userIdByJwt = 1L;
-	// 	Long userIdParam = 2L;
-	// 	Long coachIdParam = 2L;
-	//
-	// 	setSecurityContextWithMockUserDetails(userIdByJwt);
-	//
-	// 	when(routineService.confirmIsMatching(userIdParam, coachIdParam, userIdByJwt)).thenReturn(routineCreatorDto);
-	// 	when(routineService.getUserInfoForRoutineList(userIdParam, coachIdParam)).thenReturn(userInfoForRoutineList);
-	//
-	// 	MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/routines/user")
-	// 			.contentType(MediaType.APPLICATION_JSON)
-	// 			.queryParam("userId", userIdParam.toString())
-	// 			.queryParam("coachId", coachIdParam.toString()))
-	// 		.andExpect(MockMvcResultMatchers.status().isOk())
-	// 		.andReturn();
-	//
-	// 	assertThat(result.getResponse().getContentAsString()).contains(userInfoForRoutineList.nickname());
-	// }
-
 	@Test
 	@DisplayName("루틴 추가 성공 테스트")
 	public void createRoutineSuccessTest() throws Exception {
@@ -231,7 +208,7 @@ public class RoutineControllerTest {
 
 		doNothing().when(routineService).deleteRoutine(1L, userIdByJwt);
 
-		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/routines/1").with(csrf()))
+		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v2/routines/1").with(csrf()))
 			.andExpect(MockMvcResultMatchers.status().isNoContent())
 			.andReturn();
 	}
@@ -244,7 +221,7 @@ public class RoutineControllerTest {
 		doThrow(new NotFoundException(ErrorMessage.NOT_FOUND_ROUTINE)).when(routineService)
 			.deleteRoutine(anyLong(), anyLong());
 
-		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/routines/" + routineId).with(csrf()))
+		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v2/routines/" + routineId).with(csrf()))
 			.andExpect(MockMvcResultMatchers.status().isNotFound())
 			.andReturn();
 
@@ -261,7 +238,7 @@ public class RoutineControllerTest {
 		doThrow(new AccessDeniedException()).when(routineService)
 			.deleteRoutine(routineId, userIdByJwt);
 
-		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/routines/" + routineId).with(csrf()))
+		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v2/routines/" + routineId).with(csrf()))
 			.andExpect(MockMvcResultMatchers.status().isForbidden())
 			.andReturn();
 
