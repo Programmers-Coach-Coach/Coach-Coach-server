@@ -56,7 +56,7 @@ public class RoutineController {
 			.body(new CreateRoutineResponse(HttpStatus.CREATED.value(), newRoutine.getRoutineId()));
 	}
 
-	@DeleteMapping("/v1/routines/{routineId}")
+	@DeleteMapping("/v2/routines/{routineId}")
 	public ResponseEntity<Void> deleteRoutine(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
 		@PathVariable(name = "routineId") Long routineId
