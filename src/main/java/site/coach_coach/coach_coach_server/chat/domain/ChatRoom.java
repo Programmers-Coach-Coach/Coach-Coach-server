@@ -1,4 +1,4 @@
-package site.coach_coach.coach_coach_server.chatroom.domain;
+package site.coach_coach.coach_coach_server.chat.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

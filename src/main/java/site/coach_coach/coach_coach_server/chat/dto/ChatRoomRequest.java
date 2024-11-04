@@ -1,4 +1,4 @@
-package site.coach_coach.coach_coach_server.chatroom.dto;
+package site.coach_coach.coach_coach_server.chat.dto;
 
 import jakarta.validation.constraints.NotNull;
 
