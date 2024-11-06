@@ -10,7 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
-import site.coach_coach.coach_coach_server.chat.dto.ChatRoomResponse;
+import site.coach_coach.coach_coach_server.chat.dto.CoachChatRoomsResponse;
+import site.coach_coach.coach_coach_server.chat.dto.UserChatRoomsResponse;
 import site.coach_coach.coach_coach_server.chat.service.ChatRoomService;
 
 @RestController
@@ -20,20 +21,20 @@ public class ChatRoomController {
 	ChatRoomService chatRoomService;
 
 	@GetMapping("/v1/users/chatrooms")
-	public ResponseEntity<List<ChatRoomResponse>> getUserChatRooms(
+	public ResponseEntity<List<UserChatRoomsResponse>> getUserChatRooms(
 		@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
 		Long userId = userDetails.getUserId();
-		List<ChatRoomResponse> chatRoomResponses = chatRoomService.findChatRoomsForUser(userId);
+		List<UserChatRoomsResponse> chatRoomResponses = chatRoomService.findChatRoomsForUser(userId);
 		return ResponseEntity.ok(chatRoomResponses);
 	}
 
 	@GetMapping("/v1/coaches/chatrooms")
-	public ResponseEntity<List<ChatRoomResponse>> getCoachChatRooms(
+	public ResponseEntity<List<CoachChatRoomsResponse>> getCoachChatRooms(
 		@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
 		Long userId = userDetails.getUserId();
-		List<ChatRoomResponse> chatRoomResponses = chatRoomService.findChatRoomsForCoach(userId);
+		List<CoachChatRoomsResponse> chatRoomResponses = chatRoomService.findChatRoomsForCoach(userId);
 		return ResponseEntity.ok(chatRoomResponses);
 	}
 }

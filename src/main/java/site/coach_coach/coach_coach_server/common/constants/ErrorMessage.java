@@ -14,7 +14,6 @@ public final class ErrorMessage {
 	public static final String EMPTY_NICKNAME = "닉네임을 입력해주세요.";
 	public static final String INVALID_NICKNAME = "닉네임 형식이 올바르지 않습니다.";
 
-	public static final String EMPTY_EMAIL = "이메일을 입력해주세요.";
 	public static final String INVALID_EMAIL = "이메일 형식이 올바르지 않습니다.";
 
 	public static final String EMPTY_PASSWORD = "비밀번호를 입력해주세요.";
@@ -30,10 +29,10 @@ public final class ErrorMessage {
 	public static final String NOT_FOUND_COACH = "존재하지 않는 코치입니다.";
 	public static final String NOT_FOUND_TOKEN = "토큰이 존재하지 않습니다.";
 	public static final String NOT_FOUND_ROUTINE = "존재하지 않는 루틴입니다.";
-	public static final String NOT_FOUND_ACTION = "존재하지 않는 운동입니다.";
 	public static final String NOT_FOUND_RECORD = "존재하지 않는 기록입니다.";
 	public static final String NOT_FOUND_NOTIFICATION = "해당 알림을 찾을 수 없습니다.";
 	public static final String NOT_FOUND_COMPLETED_ROUTINE = "아직 완료되지 않은 루틴입니다.";
+	public static final String NOT_FOUND_CHAT_ROOM = "존재하지 않는 채팅방입니다.";
 
 	public static final String EXPIRED_TOKEN = "만료된 토큰입니다.";
 	public static final String INVALID_TOKEN = "유효하지 않은 토큰입니다.";
