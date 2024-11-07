@@ -4,8 +4,11 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 
+import java.time.DayOfWeek;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -88,7 +91,9 @@ public class RoutineControllerTest {
 			.isDeleted(false)
 			.actions(new ArrayList<>())
 			.build();
-		routineDto = new RoutineDto(1L, "RoutineName", "SportName", false, new ArrayList<>());
+		Set<DayOfWeek> repeats = new HashSet<DayOfWeek>();
+		repeats.add(DayOfWeek.MONDAY);
+		routineDto = new RoutineDto(1L, "RoutineName", "SportName", repeats, false, new ArrayList<>());
 		routineListDto = new RoutineListDto(0.7f, List.of(routineDto));
 		userInfoForRoutineList = new UserInfoForRoutineList(1L, "nickname", "profileImageUrl");
 	}
@@ -158,7 +163,8 @@ public class RoutineControllerTest {
 		// Given
 		Long userIdByJwt = 1L;
 		Long routineId = 1L;
-		String[] repeats = {"MONDAY"};
+		Set<DayOfWeek> repeats = new HashSet<DayOfWeek>();
+		repeats.add(DayOfWeek.MONDAY);
 		CreateRoutineRequest createRoutineRequest =
 			new CreateRoutineRequest(2L, "routineName", 1L, repeats, new ArrayList<>());
 
@@ -184,7 +190,8 @@ public class RoutineControllerTest {
 	public void createdRoutineFailTest() throws Exception {
 		// Given
 		Long userIdByJwt = 1L;
-		String[] repeats = {"MONDAY"};
+		Set<DayOfWeek> repeats = new HashSet<DayOfWeek>();
+		repeats.add(DayOfWeek.MONDAY);
 		CreateRoutineRequest createRoutineRequest =
 			new CreateRoutineRequest(null, "  ", 1L, repeats, new ArrayList<>());
 
