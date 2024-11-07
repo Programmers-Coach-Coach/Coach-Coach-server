@@ -47,7 +47,7 @@ public class ChatRoomController {
 		@PathVariable(name = "chatRoomId") Long chatRoomId,
 		Pageable pageable
 	) {
-		Slice<ChatMessageResponse> messages = chatRoomService.getChatMessages(chatRoomId, pageable);
+		Slice<ChatMessageResponse> messages = chatRoomService.findChatMessagesByChatRoomId(chatRoomId, pageable);
 		return ResponseEntity.ok(messages);
 	}
 }

@@ -78,7 +78,7 @@ public class ChatRoomService {
 	}
 
 	@Transactional(readOnly = true)
-	public Slice<ChatMessageResponse> getChatMessages(Long chatRoomId, Pageable pageable) {
+	public Slice<ChatMessageResponse> findChatMessagesByChatRoomId(Long chatRoomId, Pageable pageable) {
 		return chatMessageRepository
 			.findByChatRoomIdOrderByCreatedAtDesc(chatRoomId, pageable)
 			.map(this::toChatMessageResponse);
