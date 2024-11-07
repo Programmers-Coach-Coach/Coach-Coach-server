@@ -4,11 +4,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.chat.domain.ChatMessage;
 import site.coach_coach.coach_coach_server.chat.domain.ChatRoom;
+import site.coach_coach.coach_coach_server.chat.dto.ChatMessageResponse;
 import site.coach_coach.coach_coach_server.chat.dto.ChatRoomRequest;
 import site.coach_coach.coach_coach_server.chat.dto.CoachChatRoomsResponse;
 import site.coach_coach.coach_coach_server.chat.dto.UserChatRoomsResponse;
@@ -36,6 +40,7 @@ public class ChatRoomService {
 	private final CoachService coachService;
 	private final ChatMessageRepository chatMessageRepository;
 
+	@Transactional
 	public Long createChatRoom(ChatRoomRequest chatRoomRequest) {
 		User user = userRepository.findById(chatRoomRequest.userId())
 			.orElseThrow(UserNotFoundException::new);
@@ -55,6 +60,7 @@ public class ChatRoomService {
 		return chatRoom.getChatRoomId();
 	}
 
+	@Transactional(readOnly = true)
 	public List<UserChatRoomsResponse> findChatRoomsForUser(Long userId) {
 		return chatRoomRepository.findByUser_UserId(userId)
 			.stream()
@@ -62,12 +68,20 @@ public class ChatRoomService {
 			.collect(Collectors.toList());
 	}
 
+	@Transactional(readOnly = true)
 	public List<CoachChatRoomsResponse> findChatRoomsForCoach(Long userId) {
 		Coach coach = coachService.getCoachByUserId(userId);
 		return chatRoomRepository.findByCoach_CoachId(coach.getCoachId())
 			.stream()
 			.map(this::toChatRoomResponseForCoach)
 			.collect(Collectors.toList());
+	}
+
+	@Transactional(readOnly = true)
+	public Slice<ChatMessageResponse> getChatMessages(Long chatRoomId, Pageable pageable) {
+		return chatMessageRepository
+			.findByChatRoomIdOrderByCreatedAtDesc(chatRoomId, pageable)
+			.map(this::toChatMessageResponse);
 	}
 
 	private UserChatRoomsResponse toChatRoomResponseForUser(ChatRoom chatRoom) {
@@ -110,5 +124,15 @@ public class ChatRoomService {
 		return coach.getCoachingSports().stream()
 			.map(CoachingSport::getSportName)
 			.collect(Collectors.toList());
+	}
+
+	private ChatMessageResponse toChatMessageResponse(ChatMessage chatMessage) {
+		return new ChatMessageResponse(
+			chatMessage.getSenderId(),
+			chatMessage.getSenderRole(),
+			chatMessage.getMessage(),
+			chatMessage.isRead(),
+			chatMessage.getCreatedAt()
+		);
 	}
 }
