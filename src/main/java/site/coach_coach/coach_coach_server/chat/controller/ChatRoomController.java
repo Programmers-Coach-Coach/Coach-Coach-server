@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
-import site.coach_coach.coach_coach_server.chat.dto.ChatMessageResponse;
-import site.coach_coach.coach_coach_server.chat.dto.CoachChatRoomsResponse;
-import site.coach_coach.coach_coach_server.chat.dto.UserChatRoomsResponse;
+import site.coach_coach.coach_coach_server.chat.dto.response.ChatMessageResponse;
+import site.coach_coach.coach_coach_server.chat.dto.response.CoachChatRoomsResponse;
+import site.coach_coach.coach_coach_server.chat.dto.response.UserChatRoomsResponse;
 import site.coach_coach.coach_coach_server.chat.service.ChatRoomService;
 
 @RestController
@@ -44,10 +44,13 @@ public class ChatRoomController {
 
 	@GetMapping("/v1/chat-rooms/{chatRoomId}/messages")
 	public ResponseEntity<Slice<ChatMessageResponse>> getChatMessages(
+		@AuthenticationPrincipal CustomUserDetails userDetails,
 		@PathVariable(name = "chatRoomId") Long chatRoomId,
 		Pageable pageable
 	) {
-		Slice<ChatMessageResponse> messages = chatRoomService.findChatMessagesByChatRoomId(chatRoomId, pageable);
+		Long userId = userDetails.getUserId();
+		Slice<ChatMessageResponse> messages = chatRoomService
+			.findChatMessagesByChatRoomId(userId, chatRoomId, pageable);
 		return ResponseEntity.ok(messages);
 	}
 }

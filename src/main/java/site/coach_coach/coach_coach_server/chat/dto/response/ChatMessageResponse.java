@@ -1,4 +1,4 @@
-package site.coach_coach.coach_coach_server.chat.dto;
+package site.coach_coach.coach_coach_server.chat.dto.response;
 
 import java.time.LocalDateTime;
 

@@ -1,7 +1,6 @@
 package site.coach_coach.coach_coach_server.chat.service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Pageable;
@@ -10,23 +9,24 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import site.coach_coach.coach_coach_server.chat.domain.ChatMessage;
 import site.coach_coach.coach_coach_server.chat.domain.ChatRoom;
-import site.coach_coach.coach_coach_server.chat.dto.ChatMessageResponse;
-import site.coach_coach.coach_coach_server.chat.dto.ChatRoomRequest;
-import site.coach_coach.coach_coach_server.chat.dto.CoachChatRoomsResponse;
-import site.coach_coach.coach_coach_server.chat.dto.UserChatRoomsResponse;
+import site.coach_coach.coach_coach_server.chat.dto.mapper.ChatMessageMapper;
+import site.coach_coach.coach_coach_server.chat.dto.mapper.ChatRoomMapper;
+import site.coach_coach.coach_coach_server.chat.dto.request.ChatRoomRequest;
+import site.coach_coach.coach_coach_server.chat.dto.response.ChatMessageResponse;
+import site.coach_coach.coach_coach_server.chat.dto.response.CoachChatRoomsResponse;
+import site.coach_coach.coach_coach_server.chat.dto.response.UserChatRoomsResponse;
 import site.coach_coach.coach_coach_server.chat.repository.ChatMessageRepository;
 import site.coach_coach.coach_coach_server.chat.repository.ChatRoomRepository;
 import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.coach.repository.CoachRepository;
 import site.coach_coach.coach_coach_server.coach.service.CoachService;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
+import site.coach_coach.coach_coach_server.common.exception.AccessDeniedException;
 import site.coach_coach.coach_coach_server.common.exception.NotFoundException;
 import site.coach_coach.coach_coach_server.common.exception.UserNotFoundException;
 import site.coach_coach.coach_coach_server.matching.domain.Matching;
 import site.coach_coach.coach_coach_server.matching.repository.MatchingRepository;
-import site.coach_coach.coach_coach_server.sport.domain.CoachingSport;
 import site.coach_coach.coach_coach_server.user.domain.User;
 import site.coach_coach.coach_coach_server.user.repository.UserRepository;
 
@@ -46,7 +46,7 @@ public class ChatRoomService {
 			.orElseThrow(UserNotFoundException::new);
 
 		Coach coach = coachRepository.findById(chatRoomRequest.coachId())
-			.orElseThrow(UserNotFoundException::new);
+			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_COACH));
 
 		Matching matching = matchingRepository.findById(chatRoomRequest.matchingId())
 			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_MATCHING));
@@ -64,7 +64,7 @@ public class ChatRoomService {
 	public List<UserChatRoomsResponse> findChatRoomsForUser(Long userId) {
 		return chatRoomRepository.findByUser_UserId(userId)
 			.stream()
-			.map(this::toChatRoomResponseForUser)
+			.map(chatRoom -> ChatRoomMapper.toUserChatRoomsResponse(chatRoom, chatMessageRepository))
 			.collect(Collectors.toList());
 	}
 
@@ -73,66 +73,28 @@ public class ChatRoomService {
 		Coach coach = coachService.getCoachByUserId(userId);
 		return chatRoomRepository.findByCoach_CoachId(coach.getCoachId())
 			.stream()
-			.map(this::toChatRoomResponseForCoach)
+			.map(chatRoom -> ChatRoomMapper.toCoachChatRoomsResponse(chatRoom, chatMessageRepository))
 			.collect(Collectors.toList());
 	}
 
 	@Transactional(readOnly = true)
-	public Slice<ChatMessageResponse> findChatMessagesByChatRoomId(Long chatRoomId, Pageable pageable) {
+	public Slice<ChatMessageResponse> findChatMessagesByChatRoomId(Long userId, Long chatRoomId, Pageable pageable) {
+		validateUserRoleForChatRoom(userId, chatRoomId);
 		return chatMessageRepository
 			.findByChatRoomIdOrderByCreatedAtDesc(chatRoomId, pageable)
-			.map(this::toChatMessageResponse);
+			.map(ChatMessageMapper::toChatMessageResponse);
 	}
 
-	private UserChatRoomsResponse toChatRoomResponseForUser(ChatRoom chatRoom) {
-		Coach coach = chatRoom.getCoach();
-		User coachUser = coach.getUser();
-		return new UserChatRoomsResponse(
-			chatRoom.getChatRoomId(),
-			coach.getCoachId(),
-			coachUser.getNickname(),
-			coachUser.getProfileImageUrl(),
-			chatRoom.getMatching() != null && chatRoom.getMatching().getIsMatching(),
-			getCoachingSports(coach),
-			coach.getActiveHours(),
-			getLastMessage(chatRoom).map(ChatMessage::getMessage).orElse(""),
-			getLastMessage(chatRoom).map(ChatMessage::getCreatedAt).orElse(null)
-		);
-	}
+	private void validateUserRoleForChatRoom(Long userId, Long chatRoomId) {
+		ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_CHAT_ROOM));
 
-	private CoachChatRoomsResponse toChatRoomResponseForCoach(ChatRoom chatRoom) {
-		User user = chatRoom.getUser();
-		return new CoachChatRoomsResponse(
-			chatRoom.getChatRoomId(),
-			user.getUserId(),
-			user.getNickname(),
-			user.getProfileImageUrl(),
-			chatRoom.getMatching() != null && chatRoom.getMatching().getIsMatching(),
-			getLastMessage(chatRoom).map(ChatMessage::getMessage).orElse(""),
-			getLastMessage(chatRoom).map(ChatMessage::getCreatedAt).orElse(null)
-		);
-	}
+		boolean isUser = chatRoom.getUser().getUserId().equals(userId);
+		boolean isCoach = chatRoom.getCoach() != null
+			&& chatRoom.getCoach().getUser().getUserId().equals(userId);
 
-	private Optional<ChatMessage> getLastMessage(ChatRoom chatRoom) {
-		return chatMessageRepository
-			.findTopByChatRoomIdOrderByCreatedAt(chatRoom.getChatRoomId())
-			.stream()
-			.findFirst();
-	}
-
-	private List<String> getCoachingSports(Coach coach) {
-		return coach.getCoachingSports().stream()
-			.map(CoachingSport::getSportName)
-			.collect(Collectors.toList());
-	}
-
-	private ChatMessageResponse toChatMessageResponse(ChatMessage chatMessage) {
-		return new ChatMessageResponse(
-			chatMessage.getSenderId(),
-			chatMessage.getSenderRole(),
-			chatMessage.getMessage(),
-			chatMessage.isRead(),
-			chatMessage.getCreatedAt()
-		);
+		if (!isUser && !isCoach) {
+			throw new AccessDeniedException();
+		}
 	}
 }

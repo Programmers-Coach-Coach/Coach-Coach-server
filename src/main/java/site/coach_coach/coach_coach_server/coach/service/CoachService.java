@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import site.coach_coach.coach_coach_server.chat.dto.ChatRoomRequest;
+import site.coach_coach.coach_coach_server.chat.dto.request.ChatRoomRequest;
 import site.coach_coach.coach_coach_server.chat.repository.ChatRoomRepository;
 import site.coach_coach.coach_coach_server.chat.service.ChatRoomService;
 import site.coach_coach.coach_coach_server.coach.domain.Coach;
