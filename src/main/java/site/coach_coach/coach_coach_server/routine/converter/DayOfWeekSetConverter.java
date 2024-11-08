@@ -2,7 +2,6 @@ package site.coach_coach.coach_coach_server.routine.converter;
 
 import java.time.DayOfWeek;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -19,8 +18,7 @@ public class DayOfWeekSetConverter implements AttributeConverter<Set<DayOfWeek>,
 
 	@Override
 	public Set<DayOfWeek> convertToEntityAttribute(String dbData) {
-		return new HashSet<>(Arrays.asList(dbData.split(",")))
-			.stream()
+		return Arrays.stream(dbData.split(","))
 			.map(DayOfWeek::valueOf)
 			.collect(Collectors.toSet());
 	}
