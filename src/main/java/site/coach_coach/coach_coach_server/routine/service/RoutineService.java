@@ -1,5 +1,7 @@
 package site.coach_coach.coach_coach_server.routine.service;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -84,18 +86,20 @@ public class RoutineService {
 			routines = routineRepository.findByUser_UserIdAndCoach_CoachId(routineCreatorDto.userId(),
 				routineCreatorDto.coachId());
 		}
-
+		ZonedDateTime nowInKorea = ZonedDateTime.now(ZoneId.of("Asia/Seoul"));
 		routines.forEach((routine) -> {
-			RoutineDto dto = RoutineDto.from(routine);
-			if (dto.isCompleted()) {
-				numberOfCompletedRoutine += 1;
+			RoutineDto dto = RoutineDto.convertToDtoWithoutNullAction(routine);
+			if (dto.repeats().contains(nowInKorea.getDayOfWeek())) {
+				if (dto.isCompleted()) {
+					numberOfCompletedRoutine += 1;
+				}
+				routineListDto.routineDtos().add(dto);
 			}
-			routineListDto.routines().add(dto);
 		});
 
-		if (!routineListDto.routines().isEmpty() && numberOfCompletedRoutine != 0) {
+		if (!routineListDto.routineDtos().isEmpty() && numberOfCompletedRoutine != 0) {
 			return routineListDto.setCompletionPercentage(
-				((float)numberOfCompletedRoutine / routineListDto.routines().size()));
+				(Math.round((float)numberOfCompletedRoutine / routineListDto.routineDtos().size() * 100) / 100.0f));
 		} else {
 			return routineListDto.setCompletionPercentage(0.0f);
 		}
@@ -117,7 +121,8 @@ public class RoutineService {
 			.routineName(createRoutineRequest.routineName())
 			.sport(sport)
 			.isCompleted(false)
-			.isDeleted(false);
+			.isDeleted(false)
+			.repeats(createRoutineRequest.repeats());
 
 		if (createRoutineRequest.userId() != null) {
 			Long coachId = getCoachId(userIdByJwt);
@@ -142,7 +147,7 @@ public class RoutineService {
 
 		Sport sport = sportRepository.findById(updateRoutineInfoRequest.sportId())
 			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_SPORTS));
-		routine.updateRoutineInfo(updateRoutineInfoRequest.routineName(), sport);
+		routine.updateRoutineInfo(updateRoutineInfoRequest, sport);
 	}
 
 	@Transactional

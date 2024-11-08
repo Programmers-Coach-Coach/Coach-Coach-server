@@ -1,6 +1,8 @@
 package site.coach_coach.coach_coach_server.routine.dto;
 
+import java.time.DayOfWeek;
 import java.util.List;
+import java.util.Set;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -17,7 +19,7 @@ public record CreateRoutineRequest(
 	Long sportId,
 
 	@NotNull
-	String[] repeats,
+	Set<DayOfWeek> repeats,
 
 	List<ActionDto> actions
 ) {
