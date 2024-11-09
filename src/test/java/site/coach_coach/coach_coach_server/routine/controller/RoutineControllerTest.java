@@ -4,8 +4,11 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 
+import java.time.DayOfWeek;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -88,7 +91,9 @@ public class RoutineControllerTest {
 			.isDeleted(false)
 			.actions(new ArrayList<>())
 			.build();
-		routineDto = new RoutineDto(1L, "RoutineName", "SportName", false, new ArrayList<>());
+		Set<DayOfWeek> repeats = new HashSet<DayOfWeek>();
+		repeats.add(DayOfWeek.MONDAY);
+		routineDto = new RoutineDto(1L, "RoutineName", "SportName", repeats, false, new ArrayList<>());
 		routineListDto = new RoutineListDto(0.7f, List.of(routineDto));
 		userInfoForRoutineList = new UserInfoForRoutineList(1L, "nickname", "profileImageUrl");
 	}
@@ -152,36 +157,14 @@ public class RoutineControllerTest {
 		assertThat(result.getResponse().getContentAsString()).contains("[]");
 	}
 
-	// @Test
-	// @DisplayName("루틴 목록 사용자 정보 조회 테스트")
-	// public void getUserInfoForRoutineListTest() throws Exception {
-	// 	// Given
-	// 	Long userIdByJwt = 1L;
-	// 	Long userIdParam = 2L;
-	// 	Long coachIdParam = 2L;
-	//
-	// 	setSecurityContextWithMockUserDetails(userIdByJwt);
-	//
-	// 	when(routineService.confirmIsMatching(userIdParam, coachIdParam, userIdByJwt)).thenReturn(routineCreatorDto);
-	// 	when(routineService.getUserInfoForRoutineList(userIdParam, coachIdParam)).thenReturn(userInfoForRoutineList);
-	//
-	// 	MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/routines/user")
-	// 			.contentType(MediaType.APPLICATION_JSON)
-	// 			.queryParam("userId", userIdParam.toString())
-	// 			.queryParam("coachId", coachIdParam.toString()))
-	// 		.andExpect(MockMvcResultMatchers.status().isOk())
-	// 		.andReturn();
-	//
-	// 	assertThat(result.getResponse().getContentAsString()).contains(userInfoForRoutineList.nickname());
-	// }
-
 	@Test
 	@DisplayName("루틴 추가 성공 테스트")
 	public void createRoutineSuccessTest() throws Exception {
 		// Given
 		Long userIdByJwt = 1L;
 		Long routineId = 1L;
-		String[] repeats = {"MONDAY"};
+		Set<DayOfWeek> repeats = new HashSet<DayOfWeek>();
+		repeats.add(DayOfWeek.MONDAY);
 		CreateRoutineRequest createRoutineRequest =
 			new CreateRoutineRequest(2L, "routineName", 1L, repeats, new ArrayList<>());
 
@@ -207,7 +190,8 @@ public class RoutineControllerTest {
 	public void createdRoutineFailTest() throws Exception {
 		// Given
 		Long userIdByJwt = 1L;
-		String[] repeats = {"MONDAY"};
+		Set<DayOfWeek> repeats = new HashSet<DayOfWeek>();
+		repeats.add(DayOfWeek.MONDAY);
 		CreateRoutineRequest createRoutineRequest =
 			new CreateRoutineRequest(null, "  ", 1L, repeats, new ArrayList<>());
 
@@ -231,7 +215,7 @@ public class RoutineControllerTest {
 
 		doNothing().when(routineService).deleteRoutine(1L, userIdByJwt);
 
-		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/routines/1").with(csrf()))
+		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v2/routines/1").with(csrf()))
 			.andExpect(MockMvcResultMatchers.status().isNoContent())
 			.andReturn();
 	}
@@ -244,7 +228,7 @@ public class RoutineControllerTest {
 		doThrow(new NotFoundException(ErrorMessage.NOT_FOUND_ROUTINE)).when(routineService)
 			.deleteRoutine(anyLong(), anyLong());
 
-		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/routines/" + routineId).with(csrf()))
+		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v2/routines/" + routineId).with(csrf()))
 			.andExpect(MockMvcResultMatchers.status().isNotFound())
 			.andReturn();
 
@@ -261,7 +245,7 @@ public class RoutineControllerTest {
 		doThrow(new AccessDeniedException()).when(routineService)
 			.deleteRoutine(routineId, userIdByJwt);
 
-		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/routines/" + routineId).with(csrf()))
+		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/v2/routines/" + routineId).with(csrf()))
 			.andExpect(MockMvcResultMatchers.status().isForbidden())
 			.andReturn();
 

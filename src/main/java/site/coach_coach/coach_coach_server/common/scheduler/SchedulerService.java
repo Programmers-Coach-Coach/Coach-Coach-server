@@ -1,4 +1,4 @@
-package site.coach_coach.coach_coach_server.common.Scheduler;
+package site.coach_coach.coach_coach_server.common.scheduler;
 
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
