@@ -1,12 +1,15 @@
 package site.coach_coach.coach_coach_server.routine.domain;
 
+import java.time.DayOfWeek;
 import java.util.List;
+import java.util.Set;
 
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -15,7 +18,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -26,7 +28,8 @@ import lombok.NoArgsConstructor;
 import site.coach_coach.coach_coach_server.action.domain.Action;
 import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.common.domain.DateEntity;
-import site.coach_coach.coach_coach_server.repeatdate.domain.RepeatDate;
+import site.coach_coach.coach_coach_server.routine.converter.DayOfWeekSetConverter;
+import site.coach_coach.coach_coach_server.routine.dto.UpdateRoutineInfoRequest;
 import site.coach_coach.coach_coach_server.sport.domain.Sport;
 import site.coach_coach.coach_coach_server.user.domain.User;
 
@@ -75,12 +78,15 @@ public class Routine extends DateEntity {
 	@OneToMany(mappedBy = "routine")
 	private List<Action> actions;
 
-	@OneToOne(mappedBy = "routine")
-	private RepeatDate repeatDate;
+	@NotNull
+	@Column(name = "repeat_date")
+	@Convert(converter = DayOfWeekSetConverter.class)
+	private Set<DayOfWeek> repeats;
 
-	public void updateRoutineInfo(String routineName, Sport sport) {
-		this.routineName = routineName;
+	public void updateRoutineInfo(UpdateRoutineInfoRequest updateRoutineInfoRequest, Sport sport) {
+		this.routineName = updateRoutineInfoRequest.routineName();
 		this.sport = sport;
+		this.repeats = updateRoutineInfoRequest.repeats();
 	}
 
 	public void changeIsCompleted() {
