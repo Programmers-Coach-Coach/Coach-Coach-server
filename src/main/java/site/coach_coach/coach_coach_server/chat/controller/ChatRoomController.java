@@ -22,7 +22,7 @@ import site.coach_coach.coach_coach_server.chat.service.ChatRoomService;
 @RequiredArgsConstructor
 @RequestMapping("/api")
 public class ChatRoomController {
-	ChatRoomService chatRoomService;
+	private final ChatRoomService chatRoomService;
 
 	@GetMapping("/v1/users/chat-rooms")
 	public ResponseEntity<List<UserChatRoomsResponse>> getUserChatRooms(

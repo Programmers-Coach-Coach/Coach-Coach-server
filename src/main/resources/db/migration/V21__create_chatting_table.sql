@@ -16,10 +16,10 @@ ALTER TABLE `coachcoach`.`chat_rooms`
     ADD CONSTRAINT `fk_chat_rooms_coach_id`
         FOREIGN KEY (`coach_id`)
             REFERENCES `coachcoach`.`coaches` (`coach_id`)
-            ON DELETE NO ACTION
+            ON DELETE CASCADE
             ON UPDATE NO ACTION,
     ADD CONSTRAINT `fk_chat_rooms_user_id`
         FOREIGN KEY (`user_id`)
             REFERENCES `coachcoach`.`users` (`user_id`)
-            ON DELETE NO ACTION
+            ON DELETE CASCADE
             ON UPDATE NO ACTION;

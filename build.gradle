@@ -54,7 +54,7 @@ dependencies {
     //db (mysql, mongo, flyway)
     implementation 'org.flywaydb:flyway-mysql'
     runtimeOnly 'com.mysql:mysql-connector-j'
-    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 
     // websocket
     implementation 'org.springframework.boot:spring-boot-starter-websocket'

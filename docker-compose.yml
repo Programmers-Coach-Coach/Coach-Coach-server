@@ -27,22 +27,8 @@ services:
     networks:
       - coachcoach-network
 
-  mongo:
-    image: mongo:7.0.5
-    container_name: coachcoach-mongo
-    ports:
-      - "27017:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: coachcoach
-      MONGO_INITDB_ROOT_PASSWORD: coach1234
-    volumes:
-      - mongo_data:/data/db
-    networks:
-      - coachcoach-network
-
 networks:
   coachcoach-network:
 
 volumes:
   db_data:
-  mongo_data:

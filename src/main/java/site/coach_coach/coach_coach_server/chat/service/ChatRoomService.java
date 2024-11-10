@@ -20,7 +20,6 @@ import site.coach_coach.coach_coach_server.chat.repository.ChatMessageRepository
 import site.coach_coach.coach_coach_server.chat.repository.ChatRoomRepository;
 import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.coach.repository.CoachRepository;
-import site.coach_coach.coach_coach_server.coach.service.CoachService;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.common.exception.AccessDeniedException;
 import site.coach_coach.coach_coach_server.common.exception.NotFoundException;
@@ -37,7 +36,6 @@ public class ChatRoomService {
 	private final CoachRepository coachRepository;
 	private final MatchingRepository matchingRepository;
 	private final ChatRoomRepository chatRoomRepository;
-	private final CoachService coachService;
 	private final ChatMessageRepository chatMessageRepository;
 
 	@Transactional
@@ -70,7 +68,8 @@ public class ChatRoomService {
 
 	@Transactional(readOnly = true)
 	public List<CoachChatRoomsResponse> findChatRoomsForCoach(Long userId) {
-		Coach coach = coachService.getCoachByUserId(userId);
+		Coach coach = coachRepository.findByUser_UserId(userId)
+			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_COACH));
 		return chatRoomRepository.findByCoach_CoachId(coach.getCoachId())
 			.stream()
 			.map(chatRoom -> ChatRoomMapper.toCoachChatRoomsResponse(chatRoom, chatMessageRepository))
