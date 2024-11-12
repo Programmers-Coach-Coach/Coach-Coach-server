@@ -5,10 +5,10 @@ import java.util.List;
 public record RoutineListDto(
 	float completionPercentage,
 
-	List<RoutineDto> routineDtos
+	List<RoutineDto> routines
 ) {
 	public RoutineListDto setCompletionPercentage(float completionPercentage) {
 
-		return new RoutineListDto(completionPercentage, this.routineDtos);
+		return new RoutineListDto(completionPercentage, this.routines);
 	}
 }

@@ -93,13 +93,13 @@ public class RoutineService {
 				if (dto.isCompleted()) {
 					numberOfCompletedRoutine += 1;
 				}
-				routineListDto.routineDtos().add(dto);
+				routineListDto.routines().add(dto);
 			}
 		});
 
-		if (!routineListDto.routineDtos().isEmpty() && numberOfCompletedRoutine != 0) {
+		if (!routineListDto.routines().isEmpty() && numberOfCompletedRoutine != 0) {
 			return routineListDto.setCompletionPercentage(
-				(Math.round((float)numberOfCompletedRoutine / routineListDto.routineDtos().size() * 100) / 100.0f));
+				(Math.round((float)numberOfCompletedRoutine / routineListDto.routines().size() * 100) / 100.0f));
 		} else {
 			return routineListDto.setCompletionPercentage(0.0f);
 		}
