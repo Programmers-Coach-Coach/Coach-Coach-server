@@ -1,4 +1,4 @@
-package site.coach_coach.coach_coach_server.maininfo.dto;
+package site.coach_coach.coach_coach_server.coach.dto;
 
 import java.util.List;
 
@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import site.coach_coach.coach_coach_server.sport.dto.CoachingSportDto;
 
-public record MainInfoCoachDto(
+public record PopularCoachDto(
 	@NotNull
 	Long coachId,
 	@NotBlank
