@@ -23,8 +23,8 @@ public interface CompletedRoutineRepository extends JpaRepository<CompletedRouti
 	@Query("SELECT cr FROM CompletedRoutine cr "
 		+ "LEFT JOIN FETCH cr.routine r "
 		+ "LEFT JOIN FETCH r.coach "
-		+ "WHERE cr.userRecord.user.userId =: userId "
-		+ "AND cr.userRecord.recordDate =: recordDate")
+		+ "WHERE cr.userRecord.user.userId = :userId "
+		+ "AND cr.userRecord.recordDate = :recordDate")
 	List<CompletedRoutine> findAllWithDetailsByUserIdAndRecordDate(
 		@Param("userId") Long userId,
 		@Param("recordDate") LocalDate recordDate
