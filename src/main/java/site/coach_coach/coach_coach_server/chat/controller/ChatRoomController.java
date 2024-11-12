@@ -17,6 +17,7 @@ import site.coach_coach.coach_coach_server.chat.dto.response.ChatMessageResponse
 import site.coach_coach.coach_coach_server.chat.dto.response.CoachChatRoomsResponse;
 import site.coach_coach.coach_coach_server.chat.dto.response.UserChatRoomsResponse;
 import site.coach_coach.coach_coach_server.chat.service.ChatRoomService;
+import site.coach_coach.coach_coach_server.user.domain.User;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,8 +29,8 @@ public class ChatRoomController {
 	public ResponseEntity<List<UserChatRoomsResponse>> getUserChatRooms(
 		@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
-		Long userId = userDetails.getUserId();
-		List<UserChatRoomsResponse> chatRoomResponses = chatRoomService.findChatRoomsForUser(userId);
+		User user = userDetails.getUser();
+		List<UserChatRoomsResponse> chatRoomResponses = chatRoomService.findChatRoomsForUser(user);
 		return ResponseEntity.ok(chatRoomResponses);
 	}
 
@@ -37,8 +38,8 @@ public class ChatRoomController {
 	public ResponseEntity<List<CoachChatRoomsResponse>> getCoachChatRooms(
 		@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
-		Long userId = userDetails.getUserId();
-		List<CoachChatRoomsResponse> chatRoomResponses = chatRoomService.findChatRoomsForCoach(userId);
+		User user = userDetails.getUser();
+		List<CoachChatRoomsResponse> chatRoomResponses = chatRoomService.findChatRoomsForCoach(user);
 		return ResponseEntity.ok(chatRoomResponses);
 	}
 
