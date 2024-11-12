@@ -161,6 +161,26 @@ public class UserRecordService {
 		);
 	}
 
+	@Transactional(readOnly = true)
+	public UserRecordDetailResponse getUserRecordDetailV2(Long userId, LocalDate recordDate) {
+		UserRecord userRecord = userRecordRepository.findByRecordDateAndUser_UserId(recordDate, userId)
+			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_RECORD));
+
+		List<CompletedRoutine> completedRoutines =
+			completedRoutineRepository.findAllWithDetailsByUserIdAndRecordDate(userId, recordDate);
+
+		List<RecordsDto> records = mapToRecordsDto(completedRoutines);
+
+		return new UserRecordDetailResponse(
+			userRecord.getUserRecordId(),
+			userRecord.getWeight(),
+			userRecord.getSkeletalMuscle(),
+			userRecord.getFatPercentage(),
+			userRecord.getBmi(),
+			records
+		);
+	}
+
 	public UserRecord getUserRecordForCompleteRoutine(Long userId) {
 		LocalDate recordDate = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDate();
 		return userRecordRepository.findByRecordDateAndUser_UserId(recordDate, userId)

@@ -1,7 +1,9 @@
 package site.coach_coach.coach_coach_server.userrecord.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -78,6 +80,18 @@ public class UserRecordController {
 	) {
 		Long userId = userDetails.getUserId();
 		UserRecordDetailResponse detailResponse = userRecordService.getUserRecordDetail(userId, recordId);
+		return ResponseEntity.ok(detailResponse);
+	}
+
+	@GetMapping("/v2/records")
+	public ResponseEntity<UserRecordDetailResponse> getUserRecordDetailV2(
+		@AuthenticationPrincipal CustomUserDetails userDetails,
+		@RequestParam(name = "date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate recordDate
+	) {
+		Long userId = userDetails.getUserId();
+		UserRecordDetailResponse detailResponse = userRecordService.getUserRecordDetailV2(
+			userId, recordDate
+		);
 		return ResponseEntity.ok(detailResponse);
 	}
 
