@@ -42,6 +42,7 @@ import site.coach_coach.coach_coach_server.review.repository.ReviewRepository;
 import site.coach_coach.coach_coach_server.sport.domain.CoachingSport;
 import site.coach_coach.coach_coach_server.sport.domain.Sport;
 import site.coach_coach.coach_coach_server.sport.dto.CoachingSportDto;
+import site.coach_coach.coach_coach_server.sport.dto.InterestedSportDto;
 import site.coach_coach.coach_coach_server.sport.repository.CoachingSportRepository;
 import site.coach_coach.coach_coach_server.sport.repository.SportRepository;
 import site.coach_coach.coach_coach_server.user.domain.User;
@@ -280,6 +281,7 @@ public class CoachService {
 		}
 	}
 
+
 	public List<MatchingUserResponseDto> getMatchingUsersByCoachId(Long coachUserId) {
 		Long coachId = coachRepository.findCoachIdByUserId(coachUserId)
 			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_COACH));
@@ -294,13 +296,26 @@ public class CoachService {
 	private MatchingUserResponseDto buildMatchingUserResponseDto(Matching matching) {
 		User user = matching.getUser();
 
+		List<InterestedSportDto> interestedSports = user.getInterestedSports().stream()
+			.map(cs -> new InterestedSportDto(
+				cs.getSport().getSportId(),
+				cs.getSport().getSportName()
+			))
+			.collect(Collectors.toList());
+
+		String startDate = matching.getUpdatedAt().toString();
+
 		return new MatchingUserResponseDto(
 			user.getUserId(),
 			user.getNickname(),
 			user.getProfileImageUrl(),
+			user.getLocalAddress(),
+			interestedSports,
+			startDate,
 			matching.getIsMatching()
 		);
 	}
+
 
 	@Transactional
 	public void addReview(Long userId, Long coachId, ReviewRequestDto requestDto) {
@@ -348,19 +363,33 @@ public class CoachService {
 
 	public List<MatchingCoachResponseDto> getMatchingCoachesByUserId(Long userId) {
 		List<Matching> matchings = matchingRepository.findByUser_UserId(userId);
+		User user = userRepository.findById(userId)
+			.orElseThrow(UserNotFoundException::new);
 
 		return matchings.stream()
-			.map(this::buildMatchingCoachResponseDto)
+			.map(matching -> buildMatchingCoachResponseDto(matching, user))
 			.collect(Collectors.toList());
 	}
 
-	private MatchingCoachResponseDto buildMatchingCoachResponseDto(Matching matching) {
+	private MatchingCoachResponseDto buildMatchingCoachResponseDto(Matching matching, User user) {
 		Coach coach = matching.getCoach();
+
+		boolean isLiked = isLikedByUser(user, coach);
+
+		List<CoachingSportDto> coachingSports = coach.getCoachingSports().stream()
+			.map(cs -> new CoachingSportDto(
+				cs.getSport().getSportId(),
+				cs.getSport().getSportName()
+			))
+			.collect(Collectors.toList());
 
 		return new MatchingCoachResponseDto(
 			coach.getCoachId(),
 			coach.getUser().getNickname(),
 			coach.getUser().getProfileImageUrl(),
+			coach.getUser().getLocalAddress(),
+			coachingSports,
+			isLiked,
 			matching.getIsMatching()
 		);
 	}
