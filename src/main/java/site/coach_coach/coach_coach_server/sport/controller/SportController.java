@@ -13,12 +13,12 @@ import site.coach_coach.coach_coach_server.sport.service.SportService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1")
+@RequestMapping("/api")
 public class SportController {
 
 	private final SportService sportService;
 
-	@GetMapping("/sports")
+	@GetMapping("/v1/sports")
 	public ResponseEntity<List<SportDto>> getSports() {
 		List<SportDto> sports = sportService.getAllSports();
 		return ResponseEntity.ok(sports);

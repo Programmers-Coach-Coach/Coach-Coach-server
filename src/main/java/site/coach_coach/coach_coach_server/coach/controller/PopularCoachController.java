@@ -16,12 +16,12 @@ import site.coach_coach.coach_coach_server.user.domain.User;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1")
+@RequestMapping("/api")
 public class PopularCoachController {
 
 	private final PopularCoachService popularCoachService;
 
-	@GetMapping("/popular-coaches")
+	@GetMapping("/v1/popular-coaches")
 	public ResponseEntity<List<PopularCoachDto>> getPopularCoaches(
 		@AuthenticationPrincipal CustomUserDetails userDetails) {
 		User user = userDetails.getUser();
