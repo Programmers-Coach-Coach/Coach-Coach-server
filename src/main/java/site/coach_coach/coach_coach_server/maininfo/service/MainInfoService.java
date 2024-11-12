@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.like.repository.UserCoachLikeRepository;
 import site.coach_coach.coach_coach_server.maininfo.dto.MainInfoCoachDto;
-import site.coach_coach.coach_coach_server.maininfo.dto.MainInfoResponseDto;
 import site.coach_coach.coach_coach_server.sport.dto.CoachingSportDto;
 import site.coach_coach.coach_coach_server.sport.dto.SportDto;
 import site.coach_coach.coach_coach_server.sport.repository.SportRepository;
@@ -26,14 +25,7 @@ public class MainInfoService {
 	private final SportRepository sportRepository;
 	private final UserCoachLikeRepository userCoachLikeRepository;
 
-	public MainInfoResponseDto getMainInfoResponse(User user) {
-		List<SportDto> sports = getSports();
-		List<MainInfoCoachDto> coaches = getTopCoaches(user);
-
-		return new MainInfoResponseDto(sports, coaches);
-	}
-
-	private List<SportDto> getSports() {
+	public List<SportDto> getSports() {
 		return sportRepository.findAll().stream()
 			.map(sport -> new SportDto(
 				sport.getSportId(),
@@ -43,17 +35,17 @@ public class MainInfoService {
 			.collect(Collectors.toList());
 	}
 
-	private List<MainInfoCoachDto> getTopCoaches(User user) {
+	public List<MainInfoCoachDto> getTopCoaches(User user) {
 		LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
-		List<Coach> topCoaches = userCoachLikeRepository.findTopCoachesByLikesSinceAndIsOpenTrue(oneWeekAgo,
-			PageRequest.of(0, 3));
+		List<Coach> topCoaches = userCoachLikeRepository.findTopCoachesByLikesSinceAndIsOpenTrue(
+			oneWeekAgo, PageRequest.of(0, 3));
+
 		return topCoaches.stream()
-			.map(coach -> buildMainInfoCoachDto(coach, user, userCoachLikeRepository))
+			.map(coach -> buildMainInfoCoachDto(coach, user))
 			.collect(Collectors.toList());
 	}
 
-	public MainInfoCoachDto buildMainInfoCoachDto(Coach coach, User user,
-		UserCoachLikeRepository userCoachLikeRepository) {
+	private MainInfoCoachDto buildMainInfoCoachDto(Coach coach, User user) {
 		List<CoachingSportDto> coachingSports = coach.getCoachingSports().stream()
 			.map(cs -> new CoachingSportDto(
 				cs.getSport().getSportId(),
@@ -61,9 +53,8 @@ public class MainInfoService {
 			))
 			.collect(Collectors.toList());
 
-		int countOfLikes = getCountOfLikes(coach, userCoachLikeRepository);
-
-		boolean isLiked = isLikedByUser(user, coach, userCoachLikeRepository);
+		int countOfLikes = getCountOfLikes(coach);
+		boolean isLiked = isLikedByUser(user, coach);
 
 		return new MainInfoCoachDto(
 			coach.getCoachId(),
@@ -76,11 +67,11 @@ public class MainInfoService {
 		);
 	}
 
-	private static int getCountOfLikes(Coach coach, UserCoachLikeRepository userCoachLikeRepository) {
+	private int getCountOfLikes(Coach coach) {
 		return userCoachLikeRepository.countByCoach_CoachId(coach.getCoachId());
 	}
 
-	private static boolean isLikedByUser(User user, Coach coach, UserCoachLikeRepository userCoachLikeRepository) {
+	private boolean isLikedByUser(User user, Coach coach) {
 		return userCoachLikeRepository.existsByUser_UserIdAndCoach_CoachId(user.getUserId(), coach.getCoachId());
 	}
 }
