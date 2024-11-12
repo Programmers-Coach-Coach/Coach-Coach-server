@@ -6,6 +6,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -164,7 +165,14 @@ public class UserRecordService {
 	@Transactional(readOnly = true)
 	public UserRecordDetailResponse getUserRecordDetailV2(Long userId, LocalDate recordDate) {
 		UserRecord userRecord = userRecordRepository.findByRecordDateAndUser_UserId(recordDate, userId)
-			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_RECORD));
+			.orElse(null);
+
+		if (userRecord == null) {
+			return new UserRecordDetailResponse(
+				null, null, null, null, null,
+				Collections.emptyList()
+			);
+		}
 
 		List<CompletedRoutine> completedRoutines =
 			completedRoutineRepository.findAllWithDetailsByUserIdAndRecordDate(userId, recordDate);
