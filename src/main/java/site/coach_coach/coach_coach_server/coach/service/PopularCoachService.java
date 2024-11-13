@@ -28,11 +28,11 @@ public class PopularCoachService {
 			oneWeekAgo, PageRequest.of(0, 3));
 
 		return topCoaches.stream()
-			.map(coach -> buildPopularCoachDto(coach, user))
+			.map(coach -> createPopularCoachDto(coach, user))
 			.collect(Collectors.toList());
 	}
 
-	private PopularCoachDto buildPopularCoachDto(Coach coach, User user) {
+	private PopularCoachDto createPopularCoachDto(Coach coach, User user) {
 		List<CoachingSportDto> coachingSports = coach.getCoachingSports().stream()
 			.map(cs -> new CoachingSportDto(cs.getSport().getSportId(), cs.getSport().getSportName()))
 			.collect(Collectors.toList());
