@@ -1,7 +1,9 @@
 package site.coach_coach.coach_coach_server.userrecord.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -60,6 +62,17 @@ public class UserRecordController {
 		return ResponseEntity.ok(new SuccessIdResponse(recordId));
 	}
 
+	@PostMapping("/v2/records")
+	public ResponseEntity<Void> addBodyInfoToUserRecordV2(
+		@AuthenticationPrincipal CustomUserDetails userDetails,
+		@RequestParam(name = "date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate recordDate,
+		@RequestBody @Valid UserRecordUpdateRequest userRecordupdateRequest
+	) {
+		Long userId = userDetails.getUserId();
+		userRecordService.upsertBodyInfoToUserRecord(userId, recordDate, userRecordupdateRequest);
+		return ResponseEntity.noContent().build();
+	}
+
 	@GetMapping("/v1/records")
 	public ResponseEntity<UserRecordResponse> getUserRecordsWithCompletionStatus(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
@@ -84,6 +97,7 @@ public class UserRecordController {
 	@GetMapping("/v1/records/charts")
 	public ResponseEntity<List<BodyInfoChartResponse>> getBodyInfoCharts(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
+		@RequestParam(name = "date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate recordDate,
 		@RequestParam(name = "type") @NotBlank String type
 	) {
 		Long userId = userDetails.getUserId();

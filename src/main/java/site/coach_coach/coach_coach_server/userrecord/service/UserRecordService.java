@@ -91,6 +91,28 @@ public class UserRecordService {
 		);
 	}
 
+	@Transactional
+	public void upsertBodyInfoToUserRecord(
+		Long userId,
+		LocalDate recordDate,
+		UserRecordUpdateRequest userRecordUpdateRequest
+	) {
+		UserRecord userRecord = userRecordRepository.findByRecordDateAndUser_UserId(recordDate, userId)
+			.orElse(null);
+
+		if (userRecord == null) {
+			userRecord = buildNewUserRecord(userId, recordDate, userRecordUpdateRequest);
+			userRecordRepository.save(userRecord);
+		} else {
+			userRecord.updateBodyInfo(
+				userRecordUpdateRequest.weight(),
+				userRecordUpdateRequest.skeletalMuscle(),
+				userRecordUpdateRequest.fatPercentage(),
+				userRecordUpdateRequest.bmi()
+			);
+		}
+	}
+
 	@Transactional(readOnly = true)
 	public UserRecordResponse getUserRecordsByUserAndPeriod(Long userId, Integer year, Integer month) {
 		LocalDate startDate = LocalDate.of(year, month, 1);
@@ -172,6 +194,24 @@ public class UserRecordService {
 					.build();
 				return userRecordRepository.save(userRecord);
 			});
+	}
+
+	private UserRecord buildNewUserRecord(
+		Long userId,
+		LocalDate recordDate,
+		UserRecordUpdateRequest userRecordUpdateRequest
+	) {
+		User user = userRepository.findById(userId)
+			.orElseThrow(UserNotFoundException::new);
+
+		return UserRecord.builder()
+			.user(user)
+			.weight(userRecordUpdateRequest.weight())
+			.skeletalMuscle(userRecordUpdateRequest.skeletalMuscle())
+			.fatPercentage(userRecordUpdateRequest.fatPercentage())
+			.bmi(userRecordUpdateRequest.bmi())
+			.recordDate(recordDate)
+			.build();
 	}
 
 	private LocalDate validateAndConvertToLocalDate(String date) {
