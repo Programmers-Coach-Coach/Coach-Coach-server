@@ -97,7 +97,6 @@ public class UserRecordController {
 	@GetMapping("/v1/records/charts")
 	public ResponseEntity<List<BodyInfoChartResponse>> getBodyInfoCharts(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
-		@RequestParam(name = "date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate recordDate,
 		@RequestParam(name = "type") @NotBlank String type
 	) {
 		Long userId = userDetails.getUserId();
