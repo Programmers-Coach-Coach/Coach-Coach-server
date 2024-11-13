@@ -62,6 +62,17 @@ public class UserRecordController {
 		return ResponseEntity.ok(new SuccessIdResponse(recordId));
 	}
 
+	@PostMapping("/v2/records")
+	public ResponseEntity<Void> addBodyInfoToUserRecordV2(
+		@AuthenticationPrincipal CustomUserDetails userDetails,
+		@RequestParam(name = "record_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate recordDate,
+		@RequestBody @Valid UserRecordUpdateRequest userRecordupdateRequest
+	) {
+		Long userId = userDetails.getUserId();
+		userRecordService.upsertBodyInfoToUserRecord(userId, recordDate, userRecordupdateRequest);
+		return ResponseEntity.status(HttpStatus.CREATED).build();
+	}
+
 	@GetMapping("/v1/records")
 	public ResponseEntity<UserRecordResponse> getUserRecordsWithCompletionStatus(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
