@@ -97,20 +97,19 @@ public class UserRecordService {
 		LocalDate recordDate,
 		UserRecordUpdateRequest userRecordUpdateRequest
 	) {
-		UserRecord userRecord = userRecordRepository.findByRecordDateAndUser_UserId(recordDate, userId)
-			.orElse(null);
-
-		if (userRecord == null) {
-			userRecord = buildNewUserRecord(userId, recordDate, userRecordUpdateRequest);
-			userRecordRepository.save(userRecord);
-		} else {
-			userRecord.updateBodyInfo(
-				userRecordUpdateRequest.weight(),
-				userRecordUpdateRequest.skeletalMuscle(),
-				userRecordUpdateRequest.fatPercentage(),
-				userRecordUpdateRequest.bmi()
+		userRecordRepository.findByRecordDateAndUser_UserId(recordDate, userId)
+			.ifPresentOrElse(
+				userRecord -> userRecord.updateBodyInfo(
+					userRecordUpdateRequest.weight(),
+					userRecordUpdateRequest.skeletalMuscle(),
+					userRecordUpdateRequest.fatPercentage(),
+					userRecordUpdateRequest.bmi()
+				),
+				() -> {
+					UserRecord newUserRecord = buildNewUserRecord(userId, recordDate, userRecordUpdateRequest);
+					userRecordRepository.save(newUserRecord);
+				}
 			);
-		}
 	}
 
 	@Transactional(readOnly = true)

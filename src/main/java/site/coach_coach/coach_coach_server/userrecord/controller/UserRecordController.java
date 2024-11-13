@@ -65,12 +65,12 @@ public class UserRecordController {
 	@PostMapping("/v2/records")
 	public ResponseEntity<Void> addBodyInfoToUserRecordV2(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
-		@RequestParam(name = "date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate recordDate,
+		@RequestParam(name = "record_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate recordDate,
 		@RequestBody @Valid UserRecordUpdateRequest userRecordupdateRequest
 	) {
 		Long userId = userDetails.getUserId();
 		userRecordService.upsertBodyInfoToUserRecord(userId, recordDate, userRecordupdateRequest);
-		return ResponseEntity.noContent().build();
+		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
 	@GetMapping("/v1/records")
