@@ -6,6 +6,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -159,6 +160,29 @@ public class UserRecordService {
 			userRecord.getBmi(),
 			records
 		);
+	}
+
+	@Transactional(readOnly = true)
+	public UserRecordDetailResponse getUserRecordDetailV2(Long userId, LocalDate recordDate) {
+		return userRecordRepository.findByRecordDateAndUser_UserId(recordDate, userId)
+			.map(userRecord -> {
+				List<CompletedRoutine> completedRoutines =
+					completedRoutineRepository.findAllWithDetailsByUserIdAndRecordDate(userId, recordDate);
+				List<RecordsDto> records = mapToRecordsDto(completedRoutines);
+
+				return new UserRecordDetailResponse(
+					userRecord.getUserRecordId(),
+					userRecord.getWeight(),
+					userRecord.getSkeletalMuscle(),
+					userRecord.getFatPercentage(),
+					userRecord.getBmi(),
+					records
+				);
+			})
+			.orElseGet(() -> new UserRecordDetailResponse(
+				null, null, null, null, null,
+				Collections.emptyList()
+			));
 	}
 
 	public UserRecord getUserRecordForCompleteRoutine(Long userId) {
