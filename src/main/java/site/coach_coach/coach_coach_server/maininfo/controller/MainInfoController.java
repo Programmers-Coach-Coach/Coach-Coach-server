@@ -1,4 +1,4 @@
-package site.coach_coach.coach_coach_server.mainInfo.controller;
+package site.coach_coach.coach_coach_server.maininfo.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

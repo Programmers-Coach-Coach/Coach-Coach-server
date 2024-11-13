@@ -53,7 +53,7 @@ public class MainInfoService {
 	}
 
 	public MainInfoCoachDto buildMainInfoCoachDto(Coach coach, User user,
-												  UserCoachLikeRepository userCoachLikeRepository) {
+		UserCoachLikeRepository userCoachLikeRepository) {
 		List<CoachingSportDto> coachingSports = coach.getCoachingSports().stream()
 			.map(cs -> new CoachingSportDto(
 				cs.getSport().getSportId(),
