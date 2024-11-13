@@ -86,7 +86,7 @@ public class UserRecordController {
 	@GetMapping("/v2/records")
 	public ResponseEntity<UserRecordDetailResponse> getUserRecordDetailV2(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
-		@RequestParam(name = "date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate recordDate
+		@RequestParam(name = "record_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate recordDate
 	) {
 		Long userId = userDetails.getUserId();
 		UserRecordDetailResponse detailResponse = userRecordService.getUserRecordDetailV2(

@@ -164,29 +164,25 @@ public class UserRecordService {
 
 	@Transactional(readOnly = true)
 	public UserRecordDetailResponse getUserRecordDetailV2(Long userId, LocalDate recordDate) {
-		UserRecord userRecord = userRecordRepository.findByRecordDateAndUser_UserId(recordDate, userId)
-			.orElse(null);
+		return userRecordRepository.findByRecordDateAndUser_UserId(recordDate, userId)
+			.map(userRecord -> {
+				List<CompletedRoutine> completedRoutines =
+					completedRoutineRepository.findAllWithDetailsByUserIdAndRecordDate(userId, recordDate);
+				List<RecordsDto> records = mapToRecordsDto(completedRoutines);
 
-		if (userRecord == null) {
-			return new UserRecordDetailResponse(
+				return new UserRecordDetailResponse(
+					userRecord.getUserRecordId(),
+					userRecord.getWeight(),
+					userRecord.getSkeletalMuscle(),
+					userRecord.getFatPercentage(),
+					userRecord.getBmi(),
+					records
+				);
+			})
+			.orElseGet(() -> new UserRecordDetailResponse(
 				null, null, null, null, null,
 				Collections.emptyList()
-			);
-		}
-
-		List<CompletedRoutine> completedRoutines =
-			completedRoutineRepository.findAllWithDetailsByUserIdAndRecordDate(userId, recordDate);
-
-		List<RecordsDto> records = mapToRecordsDto(completedRoutines);
-
-		return new UserRecordDetailResponse(
-			userRecord.getUserRecordId(),
-			userRecord.getWeight(),
-			userRecord.getSkeletalMuscle(),
-			userRecord.getFatPercentage(),
-			userRecord.getBmi(),
-			records
-		);
+			));
 	}
 
 	public UserRecord getUserRecordForCompleteRoutine(Long userId) {
