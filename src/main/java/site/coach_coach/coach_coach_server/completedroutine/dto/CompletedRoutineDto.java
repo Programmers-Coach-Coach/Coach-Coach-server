@@ -10,6 +10,7 @@ import site.coach_coach.coach_coach_server.routine.domain.Routine;
 public record CompletedRoutineDto(
 	Long routineId,
 	String routineName,
+	String sportName,
 	List<ActionDto> actions
 ) {
 	public static CompletedRoutineDto from(CompletedRoutine completedRoutine) {
@@ -22,6 +23,7 @@ public record CompletedRoutineDto(
 		return new CompletedRoutineDto(
 			routine.getRoutineId(),
 			routine.getRoutineName(),
+			routine.getSport().getSportName(),
 			actions
 		);
 	}
