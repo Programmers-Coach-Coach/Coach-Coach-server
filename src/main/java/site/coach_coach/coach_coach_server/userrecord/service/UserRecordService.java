@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
 import site.coach_coach.coach_coach_server.common.exception.AccessDeniedException;
 import site.coach_coach.coach_coach_server.common.exception.DuplicateValueException;
@@ -261,9 +260,7 @@ public class UserRecordService {
 				List<CompletedRoutineDto> completedRoutineDtos = entry.getValue();
 
 				Routine routine = routineOpt.orElse(null);
-				Coach coach = routine != null ? routine.getCoach() : null;
-
-				return RecordsDto.from(routine, coach, completedRoutineDtos);
+				return RecordsDto.from(routine, completedRoutineDtos);
 			})
 			.collect(Collectors.toList());
 	}
