@@ -24,6 +24,7 @@ import site.coach_coach.coach_coach_server.coach.dto.CoachListResponse;
 import site.coach_coach.coach_coach_server.coach.dto.CoachRequest;
 import site.coach_coach.coach_coach_server.coach.dto.MatchingCoachResponseDto;
 import site.coach_coach.coach_coach_server.coach.dto.MatchingUserResponseDto;
+import site.coach_coach.coach_coach_server.coach.dto.ReviewListDto;
 import site.coach_coach.coach_coach_server.coach.dto.ReviewRequestDto;
 import site.coach_coach.coach_coach_server.coach.repository.CoachRepository;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
@@ -40,6 +41,7 @@ import site.coach_coach.coach_coach_server.matching.repository.MatchingRepositor
 import site.coach_coach.coach_coach_server.notification.service.NotificationService;
 import site.coach_coach.coach_coach_server.review.domain.Review;
 import site.coach_coach.coach_coach_server.review.dto.ReviewDto;
+import site.coach_coach.coach_coach_server.review.dto.ReviewSortOption;
 import site.coach_coach.coach_coach_server.review.repository.ReviewRepository;
 import site.coach_coach.coach_coach_server.sport.domain.CoachingSport;
 import site.coach_coach.coach_coach_server.sport.domain.Sport;
@@ -191,7 +193,7 @@ public class CoachService {
 			throw new AccessDeniedException();
 		}
 
-		List<ReviewDto> reviews = getReviews(coach, user);
+		List<ReviewDto> reviews = getReviews(coach, user, ReviewSortOption.LATEST);
 		double averageRating = calculateAverageRating(reviews);
 
 		boolean isLiked = isLikedByUser(user, coach);
@@ -466,9 +468,34 @@ public class CoachService {
 			.build();
 	}
 
+	@Transactional
+	public ReviewListDto getAllReviews(User user, Long coachId, ReviewSortOption sortOption) {
+		Coach coach = (coachId != null) ? getCoachById(coachId) : getCoachByUserId(user.getUserId());
+
+		boolean isSelf = user.getUserId().equals(coach.getUser().getUserId());
+
+		if (!isSelf && !coach.getIsOpen()) {
+			throw new AccessDeniedException();
+		}
+
+		List<ReviewDto> reviews = getReviews(coach, user, sortOption);
+		double averageRating = calculateAverageRating(reviews);
+
+		boolean isMatched = matchingRepository.existsByUserUserIdAndCoachCoachIdAndIsMatching(
+			user.getUserId(), coach.getCoachId(), true);
+
+		return ReviewListDto.builder()
+			.reviews(reviews)
+			.countOfReviews(reviews.size())
+			.reviewRating(averageRating)
+			.isMatched(isMatched)
+			.isOpen(coach.getIsOpen())
+			.build();
+	}
+
 	@Transactional(readOnly = true)
-	public List<ReviewDto> getReviews(Coach coach, User currentUser) {
-		return reviewRepository.findByCoach_CoachId(coach.getCoachId()).stream()
+	public List<ReviewDto> getReviews(Coach coach, User currentUser, ReviewSortOption sortOption) {
+		List<ReviewDto> reviews = reviewRepository.findByCoach_CoachId(coach.getCoachId()).stream()
 			.map(review -> new ReviewDto(
 				review.getReviewId(),
 				review.getUserId(),
@@ -480,7 +507,30 @@ public class CoachService {
 					.map(user -> user.getUserId().equals(currentUser.getUserId()))
 					.orElse(false)
 			))
-			.sorted(Comparator.comparing(ReviewDto::createdAt).reversed())
+			.collect(Collectors.toList());
+
+		return sortReviews(reviews, sortOption);
+	}
+
+	private List<ReviewDto> sortReviews(List<ReviewDto> reviews, ReviewSortOption sortOption) {
+		Comparator<ReviewDto> comparator;
+
+		switch (sortOption) {
+			case RATING_ASC:
+				comparator = Comparator.comparing(ReviewDto::stars).reversed()
+					.thenComparing(ReviewDto::createdAt).reversed();
+				break;
+			case RATING_DESC:
+				comparator = Comparator.comparing(ReviewDto::stars)
+					.thenComparing(ReviewDto::createdAt).reversed();
+				break;
+			case LATEST:
+			default:
+				comparator = Comparator.comparing(ReviewDto::createdAt).reversed();
+		}
+
+		return reviews.stream()
+			.sorted(comparator)
 			.collect(Collectors.toList());
 	}
 
