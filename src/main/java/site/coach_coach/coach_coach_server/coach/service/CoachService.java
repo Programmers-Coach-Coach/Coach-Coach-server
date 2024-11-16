@@ -513,21 +513,13 @@ public class CoachService {
 	}
 
 	private List<ReviewDto> sortReviews(List<ReviewDto> reviews, ReviewSortOption sortOption) {
-		Comparator<ReviewDto> comparator;
-
-		switch (sortOption) {
-			case RATING_ASC:
-				comparator = Comparator.comparing(ReviewDto::stars).reversed()
-					.thenComparing(ReviewDto::createdAt).reversed();
-				break;
-			case RATING_DESC:
-				comparator = Comparator.comparing(ReviewDto::stars)
-					.thenComparing(ReviewDto::createdAt).reversed();
-				break;
-			case LATEST:
-			default:
-				comparator = Comparator.comparing(ReviewDto::createdAt).reversed();
-		}
+		Comparator<ReviewDto> comparator = switch (sortOption) {
+			case RATING_ASC -> Comparator.comparing(ReviewDto::stars).reversed()
+				.thenComparing(ReviewDto::createdAt).reversed();
+			case RATING_DESC -> Comparator.comparing(ReviewDto::stars)
+				.thenComparing(ReviewDto::createdAt).reversed();
+			case LATEST -> Comparator.comparing(ReviewDto::createdAt).reversed();
+		};
 
 		return reviews.stream()
 			.sorted(comparator)
