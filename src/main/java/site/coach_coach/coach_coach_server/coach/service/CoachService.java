@@ -197,7 +197,6 @@ public class CoachService {
 		boolean isLiked = isLikedByUser(user, coach);
 		boolean isContacted = matchingRepository.existsByUserUserIdAndCoachCoachId(user.getUserId(), coachId);
 
-
 		List<CoachingSportDto> coachingSports = getCoachingSports(coach);
 		boolean isMatched = matchingRepository.existsByUserUserIdAndCoachCoachIdAndIsMatching(
 			user.getUserId(), coach.getCoachId(), true);
