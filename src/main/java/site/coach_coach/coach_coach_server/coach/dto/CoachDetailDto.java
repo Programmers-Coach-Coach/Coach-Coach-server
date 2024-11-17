@@ -20,7 +20,6 @@ public record CoachDetailDto(
 	String localAddress,
 	@NotNull
 	String profileImageUrl,
-	String createdAt,
 	@NotNull
 	String coachIntroduction,
 	@NotNull
@@ -32,14 +31,13 @@ public record CoachDetailDto(
 	@NotNull
 	@Size(max = 500)
 	String chattingUrl,
-	List<ReviewDto> reviews,
 	@NotNull
 	boolean isOpen,
 	boolean isContacted,
 	boolean isMatched,
-	int countOfReviews,
-	double reviewRating,
 	boolean isLiked,
-	int countOfLikes
+	boolean isSelf,
+	double reviewRating,
+	int totalUserCount
 ) {
 }

@@ -65,6 +65,10 @@ public class Coach extends DateEntity {
 	@Column(name = "is_open")
 	private Boolean isOpen;
 
+	@NotNull
+	@Column(name = "total_user_count", nullable = false)
+	private int totalUserCount = 0;
+
 	@OneToMany(mappedBy = "coach")
 	private List<CoachingSport> coachingSports;
 
@@ -81,6 +85,10 @@ public class Coach extends DateEntity {
 		this.isOpen = isOpen;
 	}
 
+	public void increaseTotalUserCount() {
+		this.totalUserCount += 1;
+	}
+
 	public Coach(User user) {
 		this.user = user;
 		this.coachIntroduction = "";
@@ -89,5 +97,6 @@ public class Coach extends DateEntity {
 		this.activeHours = "";
 		this.chattingUrl = "";
 		this.isOpen = true;
+		this.totalUserCount = 0;
 	}
 }

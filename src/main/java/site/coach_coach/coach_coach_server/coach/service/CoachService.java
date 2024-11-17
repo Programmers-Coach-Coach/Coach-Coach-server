@@ -197,8 +197,6 @@ public class CoachService {
 		boolean isLiked = isLikedByUser(user, coach);
 		boolean isContacted = matchingRepository.existsByUserUserIdAndCoachCoachId(user.getUserId(), coachId);
 
-		int countOfLikes = getCountOfLikes(coach);
-
 		List<CoachingSportDto> coachingSports = getCoachingSports(coach);
 		boolean isMatched = matchingRepository.existsByUserUserIdAndCoachCoachIdAndIsMatching(
 			user.getUserId(), coach.getCoachId(), true);
@@ -209,21 +207,19 @@ public class CoachService {
 			.coachGender(coach.getUser().getGender())
 			.localAddress(coach.getUser().getLocalAddress())
 			.profileImageUrl(coach.getUser().getProfileImageUrl())
-			.createdAt(coach.getCreatedAt().toString())
 			.coachIntroduction(coach.getCoachIntroduction())
 			.coachingSports(coachingSports)
 			.activeCenter(coach.getActiveCenter())
 			.activeCenterDetail(coach.getActiveCenterDetail())
 			.activeHours(coach.getActiveHours())
 			.chattingUrl(coach.getChattingUrl())
-			.reviews(reviews)
 			.isOpen(coach.getIsOpen())
 			.isContacted(isContacted)
 			.isMatched(isMatched)
-			.countOfReviews(reviews.size())
-			.reviewRating(averageRating)
 			.isLiked(isLiked)
-			.countOfLikes(countOfLikes)
+			.isSelf(isSelf)
+			.reviewRating(averageRating)
+			.totalUserCount(coach.getTotalUserCount())
 			.build();
 	}
 
@@ -528,6 +524,7 @@ public class CoachService {
 		}
 
 		matching.markAsMatched();
+		coach.increaseTotalUserCount();
 		notificationService.createNotification(userId, coach.getCoachId(), RelationFunctionEnum.match);
 	}
 }
