@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.chat.domain.ChatMessage;
 import site.coach_coach.coach_coach_server.chat.domain.ChatRoom;
-import site.coach_coach.coach_coach_server.chat.dto.mapper.ChatMessageMapper;
 import site.coach_coach.coach_coach_server.chat.dto.request.ChatMessageRequest;
 import site.coach_coach.coach_coach_server.chat.repository.ChatMessageRepository;
 import site.coach_coach.coach_coach_server.chat.repository.ChatRoomRepository;
@@ -24,14 +23,14 @@ public class ChatMessageService {
 	private final SimpMessageSendingOperations messagingTemplate;
 
 	@Transactional
-	public void addMessage(Long chatRoomId, ChatMessageRequest messageRequest) {
+	public void addMessage(Long chatRoomId, Long senderId, ChatMessageRequest messageRequest) {
 		ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
 			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_CHAT_ROOM));
-		ChatMessage chatMessage = chatMessageRepository.save(
-			ChatMessageMapper.toChatMessage(messageRequest, chatRoomId)
-		);
+
+		RoleEnum senderRole = determineSenderRole(chatRoom, senderId);
+
 		messagingTemplate.convertAndSend("/sub/chat-rooms/" + chatRoomId,
-			ChatMessageMapper.toChatMessageResponse(chatMessage));
+			ChatMessage.of(chatRoomId, senderId, senderRole, messageRequest.message()));
 	}
 
 	private RoleEnum determineSenderRole(ChatRoom chatRoom, Long senderId) {
