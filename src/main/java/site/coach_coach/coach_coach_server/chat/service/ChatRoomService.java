@@ -83,16 +83,16 @@ public class ChatRoomService {
 
 	@Transactional(readOnly = true)
 	public Slice<ChatMessageResponse> findChatMessagesByChatRoomId(Long userId, Long chatRoomId, Pageable pageable) {
-		validateUserRoleForChatRoom(userId, chatRoomId);
+		ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_CHAT_ROOM));
+		validateUserRoleForChatRoom(userId, chatRoom);
 		return chatMessageRepository
 			.findByChatRoomIdOrderByCreatedAtDesc(chatRoomId, pageable)
 			.map(ChatMessageMapper::toChatMessageResponse);
 	}
 
-	private void validateUserRoleForChatRoom(Long userId, Long chatRoomId) {
-		ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
-			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_CHAT_ROOM));
-
+	@Transactional(readOnly = true)
+	public void validateUserRoleForChatRoom(Long userId, ChatRoom chatRoom) {
 		boolean isUser = chatRoom.getUser().getUserId().equals(userId);
 		boolean isCoach = chatRoom.getCoach() != null
 			&& chatRoom.getCoach().getUser().getUserId().equals(userId);
