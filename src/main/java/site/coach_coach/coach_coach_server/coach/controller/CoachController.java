@@ -23,11 +23,13 @@ import site.coach_coach.coach_coach_server.coach.dto.CoachListResponse;
 import site.coach_coach.coach_coach_server.coach.dto.CoachRequest;
 import site.coach_coach.coach_coach_server.coach.dto.MatchingCoachResponseDto;
 import site.coach_coach.coach_coach_server.coach.dto.MatchingUserResponseDto;
+import site.coach_coach.coach_coach_server.coach.dto.ReviewListDto;
 import site.coach_coach.coach_coach_server.coach.dto.ReviewRequestDto;
 import site.coach_coach.coach_coach_server.coach.service.CoachService;
 import site.coach_coach.coach_coach_server.common.constants.SuccessMessage;
 import site.coach_coach.coach_coach_server.common.exception.UserNotFoundException;
 import site.coach_coach.coach_coach_server.common.response.SuccessResponse;
+import site.coach_coach.coach_coach_server.review.dto.ReviewSortOption;
 import site.coach_coach.coach_coach_server.user.domain.User;
 
 @RestController
@@ -154,6 +156,17 @@ public class CoachController {
 		List<MatchingCoachResponseDto> matchingCoaches = coachService.getMatchingCoachesByUserId(userId);
 
 		return ResponseEntity.ok(matchingCoaches);
+	}
+
+	@GetMapping("/v1/coaches/reviews")
+	public ResponseEntity<ReviewListDto> getReviews(
+		@AuthenticationPrincipal CustomUserDetails userDetails,
+		@RequestParam(name = "coachId", required = false) Long coachId,
+		@RequestParam(required = false, defaultValue = "LATEST") ReviewSortOption sortOption) {
+		User user = userDetails.getUser();
+		ReviewListDto reviewList = coachService.getAllReviews(user, coachId, sortOption);
+
+		return ResponseEntity.ok(reviewList);
 	}
 
 	@PostMapping("/v1/coaches/{coachId}/reviews")
