@@ -6,9 +6,6 @@ import site.coach_coach.coach_coach_server.common.domain.RoleEnum;
 
 public record ChatMessageRequest(
 	@NotNull
-	Long chatRoomId,
-
-	@NotNull
 	Long senderId,
 
 	@NotBlank
