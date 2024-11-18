@@ -4,21 +4,15 @@ import java.time.LocalDateTime;
 
 import lombok.Builder;
 import site.coach_coach.coach_coach_server.common.domain.RelationFunctionEnum;
-import site.coach_coach.coach_coach_server.notification.domain.Notification;
 
 @Builder
 public record NotificationListResponse(
 	Long notificationId,
+	String nickname,
+	String profileImageUrl,
 	String message,
 	RelationFunctionEnum relationFunction,
+	boolean isRead,
 	LocalDateTime createdAt
 ) {
-	public static NotificationListResponse from(Notification notification) {
-		return new NotificationListResponse(
-			notification.getNotificationId(),
-			notification.getMessage(),
-			notification.getRelationFunction(),
-			notification.getCreatedAt()
-		);
-	}
 }
