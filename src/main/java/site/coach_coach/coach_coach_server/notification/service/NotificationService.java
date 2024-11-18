@@ -58,6 +58,7 @@ public class NotificationService {
 			.coach(coach)
 			.message(message)
 			.relationFunction(relationFunction)
+			.isRead(false)
 			.build();
 		notificationRepository.save(notification);
 	}
