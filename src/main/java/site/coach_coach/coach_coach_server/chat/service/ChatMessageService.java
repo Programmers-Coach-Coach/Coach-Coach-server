@@ -52,14 +52,19 @@ public class ChatMessageService {
 		chatRoomService.validateUserRoleForChatRoom(userId, chatRoom);
 		RoleEnum senderRole = determineSenderRole(chatRoom, userId);
 		Long receiverId = determineReceiverId(chatRoom, userId, senderRole);
-
+		chatMessageRepository.markMessagesAsRead(chatRoomId, receiverId);
 	}
 
 	private Long determineReceiverId(ChatRoom chatRoom, Long senderId, RoleEnum role) {
 		if (role == RoleEnum.USER) {
-			return chatRoom.getCoach().getUser().getUserId();
+			if (chatRoom.getUser().getUserId().equals(senderId)) {
+				return chatRoom.getCoach().getUser().getUserId();
+			}
 		} else {
-			return chatRoom.getUser().getUserId();
+			if (chatRoom.getCoach().getUser().getUserId().equals(senderId)) {
+				return chatRoom.getUser().getUserId();
+			}
 		}
+		throw new AccessDeniedException();
 	}
 }

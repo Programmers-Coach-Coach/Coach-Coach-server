@@ -16,10 +16,16 @@ import site.coach_coach.coach_coach_server.user.domain.User;
 public class ChatRoomMapper {
 	public static UserChatRoomsResponse toUserChatRoomsResponse(
 		ChatRoom chatRoom,
+		Long userId,
 		ChatMessageRepository chatMessageRepository
 	) {
 		Coach coach = chatRoom.getCoach();
 		User coachUser = coach.getUser();
+
+		long unreadCount = chatMessageRepository.countByChatRoomIdAndSenderIdNotAndIsReadFalse(
+			chatRoom.getChatRoomId(),
+			userId
+		);
 		Optional<ChatMessage> lastMessage = findLastMessage(chatRoom, chatMessageRepository);
 		return new UserChatRoomsResponse(
 			chatRoom.getChatRoomId(),
@@ -30,16 +36,24 @@ public class ChatRoomMapper {
 			getCoachingSports(coach),
 			coach.getActiveHours(),
 			lastMessage.map(ChatMessage::getMessage).orElse(""),
+			unreadCount,
 			lastMessage.map(ChatMessage::getCreatedAt).orElse(null)
 		);
 	}
 
 	public static CoachChatRoomsResponse toCoachChatRoomsResponse(
 		ChatRoom chatRoom,
+		Long userId,
 		ChatMessageRepository chatMessageRepository
 	) {
 		User user = chatRoom.getUser();
 		Optional<ChatMessage> lastMessage = findLastMessage(chatRoom, chatMessageRepository);
+
+		long unreadCount = chatMessageRepository.countByChatRoomIdAndSenderIdNotAndIsReadFalse(
+			chatRoom.getChatRoomId(),
+			userId
+		);
+
 		return new CoachChatRoomsResponse(
 			chatRoom.getChatRoomId(),
 			user.getUserId(),
@@ -47,6 +61,7 @@ public class ChatRoomMapper {
 			user.getProfileImageUrl(),
 			chatRoom.getMatching() != null && chatRoom.getMatching().getIsMatching(),
 			lastMessage.map(ChatMessage::getMessage).orElse(""),
+			unreadCount,
 			lastMessage.map(ChatMessage::getCreatedAt).orElse(null)
 		);
 	}

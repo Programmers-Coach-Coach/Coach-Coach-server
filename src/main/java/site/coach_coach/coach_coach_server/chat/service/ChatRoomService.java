@@ -60,9 +60,10 @@ public class ChatRoomService {
 
 	@Transactional(readOnly = true)
 	public List<UserChatRoomsResponse> findChatRoomsForUser(User user) {
+		Long userId = user.getUserId();
 		return chatRoomRepository.findByUser(user)
 			.stream()
-			.map(chatRoom -> ChatRoomMapper.toUserChatRoomsResponse(chatRoom, chatMessageRepository))
+			.map(chatRoom -> ChatRoomMapper.toUserChatRoomsResponse(chatRoom, userId, chatMessageRepository))
 			.collect(Collectors.toList());
 	}
 
@@ -75,9 +76,10 @@ public class ChatRoomService {
 		Coach coach = coachRepository.findByUser(user)
 			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_COACH));
 
+		Long userId = user.getUserId();
 		return chatRoomRepository.findByCoach_CoachId(coach.getCoachId())
 			.stream()
-			.map(chatRoom -> ChatRoomMapper.toCoachChatRoomsResponse(chatRoom, chatMessageRepository))
+			.map(chatRoom -> ChatRoomMapper.toCoachChatRoomsResponse(chatRoom, userId, chatMessageRepository))
 			.collect(Collectors.toList());
 	}
 
