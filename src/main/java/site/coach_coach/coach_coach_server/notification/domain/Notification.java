@@ -56,4 +56,8 @@ public class Notification extends DateEntity {
 	@NotNull
 	@Column(name = "is_read")
 	private boolean isRead;
+
+	public void markAsRead() {
+		this.isRead = true;
+	}
 }

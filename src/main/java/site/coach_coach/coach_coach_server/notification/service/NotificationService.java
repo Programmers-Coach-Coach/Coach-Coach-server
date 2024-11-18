@@ -1,6 +1,5 @@
 package site.coach_coach.coach_coach_server.notification.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -63,6 +62,7 @@ public class NotificationService {
 		notificationRepository.save(notification);
 	}
 
+	@Transactional
 	public void deleteNotification(Long userId, Long notificationId) {
 		Notification notification = notificationRepository.findById(notificationId)
 			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_NOTIFICATION));
@@ -75,10 +75,26 @@ public class NotificationService {
 
 	public void deleteAllNotifications(Long userId) {
 		User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-		List<Notification> notifications = new ArrayList<>(user.getNotifications());
-		if (!notifications.isEmpty()) {
-			notificationRepository.deleteAll(notifications);
+		notificationRepository.deleteAll(user.getNotifications());
+	}
+
+	@Transactional
+	public void markNotificationAsRead(Long userId, Long notificationId) {
+		Notification notification = notificationRepository.findById(notificationId)
+			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_NOTIFICATION));
+
+		if (!notification.getUser().getUserId().equals(userId)) {
+			throw new AccessDeniedException();
 		}
+		notification.markAsRead();
+		notificationRepository.save(notification);
+	}
+
+	@Transactional
+	public void markAllNotificationsAsRead(Long userId) {
+		List<Notification> unreadNotifications = notificationRepository.findUnreadNotificationsByUserId(userId);
+		unreadNotifications.forEach(Notification::markAsRead);
+		notificationRepository.saveAll(unreadNotifications);
 	}
 
 	private String createMessage(User user, User coach, RelationFunctionEnum relationFunction) {
@@ -136,5 +152,4 @@ public class NotificationService {
 			default -> false;
 		};
 	}
-
 }
