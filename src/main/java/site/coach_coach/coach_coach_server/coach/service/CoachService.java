@@ -445,7 +445,7 @@ public class CoachService {
 		try {
 			return GenderEnum.valueOf(gender.toUpperCase());
 		} catch (IllegalArgumentException e) {
-			throw new IllegalArgumentException("Invalid gender value: " + gender);
+			throw new IllegalArgumentException(ErrorMessage.INVALID_REQUEST);
 		}
 	}
 
