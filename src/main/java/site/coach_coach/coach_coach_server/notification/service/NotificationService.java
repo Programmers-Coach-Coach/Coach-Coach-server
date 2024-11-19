@@ -92,9 +92,7 @@ public class NotificationService {
 
 	@Transactional
 	public void markAllNotificationsAsRead(Long userId) {
-		List<Notification> unreadNotifications = notificationRepository.findUnreadNotificationsByUserId(userId);
-		unreadNotifications.forEach(Notification::markAsRead);
-		notificationRepository.saveAll(unreadNotifications);
+		notificationRepository.updateIsReadByUserID(userId);
 	}
 
 	private String createMessage(User user, User coach, RelationFunctionEnum relationFunction) {
