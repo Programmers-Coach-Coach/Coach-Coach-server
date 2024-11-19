@@ -54,7 +54,7 @@ public class NotificationController {
 		);
 	}
 
-	@PatchMapping("/v1/notifications/{notificationId}/read")
+	@PatchMapping("/v1/notifications/{notificationId}")
 	public ResponseEntity<Void> markNotificationAsRead(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
 		@PathVariable(name = "notificationId") Long notificationId
@@ -64,7 +64,7 @@ public class NotificationController {
 		return ResponseEntity.noContent().build();
 	}
 
-	@PatchMapping("/v1/notifications/read")
+	@PatchMapping("/v1/notifications")
 	public ResponseEntity<Void> markAllNotificationsAsRead(
 		@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
