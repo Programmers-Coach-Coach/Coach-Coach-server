@@ -148,6 +148,7 @@ public class CoachService {
 			newMatching.getUserCoachMatchingId());
 		Long chatRoomId = chatRoomService.createChatRoom(chatRoomRequest);
 
+		notificationService.createNotification(user.getUserId(), coachId, RelationFunctionEnum.request);
 		notificationService.createNotification(user.getUserId(), coachId, RelationFunctionEnum.ask);
 	}
 
@@ -274,6 +275,7 @@ public class CoachService {
 		if (!userCoachLikeRepository.existsByUser_UserIdAndCoach_CoachId(userId, coachId)) {
 			userCoachLikeRepository.save(new UserCoachLike(null, user, coach));
 		}
+		notificationService.createNotification(userId, coachId, RelationFunctionEnum.like);
 	}
 
 	@Transactional
@@ -285,7 +287,6 @@ public class CoachService {
 			userCoachLikeRepository.deleteByUser_UserIdAndCoach_CoachId(userId, coachId);
 		}
 	}
-
 
 	public List<MatchingUserResponseDto> getMatchingUsersByCoachId(Long coachUserId) {
 		Long coachId = coachRepository.findCoachIdByUserId(coachUserId)
@@ -320,7 +321,6 @@ public class CoachService {
 			matching.getIsMatching()
 		);
 	}
-
 
 	@Transactional
 	public void addReview(Long userId, Long coachId, ReviewRequestDto requestDto) {
