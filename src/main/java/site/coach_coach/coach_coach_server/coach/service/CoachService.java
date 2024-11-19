@@ -222,6 +222,7 @@ public class CoachService {
 			.isLiked(isLiked)
 			.isSelf(isSelf)
 			.reviewRating(averageRating)
+			.countOfReviews(reviews.size())
 			.totalUserCount(coach.getTotalUserCount())
 			.build();
 	}
