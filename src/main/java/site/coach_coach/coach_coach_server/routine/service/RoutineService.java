@@ -13,10 +13,12 @@ import lombok.extern.slf4j.Slf4j;
 import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.coach.repository.CoachRepository;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
+import site.coach_coach.coach_coach_server.common.domain.RelationFunctionEnum;
 import site.coach_coach.coach_coach_server.common.exception.AccessDeniedException;
 import site.coach_coach.coach_coach_server.common.exception.NotFoundException;
 import site.coach_coach.coach_coach_server.matching.domain.Matching;
 import site.coach_coach.coach_coach_server.matching.repository.MatchingRepository;
+import site.coach_coach.coach_coach_server.notification.service.NotificationService;
 import site.coach_coach.coach_coach_server.routine.domain.Routine;
 import site.coach_coach.coach_coach_server.routine.dto.CreateRoutineRequest;
 import site.coach_coach.coach_coach_server.routine.dto.RoutineCreatorDto;
@@ -38,6 +40,7 @@ public class RoutineService {
 	private final CoachRepository coachRepository;
 	private final UserRepository userRepository;
 	private final SportRepository sportRepository;
+	private final NotificationService notificationService;
 	private int numberOfCompletedRoutine;
 
 	public void checkIsMatching(Long userId, Long coachId) {
@@ -130,6 +133,8 @@ public class RoutineService {
 			Coach coach = coachRepository.findById(coachId)
 				.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_COACH));
 			routineBuilder.coach(coach);
+			notificationService.createNotification(createRoutineRequest.userId(), userIdByJwt,
+				RelationFunctionEnum.routine);
 		}
 
 		return routineRepository.save(routineBuilder.build());

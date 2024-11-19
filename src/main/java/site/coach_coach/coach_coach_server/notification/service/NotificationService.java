@@ -1,6 +1,5 @@
 package site.coach_coach.coach_coach_server.notification.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -37,7 +36,7 @@ public class NotificationService {
 
 		return user.getNotifications()
 			.stream()
-			.map(NotificationListResponse::from)
+			.map(this::buildNotificationResponse)
 			.toList();
 	}
 
@@ -53,23 +52,17 @@ public class NotificationService {
 			throw new InvalidInputException(ErrorMessage.INVALID_REQUEST);
 		}
 
-		User receiver;
-
-		if (relationFunction == RelationFunctionEnum.match || relationFunction == RelationFunctionEnum.refusal
-			|| relationFunction == RelationFunctionEnum.cancel) {
-			receiver = user;
-		} else {
-			receiver = coach;
-		}
-
 		Notification notification = Notification.builder()
-			.user(receiver)
+			.user(user)
+			.coach(coach)
 			.message(message)
 			.relationFunction(relationFunction)
+			.isRead(false)
 			.build();
 		notificationRepository.save(notification);
 	}
 
+	@Transactional
 	public void deleteNotification(Long userId, Long notificationId) {
 		Notification notification = notificationRepository.findById(notificationId)
 			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_NOTIFICATION));
@@ -82,25 +75,79 @@ public class NotificationService {
 
 	public void deleteAllNotifications(Long userId) {
 		User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-		List<Notification> notifications = new ArrayList<>(user.getNotifications());
-		if (!notifications.isEmpty()) {
-			notificationRepository.deleteAll(notifications);
+		notificationRepository.deleteAll(user.getNotifications());
+	}
+
+	@Transactional
+	public void markNotificationAsRead(Long userId, Long notificationId) {
+		Notification notification = notificationRepository.findById(notificationId)
+			.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_NOTIFICATION));
+
+		if (!notification.getUser().getUserId().equals(userId)) {
+			throw new AccessDeniedException();
 		}
+		notification.markAsRead();
+		notificationRepository.save(notification);
+	}
+
+	@Transactional
+	public void markAllNotificationsAsRead(Long userId) {
+		notificationRepository.updateIsReadByUserID(userId);
 	}
 
 	private String createMessage(User user, User coach, RelationFunctionEnum relationFunction) {
 		return switch (relationFunction) {
-			case ask -> user.getNickname() + NotificationMessage.USER_MESSAGE.getMessage()
-				+ NotificationMessage.ASK_MESSAGE.getMessage();
-			case like -> user.getNickname() + NotificationMessage.USER_MESSAGE.getMessage()
-				+ NotificationMessage.LIKE_MESSAGE.getMessage();
+			case ask -> String.format(
+				"%s%s%s", user.getNickname(), NotificationMessage.USER_MESSAGE.getMessage(),
+				NotificationMessage.ASK_MESSAGE.getMessage()
+			);
+			case like -> String.format(
+				"%s%s%s", user.getNickname(), NotificationMessage.USER_MESSAGE.getMessage(),
+				NotificationMessage.LIKE_MESSAGE.getMessage()
+			);
 			case review -> NotificationMessage.REVIEW_MESSAGE.getMessage();
-			case match -> coach.getNickname() + NotificationMessage.USER_MESSAGE.getMessage()
-				+ NotificationMessage.MATCH_MESSAGE.getMessage();
-			case refusal -> coach.getNickname() + NotificationMessage.USER_MESSAGE.getMessage()
-				+ NotificationMessage.REFUSAL_MESSAGE.getMessage();
-			case cancel -> coach.getNickname() + NotificationMessage.USER_MESSAGE.getMessage()
-				+ NotificationMessage.CANCEL_MESSAGE.getMessage();
+			case match -> String.format(
+				"%s%s%s", coach.getNickname(), NotificationMessage.USER_MESSAGE.getMessage(),
+				NotificationMessage.MATCH_MESSAGE.getMessage()
+			);
+			case refusal -> String.format(
+				"%s%s%s", coach.getNickname(), NotificationMessage.USER_MESSAGE.getMessage(),
+				NotificationMessage.REFUSAL_MESSAGE.getMessage()
+			);
+			case cancel -> String.format(
+				"%s%s%s", coach.getNickname(), NotificationMessage.USER_MESSAGE.getMessage(),
+				NotificationMessage.CANCEL_MESSAGE.getMessage()
+			);
+			case routine -> String.format(
+				"%s%s%s", coach.getNickname(), NotificationMessage.USER_MESSAGE.getMessage(),
+				NotificationMessage.ROUTINE_MESSAGE.getMessage()
+			);
+			case request -> coach.getNickname() + NotificationMessage.MATCH_REQUEST_MESSAGE.getMessage();
+		};
+	}
+
+	private NotificationListResponse buildNotificationResponse(Notification notification) {
+		User sender;
+		if (isCoachSender(notification.getRelationFunction())) {
+			sender = notification.getCoach();
+		} else {
+			sender = notification.getUser();
+		}
+		return NotificationListResponse.builder()
+			.notificationId(notification.getNotificationId())
+			.nickname(sender.getNickname())
+			.profileImageUrl(sender.getProfileImageUrl())
+			.message(notification.getMessage())
+			.relationFunction(notification.getRelationFunction())
+			.isRead(notification.isRead())
+			.createdAt(notification.getCreatedAt())
+			.build();
+	}
+
+	private boolean isCoachSender(RelationFunctionEnum relationFunction) {
+		return switch (relationFunction) {
+			case match, refusal, cancel, request, routine -> true;
+			default -> false;
 		};
 	}
 }

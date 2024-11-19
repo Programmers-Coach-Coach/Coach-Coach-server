@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -51,5 +52,24 @@ public class NotificationController {
 		return ResponseEntity.ok(
 			new SuccessResponse(HttpStatus.OK.value(), SuccessMessage.DELETE_NOTIFICATION_SUCCESS.getMessage())
 		);
+	}
+
+	@PatchMapping("/v1/notifications/{notificationId}")
+	public ResponseEntity<Void> markNotificationAsRead(
+		@AuthenticationPrincipal CustomUserDetails userDetails,
+		@PathVariable(name = "notificationId") Long notificationId
+	) {
+		Long userId = userDetails.getUserId();
+		notificationService.markNotificationAsRead(userId, notificationId);
+		return ResponseEntity.noContent().build();
+	}
+
+	@PatchMapping("/v1/notifications")
+	public ResponseEntity<Void> markAllNotificationsAsRead(
+		@AuthenticationPrincipal CustomUserDetails userDetails
+	) {
+		Long userId = userDetails.getUserId();
+		notificationService.markAllNotificationsAsRead(userId);
+		return ResponseEntity.noContent().build();
 	}
 }

@@ -148,7 +148,9 @@ public class CoachService {
 			newMatching.getUserCoachMatchingId());
 		Long chatRoomId = chatRoomService.createChatRoom(chatRoomRequest);
 
-		notificationService.createNotification(user.getUserId(), coachId, RelationFunctionEnum.ask);
+		notificationService.createNotification(user.getUserId(), coach.getUser().getUserId(),
+			RelationFunctionEnum.request);
+		notificationService.createNotification(user.getUserId(), coach.getUser().getUserId(), RelationFunctionEnum.ask);
 	}
 
 	@Transactional
@@ -165,9 +167,9 @@ public class CoachService {
 		boolean isMatching = matching.getIsMatching();
 		matchingRepository.delete(matching);
 		if (isMatching) {
-			notificationService.createNotification(userId, coach.getCoachId(), RelationFunctionEnum.cancel);
+			notificationService.createNotification(userId, coach.getUser().getUserId(), RelationFunctionEnum.cancel);
 		} else {
-			notificationService.createNotification(userId, coach.getCoachId(), RelationFunctionEnum.refusal);
+			notificationService.createNotification(userId, coach.getUser().getUserId(), RelationFunctionEnum.refusal);
 		}
 	}
 
@@ -274,6 +276,7 @@ public class CoachService {
 		if (!userCoachLikeRepository.existsByUser_UserIdAndCoach_CoachId(userId, coachId)) {
 			userCoachLikeRepository.save(new UserCoachLike(null, user, coach));
 		}
+		notificationService.createNotification(userId, coach.getUser().getUserId(), RelationFunctionEnum.like);
 	}
 
 	@Transactional
@@ -285,7 +288,6 @@ public class CoachService {
 			userCoachLikeRepository.deleteByUser_UserIdAndCoach_CoachId(userId, coachId);
 		}
 	}
-
 
 	public List<MatchingUserResponseDto> getMatchingUsersByCoachId(Long coachUserId) {
 		Long coachId = coachRepository.findCoachIdByUserId(coachUserId)
@@ -321,7 +323,6 @@ public class CoachService {
 		);
 	}
 
-
 	@Transactional
 	public void addReview(Long userId, Long coachId, ReviewRequestDto requestDto) {
 		User user = getUserById(userId);
@@ -342,7 +343,8 @@ public class CoachService {
 		Review review = new Review(null, coach, user, requestDto.contents(), requestDto.stars());
 
 		reviewRepository.save(review);
-		notificationService.createNotification(user.getUserId(), coachId, RelationFunctionEnum.review);
+		notificationService.createNotification(user.getUserId(), coach.getUser().getUserId(),
+			RelationFunctionEnum.review);
 	}
 
 	@Transactional
@@ -567,6 +569,6 @@ public class CoachService {
 
 		matching.markAsMatched();
 		coach.increaseTotalUserCount();
-		notificationService.createNotification(userId, coach.getCoachId(), RelationFunctionEnum.match);
+		notificationService.createNotification(userId, coachUserId, RelationFunctionEnum.match);
 	}
 }

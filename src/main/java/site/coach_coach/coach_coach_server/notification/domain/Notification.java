@@ -39,6 +39,10 @@ public class Notification extends DateEntity {
 	@JoinColumn(name = "user_id")
 	private User user;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "coach_id")
+	private User coach;
+
 	@NotBlank
 	@Column(name = "message", nullable = false, length = 100)
 	@Size(max = 100)
@@ -48,4 +52,12 @@ public class Notification extends DateEntity {
 	@Column(name = "relation_function")
 	@Enumerated(EnumType.STRING)
 	private RelationFunctionEnum relationFunction;
+
+	@NotNull
+	@Column(name = "is_read")
+	private boolean isRead;
+
+	public void markAsRead() {
+		this.isRead = true;
+	}
 }
