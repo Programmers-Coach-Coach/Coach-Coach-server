@@ -27,8 +27,6 @@ import site.coach_coach.coach_coach_server.coach.dto.ReviewListDto;
 import site.coach_coach.coach_coach_server.coach.dto.ReviewRequestDto;
 import site.coach_coach.coach_coach_server.coach.service.CoachService;
 import site.coach_coach.coach_coach_server.common.constants.SuccessMessage;
-import site.coach_coach.coach_coach_server.common.domain.GenderEnum;
-import site.coach_coach.coach_coach_server.common.exception.UserNotFoundException;
 import site.coach_coach.coach_coach_server.common.response.SuccessResponse;
 import site.coach_coach.coach_coach_server.review.dto.ReviewSortOption;
 import site.coach_coach.coach_coach_server.user.domain.User;

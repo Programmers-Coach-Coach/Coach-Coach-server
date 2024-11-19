@@ -84,6 +84,4 @@ public interface CoachRepository extends JpaRepository<Coach, Long> {
 		@Param("genderEnum") GenderEnum genderEnum,
 		Pageable pageable);
 
-
-	boolean existsByUser(User user);
 }
