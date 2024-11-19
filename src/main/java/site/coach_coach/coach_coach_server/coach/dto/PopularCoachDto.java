@@ -17,6 +17,7 @@ public record PopularCoachDto(
 	@NotBlank
 	String description,
 	int countOfLikes,
+	double reviewRating,
 	boolean isLiked,
 	List<CoachingSportDto> coachingSports
 ) {

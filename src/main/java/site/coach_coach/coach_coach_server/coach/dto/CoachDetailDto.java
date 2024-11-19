@@ -38,6 +38,7 @@ public record CoachDetailDto(
 	boolean isLiked,
 	boolean isSelf,
 	double reviewRating,
+	int countOfReviews,
 	int totalUserCount
 ) {
 }

@@ -28,6 +28,7 @@ import site.coach_coach.coach_coach_server.coach.dto.ReviewListDto;
 import site.coach_coach.coach_coach_server.coach.dto.ReviewRequestDto;
 import site.coach_coach.coach_coach_server.coach.repository.CoachRepository;
 import site.coach_coach.coach_coach_server.common.constants.ErrorMessage;
+import site.coach_coach.coach_coach_server.common.domain.GenderEnum;
 import site.coach_coach.coach_coach_server.common.domain.RelationFunctionEnum;
 import site.coach_coach.coach_coach_server.common.exception.AccessDeniedException;
 import site.coach_coach.coach_coach_server.common.exception.DuplicateValueException;
@@ -223,13 +224,14 @@ public class CoachService {
 			.isLiked(isLiked)
 			.isSelf(isSelf)
 			.reviewRating(averageRating)
+			.countOfReviews(reviews.size())
 			.totalUserCount(coach.getTotalUserCount())
 			.build();
 	}
 
 	@Transactional(readOnly = true)
-	public CoachListResponse getAllCoaches(User user, int page, String sports, String search, Boolean latest,
-		Boolean review, Boolean liked, Boolean my) {
+	public CoachListResponse getAllCoaches(User user, int page, String sports, String search, String gender,
+		Boolean latest, Boolean review, Boolean liked, Boolean my) {
 
 		List<Long> allSportsIds = sportRepository.findAllSportIds();
 
@@ -239,11 +241,14 @@ public class CoachService {
 		List<Long> sportsList = (sports != null && !sports.isEmpty()) ? parseSports(sports) : allSportsIds;
 		sportsList = getExistingSportsList(sportsList);
 
+		GenderEnum genderEnum = parseGender(gender);
+
 		if (sportsList.isEmpty() && (sports != null && !sports.isEmpty())) {
 			return new CoachListResponse(List.of(), 0, page);
 		}
 
-		Page<Coach> coachesPage = fetchCoachesPage(user, sportsList, search, pageable, review, liked, latest, my);
+		Page<Coach> coachesPage;
+		coachesPage = fetchCoachesPage(user, sportsList, search, genderEnum, pageable, review, liked, latest, my);
 
 		if (coachesPage.isEmpty() && page == 1) {
 			return new CoachListResponse(List.of(), 0, page);
@@ -413,20 +418,20 @@ public class CoachService {
 			.collect(Collectors.toList());
 	}
 
-	private Page<Coach> fetchCoachesPage(User user, List<Long> sportsList, String search, Pageable pageable,
-		Boolean review, Boolean liked, Boolean latest, Boolean my) {
+	private Page<Coach> fetchCoachesPage(User user, List<Long> sportsList, String search, GenderEnum genderEnum,
+		Pageable pageable, Boolean review, Boolean liked, Boolean latest, Boolean my) {
 		Page<Coach> coachesPage;
 
 		if (Boolean.TRUE.equals(review)) {
-			coachesPage = coachRepository.findAllWithReviewsSorted(sportsList, search, pageable);
+			coachesPage = coachRepository.findAllWithReviewsSorted(sportsList, search, genderEnum, pageable);
 		} else if (Boolean.TRUE.equals(liked)) {
-			coachesPage = coachRepository.findAllWithLikesSorted(sportsList, search, pageable);
+			coachesPage = coachRepository.findAllWithLikesSorted(sportsList, search, genderEnum, pageable);
 		} else if (Boolean.TRUE.equals(latest)) {
-			coachesPage = coachRepository.findAllWithLatestSorted(sportsList, search, pageable);
+			coachesPage = coachRepository.findAllWithLatestSorted(sportsList, search, genderEnum, pageable);
 		} else if (Boolean.TRUE.equals(my)) {
-			coachesPage = coachRepository.findMyCoaches(user.getUserId(), sportsList, search, pageable);
+			coachesPage = coachRepository.findMyCoaches(user.getUserId(), sportsList, search, genderEnum, pageable);
 		} else {
-			coachesPage = coachRepository.findAllWithLatestSorted(sportsList, search, pageable);
+			coachesPage = coachRepository.findAllWithLatestSorted(sportsList, search, genderEnum, pageable);
 		}
 
 		List<Coach> filteredCoaches = coachesPage.getContent().stream()
@@ -434,12 +439,23 @@ public class CoachService {
 			.collect(Collectors.toList());
 
 		return new PageImpl<>(filteredCoaches, pageable, coachesPage.getTotalElements());
+	}
 
+	private GenderEnum parseGender(String gender) {
+		if (gender == null || gender.isEmpty()) {
+			return null;
+		}
+		try {
+			return GenderEnum.valueOf(gender.toUpperCase());
+		} catch (IllegalArgumentException e) {
+			throw new IllegalArgumentException(ErrorMessage.INVALID_REQUEST);
+		}
 	}
 
 	private CoachListDto getCoachListDto(Coach coach, User user) {
 		List<Review> reviews = reviewRepository.findByCoach_CoachId(coach.getCoachId());
 		double averageRating = reviews.stream().mapToInt(Review::getStars).average().orElse(0.0);
+		averageRating = Math.round(averageRating * 10.0) / 10.0;
 		int countOfReviews = reviews.size();
 
 		boolean isLiked = isLikedByUser(user, coach);
