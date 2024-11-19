@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import site.coach_coach.coach_coach_server.coach.domain.Coach;
 import site.coach_coach.coach_coach_server.coach.dto.PopularCoachDto;
 import site.coach_coach.coach_coach_server.like.repository.UserCoachLikeRepository;
+import site.coach_coach.coach_coach_server.review.domain.Review;
+import site.coach_coach.coach_coach_server.review.repository.ReviewRepository;
 import site.coach_coach.coach_coach_server.sport.dto.CoachingSportDto;
 import site.coach_coach.coach_coach_server.user.domain.User;
 
@@ -21,6 +23,7 @@ import site.coach_coach.coach_coach_server.user.domain.User;
 public class PopularCoachService {
 
 	private final UserCoachLikeRepository userCoachLikeRepository;
+	private final ReviewRepository reviewRepository;
 
 	public List<PopularCoachDto> getTopCoaches(User user) {
 		LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
@@ -40,6 +43,8 @@ public class PopularCoachService {
 		int countOfLikes = userCoachLikeRepository.countByCoach_CoachId(coach.getCoachId());
 		boolean isLiked = userCoachLikeRepository
 			.existsByUser_UserIdAndCoach_CoachId(user.getUserId(), coach.getCoachId());
+		List<Review> reviews = reviewRepository.findByCoach_CoachId(coach.getCoachId());
+		double averageRating = reviews.stream().mapToInt(Review::getStars).average().orElse(0.0);
 
 		return new PopularCoachDto(
 			coach.getCoachId(),
@@ -47,6 +52,7 @@ public class PopularCoachService {
 			coach.getUser().getProfileImageUrl(),
 			coach.getCoachIntroduction(),
 			countOfLikes,
+			averageRating,
 			isLiked,
 			coachingSports
 		);
