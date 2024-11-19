@@ -10,6 +10,4 @@ ALTER TABLE `coachcoach`.`notifications`
 ALTER TABLE `coachcoach`.`notifications`
     ADD CONSTRAINT `fk_notifications_coach_id`
         FOREIGN KEY (`coach_id`)
-            REFERENCES `coachcoach`.`users` (`user_id`)
-            ON DELETE CASCADE
-            ON UPDATE NO ACTION;
+            REFERENCES `coachcoach`.`users` (`user_id`);
