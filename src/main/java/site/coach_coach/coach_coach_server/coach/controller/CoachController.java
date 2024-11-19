@@ -27,6 +27,7 @@ import site.coach_coach.coach_coach_server.coach.dto.ReviewListDto;
 import site.coach_coach.coach_coach_server.coach.dto.ReviewRequestDto;
 import site.coach_coach.coach_coach_server.coach.service.CoachService;
 import site.coach_coach.coach_coach_server.common.constants.SuccessMessage;
+import site.coach_coach.coach_coach_server.common.domain.GenderEnum;
 import site.coach_coach.coach_coach_server.common.exception.UserNotFoundException;
 import site.coach_coach.coach_coach_server.common.response.SuccessResponse;
 import site.coach_coach.coach_coach_server.review.dto.ReviewSortOption;
@@ -68,17 +69,15 @@ public class CoachController {
 		@RequestParam(defaultValue = "1") int page,
 		@RequestParam(required = false) String sports,
 		@RequestParam(required = false) String search,
+		@RequestParam(required = false) String gender,
 		@RequestParam(required = false) Boolean latest,
 		@RequestParam(required = false) Boolean review,
 		@RequestParam(required = false) Boolean liked,
 		@RequestParam(required = false) Boolean my
 	) {
-		if (userDetails == null || userDetails.getUser() == null) {
-			throw new UserNotFoundException();
-		}
-
 		User user = userDetails.getUser();
-		CoachListResponse response = coachService.getAllCoaches(user, page, sports, search, latest, review, liked, my);
+		CoachListResponse response;
+		response = coachService.getAllCoaches(user, page, sports, search, gender, latest, review, liked, my);
 		return ResponseEntity.ok(response);
 	}
 

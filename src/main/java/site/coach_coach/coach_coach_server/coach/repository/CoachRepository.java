@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import jakarta.validation.constraints.NotNull;
 import site.coach_coach.coach_coach_server.coach.domain.Coach;
+import site.coach_coach.coach_coach_server.common.domain.GenderEnum;
 import site.coach_coach.coach_coach_server.user.domain.User;
 
 @Repository
@@ -32,10 +33,12 @@ public interface CoachRepository extends JpaRepository<Coach, Long> {
 		+ "LEFT JOIN c.reviews r "
 		+ "WHERE (:sports IS NULL OR cs.sport.sportId IN :sports) "
 		+ "AND (:search IS NULL OR c.user.nickname LIKE %:search%) "
+		+ "AND (:genderEnum IS NULL OR c.user.gender = :genderEnum) "
 		+ "GROUP BY c.coachId "
 		+ "ORDER BY c.updatedAt DESC")
 	Page<Coach> findAllWithLatestSorted(@Param("sports") List<Long> sports,
 		@Param("search") String search,
+		@Param("genderEnum") GenderEnum genderEnum,
 		Pageable pageable);
 
 	@Query("SELECT c FROM Coach c "
@@ -43,10 +46,12 @@ public interface CoachRepository extends JpaRepository<Coach, Long> {
 		+ "LEFT JOIN c.reviews r "
 		+ "WHERE (:sports IS NULL OR cs.sport.sportId IN :sports) "
 		+ "AND (:search IS NULL OR c.user.nickname LIKE %:search%) "
+		+ "AND (:genderEnum IS NULL OR c.user.gender = :genderEnum) "
 		+ "GROUP BY c.coachId "
 		+ "ORDER BY COUNT(r) DESC")
 	Page<Coach> findAllWithReviewsSorted(@Param("sports") List<Long> sports,
 		@Param("search") String search,
+		@Param("genderEnum") GenderEnum genderEnum,
 		Pageable pageable);
 
 	@Query("SELECT c FROM Coach c "
@@ -54,10 +59,12 @@ public interface CoachRepository extends JpaRepository<Coach, Long> {
 		+ "LEFT JOIN c.reviews r "
 		+ "WHERE (:sports IS NULL OR cs.sport.sportId IN :sports) "
 		+ "AND (:search IS NULL OR c.user.nickname LIKE %:search%) "
+		+ "AND (:genderEnum IS NULL OR c.user.gender = :genderEnum) "
 		+ "GROUP BY c.coachId "
 		+ "ORDER BY (SELECT COUNT(ucl) FROM UserCoachLike ucl WHERE ucl.coach.coachId = c.coachId) DESC")
 	Page<Coach> findAllWithLikesSorted(@Param("sports") List<Long> sports,
 		@Param("search") String search,
+		@Param("genderEnum") GenderEnum genderEnum,
 		Pageable pageable);
 
 	@Query("SELECT c FROM Coach c "
@@ -67,13 +74,16 @@ public interface CoachRepository extends JpaRepository<Coach, Long> {
 		+ "WHERE ucl.user.userId = :userId "
 		+ "AND (:sports IS NULL OR cs.sport.sportId IN :sports) "
 		+ "AND (:search IS NULL OR c.user.nickname LIKE %:search%) "
+		+ "AND (:genderEnum IS NULL OR c.user.gender = :genderEnum) "
 		+ "GROUP BY c.coachId "
 		+ "ORDER BY c.updatedAt DESC")
 	Page<Coach> findMyCoaches(
 		@Param("userId") Long userId,
 		@Param("sports") List<Long> sports,
 		@Param("search") String search,
+		@Param("genderEnum") GenderEnum genderEnum,
 		Pageable pageable);
+
 
 	boolean existsByUser(User user);
 }
