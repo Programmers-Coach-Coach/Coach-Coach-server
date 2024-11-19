@@ -115,7 +115,7 @@ public class UserService {
 		GenderEnum gender = user.getGender();
 		String profileImageUrl = user.getProfileImageUrl();
 		boolean isCoach = user.getIsCoach();
-		int countOfNotifications = notificationRepository.countByUser_UserId(user.getUserId());
+		int countOfNotifications = notificationRepository.countByUser_UserIdAndIsReadFalse(user.getUserId());
 		return AuthResponse.builder()
 			.isLogin(true)
 			.nickname(nickname)

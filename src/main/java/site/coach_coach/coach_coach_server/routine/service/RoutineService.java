@@ -133,7 +133,7 @@ public class RoutineService {
 			Coach coach = coachRepository.findById(coachId)
 				.orElseThrow(() -> new NotFoundException(ErrorMessage.NOT_FOUND_COACH));
 			routineBuilder.coach(coach);
-			notificationService.createNotification(createRoutineRequest.userId(), coachId,
+			notificationService.createNotification(createRoutineRequest.userId(), userIdByJwt,
 				RelationFunctionEnum.routine);
 		}
 
