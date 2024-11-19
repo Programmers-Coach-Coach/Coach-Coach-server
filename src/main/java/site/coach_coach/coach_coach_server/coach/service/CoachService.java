@@ -450,8 +450,8 @@ public class CoachService {
 	}
 
 	private CoachListDto getCoachListDto(Coach coach, User user) {
-		List<Review> reviews = reviewRepository.findByCoach_CoachId(coach.getCoachId());
-		double averageRating = reviews.stream().mapToInt(Review::getStars).average().orElse(0.0);
+		List<ReviewDto> reviews = getReviews(coach, user, ReviewSortOption.LATEST);
+		double averageRating = calculateAverageRating(reviews);
 		int countOfReviews = reviews.size();
 
 		boolean isLiked = isLikedByUser(user, coach);

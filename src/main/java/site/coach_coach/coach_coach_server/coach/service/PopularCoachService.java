@@ -44,7 +44,7 @@ public class PopularCoachService {
 		boolean isLiked = userCoachLikeRepository
 			.existsByUser_UserIdAndCoach_CoachId(user.getUserId(), coach.getCoachId());
 		List<Review> reviews = reviewRepository.findByCoach_CoachId(coach.getCoachId());
-		double averageRating = reviews.stream().mapToInt(Review::getStars).average().orElse(0.0);
+		double averageRating = calculateRoundedAverageRating(reviews);
 
 		return new PopularCoachDto(
 			coach.getCoachId(),
@@ -56,5 +56,16 @@ public class PopularCoachService {
 			isLiked,
 			coachingSports
 		);
+	}
+
+	private double calculateRoundedAverageRating(List<Review> reviews) {
+		if (reviews.isEmpty()) {
+			return 0.0;
+		}
+		double average = reviews.stream()
+			.mapToInt(Review::getStars)
+			.average()
+			.orElse(0.0);
+		return Math.round(average * 10) / 10.0; // 소수점 첫째 자리 반올림
 	}
 }
