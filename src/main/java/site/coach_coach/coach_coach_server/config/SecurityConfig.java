@@ -50,7 +50,7 @@ public class SecurityConfig {
 				authorizeRequests
 					.requestMatchers("/api/v1/auth/login", "/api/v1/auth/signup", "/api/v1/test",
 						"/api/v1/auth/check-email", "/api/v1/auth/check-nickname", "/api/v1/auth/reissue",
-						"/api/v1/auth", "/oauth2/", "/login/oauth2/", "/ws/**").permitAll()
+						"/api/v1/auth", "/oauth2/", "/login/oauth2/", "/ws/**", "/users/reset-password").permitAll()
 					.anyRequest()
 					.authenticated()
 			)
