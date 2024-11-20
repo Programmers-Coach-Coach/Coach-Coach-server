@@ -12,6 +12,7 @@ public record UserChatRoomsResponse(
 	List<String> coachingSports,
 	String activeHours,
 	String lastMessage,
+	long unreadCount,
 	LocalDateTime lastMessageCreatedAt
 ) {
 }

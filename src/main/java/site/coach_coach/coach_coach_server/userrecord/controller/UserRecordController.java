@@ -29,6 +29,7 @@ import site.coach_coach.coach_coach_server.common.response.SuccessIdResponse;
 import site.coach_coach.coach_coach_server.userrecord.dto.BodyInfoChartResponse;
 import site.coach_coach.coach_coach_server.userrecord.dto.UserRecordCreateRequest;
 import site.coach_coach.coach_coach_server.userrecord.dto.UserRecordDetailResponse;
+import site.coach_coach.coach_coach_server.userrecord.dto.UserRecordDetailV2Response;
 import site.coach_coach.coach_coach_server.userrecord.dto.UserRecordResponse;
 import site.coach_coach.coach_coach_server.userrecord.dto.UserRecordUpdateRequest;
 import site.coach_coach.coach_coach_server.userrecord.service.UserRecordService;
@@ -95,12 +96,12 @@ public class UserRecordController {
 	}
 
 	@GetMapping("/v2/records")
-	public ResponseEntity<UserRecordDetailResponse> getUserRecordDetailV2(
+	public ResponseEntity<UserRecordDetailV2Response> getUserRecordDetailV2(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
 		@RequestParam(name = "record_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate recordDate
 	) {
 		Long userId = userDetails.getUserId();
-		UserRecordDetailResponse detailResponse = userRecordService.getUserRecordDetailV2(
+		UserRecordDetailV2Response detailResponse = userRecordService.getUserRecordDetailV2(
 			userId, recordDate
 		);
 		return ResponseEntity.ok(detailResponse);

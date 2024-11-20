@@ -16,6 +16,7 @@ import site.coach_coach.coach_coach_server.auth.userdetails.CustomUserDetails;
 import site.coach_coach.coach_coach_server.chat.dto.response.ChatMessageResponse;
 import site.coach_coach.coach_coach_server.chat.dto.response.CoachChatRoomsResponse;
 import site.coach_coach.coach_coach_server.chat.dto.response.UserChatRoomsResponse;
+import site.coach_coach.coach_coach_server.chat.service.ChatMessageService;
 import site.coach_coach.coach_coach_server.chat.service.ChatRoomService;
 import site.coach_coach.coach_coach_server.user.domain.User;
 
@@ -24,6 +25,7 @@ import site.coach_coach.coach_coach_server.user.domain.User;
 @RequestMapping("/api")
 public class ChatRoomController {
 	private final ChatRoomService chatRoomService;
+	private final ChatMessageService chatMessageService;
 
 	@GetMapping("/v1/users/chat-rooms")
 	public ResponseEntity<List<UserChatRoomsResponse>> getUserChatRooms(
@@ -50,6 +52,7 @@ public class ChatRoomController {
 		Pageable pageable
 	) {
 		Long userId = userDetails.getUserId();
+		chatMessageService.markMessagesAsRead(chatRoomId, userId);
 		Slice<ChatMessageResponse> messages = chatRoomService
 			.findChatMessagesByChatRoomId(userId, chatRoomId, pageable);
 		return ResponseEntity.ok(messages);

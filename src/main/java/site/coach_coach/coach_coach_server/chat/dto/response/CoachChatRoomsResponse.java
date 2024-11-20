@@ -9,6 +9,7 @@ public record CoachChatRoomsResponse(
 	String userProfileImageUrl,
 	boolean isMatching,
 	String lastMessage,
+	long unreadCount,
 	LocalDateTime lastMessageCreatedAt
 ) {
 }
