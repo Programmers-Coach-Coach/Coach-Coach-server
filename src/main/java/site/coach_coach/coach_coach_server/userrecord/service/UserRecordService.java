@@ -37,6 +37,7 @@ import site.coach_coach.coach_coach_server.userrecord.dto.RecordResponse;
 import site.coach_coach.coach_coach_server.userrecord.dto.RecordsDto;
 import site.coach_coach.coach_coach_server.userrecord.dto.UserRecordCreateRequest;
 import site.coach_coach.coach_coach_server.userrecord.dto.UserRecordDetailResponse;
+import site.coach_coach.coach_coach_server.userrecord.dto.UserRecordDetailV2Response;
 import site.coach_coach.coach_coach_server.userrecord.dto.UserRecordResponse;
 import site.coach_coach.coach_coach_server.userrecord.dto.UserRecordUpdateRequest;
 import site.coach_coach.coach_coach_server.userrecord.repository.UserRecordRepository;
@@ -182,26 +183,35 @@ public class UserRecordService {
 	}
 
 	@Transactional(readOnly = true)
-	public UserRecordDetailResponse getUserRecordDetailV2(Long userId, LocalDate recordDate) {
+	public UserRecordDetailV2Response getUserRecordDetailV2(Long userId, LocalDate recordDate) {
 		return userRecordRepository.findByRecordDateAndUser_UserId(recordDate, userId)
 			.map(userRecord -> {
-				List<CompletedRoutine> completedRoutines =
-					completedRoutineRepository.findAllWithDetailsByUserIdAndRecordDate(userId, recordDate);
-				List<RecordsDto> records = mapToRecordsDto(completedRoutines);
+				List<CompletedRoutineDto> completedRoutines = completedRoutineRepository
+					.findAllWithDetailsByUserIdAndRecordDate(userId, recordDate)
+					.stream()
+					.map(CompletedRoutineDto::from)
+					.collect(Collectors.toList());
 
-				return new UserRecordDetailResponse(
-					userRecord.getUserRecordId(),
-					userRecord.getWeight(),
-					userRecord.getSkeletalMuscle(),
-					userRecord.getFatPercentage(),
-					userRecord.getBmi(),
-					records
-				);
+				return buildUserRecordDetailResponse(userRecord, completedRoutines);
 			})
-			.orElseGet(() -> new UserRecordDetailResponse(
+			.orElseGet(() -> new UserRecordDetailV2Response(
 				null, null, null, null, null,
 				Collections.emptyList()
 			));
+	}
+
+	private UserRecordDetailV2Response buildUserRecordDetailResponse(
+		UserRecord userRecord,
+		List<CompletedRoutineDto> completedRoutines
+	) {
+		return new UserRecordDetailV2Response(
+			userRecord.getUserRecordId(),
+			userRecord.getWeight(),
+			userRecord.getSkeletalMuscle(),
+			userRecord.getFatPercentage(),
+			userRecord.getBmi(),
+			completedRoutines
+		);
 	}
 
 	public UserRecord getUserRecordForCompleteRoutine(Long userId) {
