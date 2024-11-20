@@ -121,4 +121,8 @@ public class User extends DateEntity {
 	public void promoteToCoach() {
 		this.isCoach = true;
 	}
+
+	public void updatePassword(String encodedPassword) {
+		this.password = encodedPassword;
+	}
 }

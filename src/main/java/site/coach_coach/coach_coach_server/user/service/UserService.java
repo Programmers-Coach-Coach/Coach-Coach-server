@@ -206,4 +206,19 @@ public class UserService {
 			.isSocial(false)
 			.build();
 	}
+
+	@Transactional
+	public void resetPassword(String email, String newPassword) {
+		// 이메일로 사용자 조회
+		User user = userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
+
+		// 새 비밀번호 암호화
+		String encodedPassword = passwordEncoder.encode(newPassword);
+
+		// 비밀번호 업데이트
+		user.updatePassword(encodedPassword);
+
+		// 저장
+		userRepository.save(user);
+	}
 }
